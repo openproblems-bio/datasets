@@ -1,0 +1,12 @@
+name: cellxgene-census
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.10
+  - scanpy=1.9
+  - anndata=0.10
+  - ipykernel
+  - pip
+  - pip:
+    - cellxgene-census

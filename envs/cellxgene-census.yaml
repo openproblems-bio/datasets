@@ -3,10 +3,12 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
+  - ipykernel
   - python=3.10
   - scanpy=1.9
   - anndata=0.10
-  - ipykernel
+  - zarr
+  - hdf5=1.14.2
   - pip
   - pip:
     - cellxgene-census

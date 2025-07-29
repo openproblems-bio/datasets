@@ -51,16 +51,16 @@ HERE
 # HERE
 
 nextflow run . \
-  -main-script target/nextflow/datasets/workflows/multimodal/process_openproblems_neurips2021_bmmc/main.nf \
+  -main-script target/nextflow/workflows/multimodal/process_openproblems_neurips2021_bmmc/main.nf \
   -profile docker \
   -resume \
   --publish_dir resources_test/common/multimodal \
   -params-file "$params_file" \
   -c src/wf_utils/labels.config
 
-# tw launch https://github.com/openproblems-bio/openproblems.git \
-#   --revision main_build \
-#   --main-script target/nextflow/datasets/workflows/process_openproblems_neurips2021_bmmc/main.nf \
+# tw launch https://github.com/openproblems-bio/datasets.git \
+#   --revision build/main \
+#   --main-script target/nextflow/workflows/process_openproblems_neurips2021_bmmc/main.nf \
 #   --workspace 53907369739130 \
 #   --compute-env 6TeIFgV5OY4pJCk8I0bfOh \
 #   --params-file "$params_file" \

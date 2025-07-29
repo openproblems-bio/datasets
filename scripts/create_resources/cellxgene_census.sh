@@ -39,7 +39,7 @@ param_list:
     dataset_url: https://cellxgene.cziscience.com/collections/296237e2-393d-4e31-b590-b03f74ac5070
     dataset_reference: hrovatin2023delineating
     dataset_organism: mus_musculus
-  - id: cellxgene_census/hcla
+  - id: cellxgene_census/hlca
     species: homo_sapiens
     census_version: "2023-07-25"
     obs_value_filter: "dataset_id == '066943a2-fdac-4b29-b348-40cede398e4e'"

@@ -3724,7 +3724,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/normalization/l1_sqrt",
     "viash_version" : "0.9.4",
-    "git_commit" : "4b3a2fcbe61aa746a6834856e0cbaec988cdd425",
+    "git_commit" : "3521aa50a3ed54ad769b428a3a4872085398b752",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {

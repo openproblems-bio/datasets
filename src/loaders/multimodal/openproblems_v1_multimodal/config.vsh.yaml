@@ -85,7 +85,7 @@ engines:
         packages: git
       - type: docker
         run: |
-          git clone -b 'v0.8.0' --depth 1 https://github.com/openproblems-bio/datasets.git /opt/openproblems && \
+          git clone -b 'v0.8.0' --depth 1 https://github.com/openproblems-bio/openproblems.git /opt/openproblems && \
             pip install --no-cache-dir -r /opt/openproblems/docker/openproblems/requirements.txt && \
             pip install --no-cache-dir --editable /opt/openproblems
 runners:

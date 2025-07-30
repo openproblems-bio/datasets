@@ -45,11 +45,3 @@ tw launch https://github.com/openproblems-bio/datasets.git \
  --labels op3,dataset_loader \
  --config /tmp/nextflow.config
 
-# set -x
-# export AWS_PROFILE=op
-# nextflow run . \
-#   -main-script target/nextflow/workflows/scrnaseq/process_openproblems_op3/main.nf \
-#   -profile docker \
-#   -resume \
-#   -params-file "$params_file" \
-#   -config /tmp/nextflow.config

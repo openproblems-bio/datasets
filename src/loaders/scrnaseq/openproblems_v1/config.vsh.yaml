@@ -1,4 +1,4 @@
-__merge__: ../../../api/comp_dataset_loader.yaml
+__merge__: /src/api/comp_dataset_loader.yaml
 name: openproblems_v1
 namespace: loaders/scrnaseq
 description: Fetch a dataset from OpenProblems v1

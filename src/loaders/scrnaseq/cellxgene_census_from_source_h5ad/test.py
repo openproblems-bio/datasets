@@ -7,7 +7,7 @@ import numpy as np
 ## VIASH START
 meta = {
     'resources_dir': './resources_test/',
-    'executable': './target/docker/datasets/loaders/cellxgene_census_from_source_h5ad/cellxgene_census_from_source_h5ad',
+    'executable': './target/docker/loaders/cellxgene_census_from_source_h5ad/cellxgene_census_from_source_h5ad',
     'config': 'src/query/cellxgene_census/config.vsh.yaml'
 }
 ## VIASH END

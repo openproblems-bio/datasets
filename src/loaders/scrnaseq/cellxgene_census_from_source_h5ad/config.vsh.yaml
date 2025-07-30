@@ -1,3 +1,4 @@
+__merge__: /src/api/comp_dataset_loader.yaml
 name: cellxgene_census_from_source_h5ad
 namespace: loaders/scrnaseq
 description: |
@@ -91,20 +92,6 @@ argument_groups:
         type: string
         description: The organism of the dataset.
         required: true
-  - name: Outputs
-    description: Output arguments.
-    arguments:
-      - name: --output
-        type: file
-        description: Output h5ad file.
-        direction: output
-        required: true
-        example: output.h5ad
-      - name: --output_compression
-        type: string
-        choices: [gzip, lzf]
-        required: false
-        example: gzip
 resources:
   - type: python_script
     path: script.py

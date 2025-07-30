@@ -35,10 +35,10 @@ output_state: '$id/state.yaml'
 publish_dir: s3://openproblems-data/resources/datasets/multimodal
 HERE
 
-tw launch https://github.com/openproblems-bio/openproblems.git \
-  --revision main_build \
+tw launch https://github.com/openproblems-bio/datasets.git \
+  --revision build/main \
   --pull-latest \
-  --main-script target/nextflow/datasets/workflows/multimodal/process_openproblems_neurips2021_bmmc/main.nf \
+  --main-script target/nextflow/workflows/multimodal/process_openproblems_neurips2021_bmmc/main.nf \
   --workspace 53907369739130 \
   --compute-env 6TeIFgV5OY4pJCk8I0bfOh \
   --params-file "$params_file" \

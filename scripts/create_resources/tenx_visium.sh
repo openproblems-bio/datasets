@@ -293,10 +293,10 @@
 # publish_dir: s3://openproblems-data/resources/datasets/spatial
 # HERE
 
-tw launch https://github.com/openproblems-bio/openproblems.git \
-  --revision main_build \
+tw launch https://github.com/openproblems-bio/datasets.git \
+  --revision build/main \
   --pull-latest \
-  --main-script target/nextflow/datasets/workflows/spatial/process_tenx_visium/main.nf \
+  --main-script target/nextflow/workflows/spatial/process_tenx_visium/main.nf \
   --workspace 53907369739130 \
   --compute-env 6TeIFgV5OY4pJCk8I0bfOh \
   --params-file "/tmp/params.yaml" \

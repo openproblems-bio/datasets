@@ -125,4 +125,4 @@ else:
         print(f"Warning: key '{par['var_feature_id']}' could not be found in adata.var.", flush=True)
 
 print("Writing adata to file", flush=True)
-adata.write_h5ad(par["output"], compression="gzip")
+adata.write_h5ad(par["output"], compression=par["output_compression"])

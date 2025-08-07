@@ -39,7 +39,7 @@ param_list:
     dataset_url: https://cellxgene.cziscience.com/collections/296237e2-393d-4e31-b590-b03f74ac5070
     dataset_reference: hrovatin2023delineating
     dataset_organism: mus_musculus
-  - id: cellxgene_census/hcla
+  - id: cellxgene_census/hlca
     species: homo_sapiens
     census_version: "2023-07-25"
     obs_value_filter: "dataset_id == '066943a2-fdac-4b29-b348-40cede398e4e'"
@@ -142,10 +142,10 @@ process {
 }
 HERE
 
-tw launch https://github.com/openproblems-bio/openproblems.git \
-  --revision main_build \
+tw launch https://github.com/openproblems-bio/datasets.git \
+  --revision build/main \
   --pull-latest \
-  --main-script target/nextflow/datasets/workflows/scrnaseq/process_cellxgene_census/main.nf \
+  --main-script target/nextflow/workflows/scrnaseq/process_cellxgene_census/main.nf \
   --workspace 53907369739130 \
   --compute-env 6TeIFgV5OY4pJCk8I0bfOh \
   --params-file "/tmp/params.yaml" \

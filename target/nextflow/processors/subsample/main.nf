@@ -4362,6 +4362,21 @@ meta = [
           "multiple_sep" : ";"
         },
         {
+          "type" : "string",
+          "name" : "--output_compression",
+          "default" : [
+            "gzip"
+          ],
+          "required" : false,
+          "choices" : [
+            "gzip",
+            "lzf"
+          ],
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
           "type" : "integer",
           "name" : "--n_obs",
           "description" : "Maximum number of observations to be kept. It might end up being less because empty cells / genes are removed.",
@@ -4409,7 +4424,7 @@ meta = [
           "description" : "Categories indexes to be selected",
           "required" : false,
           "direction" : "input",
-          "multiple" : true,
+         ''' + ''' "multiple" : true,
           "multiple_sep" : ";"
         },
         {
@@ -4421,7 +4436,7 @@ meta = [
         {
           "type" : "integer",
           "name" : "--seed",
-          "description" : "A se''' + '''ed for the subsampling.",
+          "description" : "A seed for the subsampling.",
           "example" : [
             123
           ],
@@ -4556,7 +4571,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/processors/subsample",
     "viash_version" : "0.9.4",
-    "git_commit" : "3521aa50a3ed54ad769b428a3a4872085398b752",
+    "git_commit" : "fbc3fe654c05974b0707a172a7ecde71173d9c4c",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -4627,6 +4642,7 @@ par = {
   'input_mod2': $( if [ ! -z ${VIASH_PAR_INPUT_MOD2+x} ]; then echo "r'${VIASH_PAR_INPUT_MOD2//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_mod2': $( if [ ! -z ${VIASH_PAR_OUTPUT_MOD2+x} ]; then echo "r'${VIASH_PAR_OUTPUT_MOD2//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'n_obs': $( if [ ! -z ${VIASH_PAR_N_OBS+x} ]; then echo "int(r'${VIASH_PAR_N_OBS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'n_vars': $( if [ ! -z ${VIASH_PAR_N_VARS+x} ]; then echo "int(r'${VIASH_PAR_N_VARS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'keep_features': $( if [ ! -z ${VIASH_PAR_KEEP_FEATURES+x} ]; then echo "r'${VIASH_PAR_KEEP_FEATURES//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
@@ -4781,9 +4797,9 @@ if par["input_mod2"] is not None:
     del adata_output_mod2.X
 
 print(">> Writing data", flush=True)
-adata_output.write_h5ad(par["output"])
+adata_output.write_h5ad(par["output"], compression=par["output_compression"])
 if par["output_mod2"] is not None:
-    adata_output_mod2.write_h5ad(par["output_mod2"])
+    adata_output_mod2.write_h5ad(par["output_mod2"], compression=par["output_compression"])
 VIASHMAIN
 python -B "$tempscript"
 '''

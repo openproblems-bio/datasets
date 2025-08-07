@@ -454,9 +454,9 @@ RUN git clone -b 'v0.8.0' --depth 1 https://github.com/openproblems-bio/openprob
   pip install --no-cache-dir --editable /opt/openproblems
 
 LABEL org.opencontainers.image.description="Companion container for running component loaders/scrnaseq openproblems_v1"
-LABEL org.opencontainers.image.created="2025-07-29T11:18:17Z"
+LABEL org.opencontainers.image.created="2025-08-07T07:32:11Z"
 LABEL org.opencontainers.image.source="https://github.com/openproblems-bio/datasets"
-LABEL org.opencontainers.image.revision="3521aa50a3ed54ad769b428a3a4872085398b752"
+LABEL org.opencontainers.image.revision="fbc3fe654c05974b0707a172a7ecde71173d9c4c"
 LABEL org.opencontainers.image.version="build_main"
 
 VIASHDOCKER
@@ -578,6 +578,23 @@ function ViashHelp {
   echo ""
   echo "Fetch a dataset from OpenProblems v1"
   echo ""
+  echo "Output:"
+  echo "    Output parameters"
+  echo ""
+  echo "    --output"
+  echo "        type: file, required parameter, output, file must exist"
+  echo "        example: resources_test/common/pancreas/raw.h5ad"
+  echo "        This dataset contains raw counts and metadata as output by a dataset"
+  echo "        loader."
+  echo "        The format of this file is derived from the [CELLxGENE schema"
+  echo "       "
+  echo "v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md)."
+  echo ""
+  echo "    --output_compression"
+  echo "        type: string"
+  echo "        default: gzip"
+  echo "        choices: [ gzip, lzf ]"
+  echo ""
   echo "Inputs:"
   echo "    --input_id"
   echo "        type: string, required parameter"
@@ -646,16 +663,6 @@ function ViashHelp {
   echo "        type: string"
   echo "        The organism of the dataset."
   echo ""
-  echo "Arguments:"
-  echo "    --output"
-  echo "        type: file, required parameter, output, file must exist"
-  echo "        example: resources_test/common/pancreas/raw.h5ad"
-  echo "        This dataset contains raw counts and metadata as output by a dataset"
-  echo "        loader."
-  echo "        The format of this file is derived from the [CELLxGENE schema"
-  echo "       "
-  echo "v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md)."
-  echo ""
   echo "Viash built in Computational Requirements:"
   echo "    ---cpus=INT"
   echo "        Number of CPUs to use"
@@ -705,6 +712,28 @@ while [[ $# -gt 0 ]]; do
         --version)
             echo "openproblems_v1 build_main"
             exit
+            ;;
+        --output)
+            [ -n "$VIASH_PAR_OUTPUT" ] && ViashError Bad arguments for option \'--output\': \'$VIASH_PAR_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --output=*)
+            [ -n "$VIASH_PAR_OUTPUT" ] && ViashError Bad arguments for option \'--output=*\': \'$VIASH_PAR_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --output_compression)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_compression. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --output_compression=*)
+            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression=*\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
+            shift 1
             ;;
         --input_id)
             [ -n "$VIASH_PAR_INPUT_ID" ] && ViashError Bad arguments for option \'--input_id\': \'$VIASH_PAR_INPUT_ID\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
@@ -869,17 +898,6 @@ while [[ $# -gt 0 ]]; do
         --dataset_organism=*)
             [ -n "$VIASH_PAR_DATASET_ORGANISM" ] && ViashError Bad arguments for option \'--dataset_organism=*\': \'$VIASH_PAR_DATASET_ORGANISM\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_DATASET_ORGANISM=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --output)
-            [ -n "$VIASH_PAR_OUTPUT" ] && ViashError Bad arguments for option \'--output\': \'$VIASH_PAR_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --output=*)
-            [ -n "$VIASH_PAR_OUTPUT" ] && ViashError Bad arguments for option \'--output=*\': \'$VIASH_PAR_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         ---engine)
@@ -1052,6 +1070,10 @@ fi
 
 
 # check whether required parameters exist
+if [ -z ${VIASH_PAR_OUTPUT+x} ]; then
+  ViashError '--output' is a required argument. Use "--help" to get more information on the parameters.
+  exit 1
+fi
 if [ -z ${VIASH_PAR_INPUT_ID+x} ]; then
   ViashError '--input_id' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
@@ -1070,10 +1092,6 @@ if [ -z ${VIASH_PAR_DATASET_SUMMARY+x} ]; then
 fi
 if [ -z ${VIASH_PAR_DATASET_DESCRIPTION+x} ]; then
   ViashError '--dataset_description' is a required argument. Use "--help" to get more information on the parameters.
-  exit 1
-fi
-if [ -z ${VIASH_PAR_OUTPUT+x} ]; then
-  ViashError '--output' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
 fi
 if [ -z ${VIASH_META_NAME+x} ]; then
@@ -1102,6 +1120,9 @@ if [ -z ${VIASH_META_TEMP_DIR+x} ]; then
 fi
 
 # filling in defaults
+if [ -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then
+  VIASH_PAR_OUTPUT_COMPRESSION="gzip"
+fi
 if [ -z ${VIASH_PAR_SPARSE+x} ]; then
   VIASH_PAR_SPARSE="true"
 fi
@@ -1187,6 +1208,19 @@ if [[ -n "$VIASH_META_MEMORY_PIB" ]]; then
     ViashError 'memory_pib' has to be a long. Use "--help" to get more information on the parameters.
     exit 1
   fi
+fi
+
+# check whether value is belongs to a set of choices
+if [ ! -z "$VIASH_PAR_OUTPUT_COMPRESSION" ]; then
+  VIASH_PAR_OUTPUT_COMPRESSION_CHOICES=("gzip;lzf")
+  IFS=';'
+  set -f
+  if ! [[ ";${VIASH_PAR_OUTPUT_COMPRESSION_CHOICES[*]};" =~ ";$VIASH_PAR_OUTPUT_COMPRESSION;" ]]; then
+    ViashError '--output_compression' specified value of \'$VIASH_PAR_OUTPUT_COMPRESSION\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+  set +f
+  unset IFS
 fi
 
 # create parent directories of output files, if so desired
@@ -1277,6 +1311,8 @@ import scipy
 ## VIASH START
 # The following code has been auto-generated by Viash.
 par = {
+  'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'input_id': $( if [ ! -z ${VIASH_PAR_INPUT_ID+x} ]; then echo "r'${VIASH_PAR_INPUT_ID//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obs_cell_type': $( if [ ! -z ${VIASH_PAR_OBS_CELL_TYPE+x} ]; then echo "r'${VIASH_PAR_OBS_CELL_TYPE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'obs_batch': $( if [ ! -z ${VIASH_PAR_OBS_BATCH+x} ]; then echo "r'${VIASH_PAR_OBS_BATCH//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1291,8 +1327,7 @@ par = {
   'dataset_reference': $( if [ ! -z ${VIASH_PAR_DATASET_REFERENCE+x} ]; then echo "r'${VIASH_PAR_DATASET_REFERENCE//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'dataset_summary': $( if [ ! -z ${VIASH_PAR_DATASET_SUMMARY+x} ]; then echo "r'${VIASH_PAR_DATASET_SUMMARY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'dataset_description': $( if [ ! -z ${VIASH_PAR_DATASET_DESCRIPTION+x} ]; then echo "r'${VIASH_PAR_DATASET_DESCRIPTION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'dataset_organism': $( if [ ! -z ${VIASH_PAR_DATASET_ORGANISM+x} ]; then echo "r'${VIASH_PAR_DATASET_ORGANISM//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi )
+  'dataset_organism': $( if [ ! -z ${VIASH_PAR_DATASET_ORGANISM+x} ]; then echo "r'${VIASH_PAR_DATASET_ORGANISM//\'/\'\"\'\"r\'}'"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1427,7 +1462,7 @@ else:
         print(f"Warning: key '{par['var_feature_id']}' could not be found in adata.var.", flush=True)
 
 print("Writing adata to file", flush=True)
-adata.write_h5ad(par["output"], compression="gzip")
+adata.write_h5ad(par["output"], compression=par["output_compression"])
 VIASHMAIN
 python -B "\$tempscript" &
 wait "\$!"

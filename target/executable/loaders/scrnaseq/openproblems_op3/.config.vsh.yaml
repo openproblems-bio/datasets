@@ -2,129 +2,8 @@ name: "openproblems_op3"
 namespace: "loaders/scrnaseq"
 version: "build_main"
 argument_groups:
-- name: "Input"
-  arguments:
-  - type: "file"
-    name: "--input"
-    description: "Input url to the .h5ad file."
-    info: null
-    example:
-    - "https:/ftp.ncbi.nlm.nih.gov/geo/series/GSE279nnn/GSE279945/suppl/GSE279945_sc_counts_processed.h5ad"
-    default:
-    - "https:/ftp.ncbi.nlm.nih.gov/geo/series/GSE279nnn/GSE279945/suppl/GSE279945_sc_counts_processed.h5ad"
-    must_exist: true
-    create_parent: true
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "string"
-    name: "--var_feature_name"
-    description: "Location of where to find the feature names. Can be set to index\
-      \ if the feature names are the index."
-    info: null
-    default:
-    - "index"
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-- name: "Data Filtering"
-  description: "Arguments for filtering the dataset"
-  arguments:
-  - type: "string"
-    name: "--donor_id"
-    description: "Donor ID to filter for (1, 2, or 3). If not specified, all donors\
-      \ are included."
-    info: null
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "string"
-    name: "--cell_type"
-    description: "Cell type to filter for (T cells, B cells, NK cells, or Myeloid).\
-      \ If not specified, all cell types are included."
-    info: null
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "string"
-    name: "--perturbation"
-    description: "Perturbation to filter for. If not specified, all perturbations\
-      \ are included."
-    info: null
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-- name: "Dataset Metadata"
-  description: "Metadata about the dataset"
-  arguments:
-  - type: "string"
-    name: "--dataset_id"
-    description: "Unique identifier for the dataset"
-    info: null
-    default:
-    - "openproblems_op3"
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "string"
-    name: "--dataset_name"
-    description: "Human-readable name for the dataset"
-    info: null
-    default:
-    - "OP3: single-cell multimodal dataset in PBMCs for perturbation prediction benchmarking"
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "string"
-    name: "--dataset_summary"
-    description: "Short summary of the dataset"
-    info: null
-    default:
-    - "The Open Problems Perurbation Prediction (OP3) dataset with small molecule\
-      \ perturbations in PBMCs"
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "string"
-    name: "--dataset_description"
-    description: "Detailed description of the dataset"
-    info: null
-    default:
-    - "The OP3 dataset is to-date the largest single-cell small molecule perturbation\
-      \ dataset in primary tissue with multiple donor replicates."
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "string"
-    name: "dataset_reference"
-    description: "Bibtex reference of the paper in which the dataset was published."
-    info: null
-    default:
-    - "GSE279945"
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-  - type: "string"
-    name: "--dataset_url"
-    description: "Link to the original source of the dataset."
-    info: null
-    default:
-    - "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE279nnn/GSE279945/suppl/GSE279945_sc_counts_processed.h5ad"
-    required: false
-    direction: "input"
-    multiple: false
-    multiple_sep: ";"
-- name: "Arguments"
+- name: "Output"
+  description: "Output parameters"
   arguments:
   - type: "file"
     name: "--output"
@@ -347,6 +226,140 @@ argument_groups:
     direction: "output"
     multiple: false
     multiple_sep: ";"
+  - type: "string"
+    name: "--output_compression"
+    info: null
+    default:
+    - "gzip"
+    required: false
+    choices:
+    - "gzip"
+    - "lzf"
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Input"
+  arguments:
+  - type: "file"
+    name: "--input"
+    description: "Input url to the .h5ad file."
+    info: null
+    example:
+    - "https:/ftp.ncbi.nlm.nih.gov/geo/series/GSE279nnn/GSE279945/suppl/GSE279945_sc_counts_processed.h5ad"
+    default:
+    - "https:/ftp.ncbi.nlm.nih.gov/geo/series/GSE279nnn/GSE279945/suppl/GSE279945_sc_counts_processed.h5ad"
+    must_exist: true
+    create_parent: true
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--var_feature_name"
+    description: "Location of where to find the feature names. Can be set to index\
+      \ if the feature names are the index."
+    info: null
+    default:
+    - "index"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Data Filtering"
+  description: "Arguments for filtering the dataset"
+  arguments:
+  - type: "string"
+    name: "--donor_id"
+    description: "Donor ID to filter for (1, 2, or 3). If not specified, all donors\
+      \ are included."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--cell_type"
+    description: "Cell type to filter for (T cells, B cells, NK cells, or Myeloid).\
+      \ If not specified, all cell types are included."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--perturbation"
+    description: "Perturbation to filter for. If not specified, all perturbations\
+      \ are included."
+    info: null
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+- name: "Dataset Metadata"
+  description: "Metadata about the dataset"
+  arguments:
+  - type: "string"
+    name: "--dataset_id"
+    description: "Unique identifier for the dataset"
+    info: null
+    default:
+    - "openproblems_op3"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--dataset_name"
+    description: "Human-readable name for the dataset"
+    info: null
+    default:
+    - "OP3: single-cell multimodal dataset in PBMCs for perturbation prediction benchmarking"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--dataset_summary"
+    description: "Short summary of the dataset"
+    info: null
+    default:
+    - "The Open Problems Perurbation Prediction (OP3) dataset with small molecule\
+      \ perturbations in PBMCs"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--dataset_description"
+    description: "Detailed description of the dataset"
+    info: null
+    default:
+    - "The OP3 dataset is to-date the largest single-cell small molecule perturbation\
+      \ dataset in primary tissue with multiple donor replicates."
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "dataset_reference"
+    description: "Bibtex reference of the paper in which the dataset was published."
+    info: null
+    default:
+    - "GSE279945"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
+  - type: "string"
+    name: "--dataset_url"
+    description: "Link to the original source of the dataset."
+    info: null
+    default:
+    - "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE279nnn/GSE279945/suppl/GSE279945_sc_counts_processed.h5ad"
+    required: false
+    direction: "input"
+    multiple: false
+    multiple_sep: ";"
 resources:
 - type: "python_script"
   path: "script.py"
@@ -427,7 +440,7 @@ build_info:
   output: "target/executable/loaders/scrnaseq/openproblems_op3"
   executable: "target/executable/loaders/scrnaseq/openproblems_op3/openproblems_op3"
   viash_version: "0.9.4"
-  git_commit: "3521aa50a3ed54ad769b428a3a4872085398b752"
+  git_commit: "fbc3fe654c05974b0707a172a7ecde71173d9c4c"
   git_remote: "https://github.com/openproblems-bio/datasets"
 package_config:
   name: "datasets"

@@ -3617,6 +3617,21 @@ meta = [
         },
         {
           "type" : "string",
+          "name" : "--output_compression",
+          "default" : [
+            "gzip"
+          ],
+          "required" : false,
+          "choices" : [
+            "gzip",
+            "lzf"
+          ],
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
           "name" : "--var_hvg",
           "description" : "In which .var slot to store whether a feature is considered to be hvg.",
           "default" : [
@@ -3758,7 +3773,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/processors/hvg",
     "viash_version" : "0.9.4",
-    "git_commit" : "3521aa50a3ed54ad769b428a3a4872085398b752",
+    "git_commit" : "fbc3fe654c05974b0707a172a7ecde71173d9c4c",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -3827,6 +3842,7 @@ par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'var_hvg': $( if [ ! -z ${VIASH_PAR_VAR_HVG+x} ]; then echo "r'${VIASH_PAR_VAR_HVG//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'var_hvg_score': $( if [ ! -z ${VIASH_PAR_VAR_HVG_SCORE+x} ]; then echo "r'${VIASH_PAR_VAR_HVG_SCORE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'num_features': $( if [ ! -z ${VIASH_PAR_NUM_FEATURES+x} ]; then echo "int(r'${VIASH_PAR_NUM_FEATURES//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi )
@@ -3877,7 +3893,7 @@ adata.var[par["var_hvg"]] = out['highly_variable'].values
 adata.var[par["var_hvg_score"]] = out['dispersions_norm'].values
 
 print(">> Writing data", flush=True)
-adata.write_h5ad(par['output'])
+adata.write_h5ad(par['output'], compression=par["output_compression"])
 VIASHMAIN
 python -B "$tempscript"
 '''

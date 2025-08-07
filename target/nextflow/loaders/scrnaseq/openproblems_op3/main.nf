@@ -3035,152 +3035,8 @@ meta = [
   "version" : "build_main",
   "argument_groups" : [
     {
-      "name" : "Input",
-      "arguments" : [
-        {
-          "type" : "file",
-          "name" : "--input",
-          "description" : "Input url to the .h5ad file.",
-          "example" : [
-            "https:/ftp.ncbi.nlm.nih.gov/geo/series/GSE279nnn/GSE279945/suppl/GSE279945_sc_counts_processed.h5ad"
-          ],
-          "default" : [
-            "https:/ftp.ncbi.nlm.nih.gov/geo/series/GSE279nnn/GSE279945/suppl/GSE279945_sc_counts_processed.h5ad"
-          ],
-          "must_exist" : true,
-          "create_parent" : true,
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--var_feature_name",
-          "description" : "Location of where to find the feature names. Can be set to index if the feature names are the index.",
-          "default" : [
-            "index"
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        }
-      ]
-    },
-    {
-      "name" : "Data Filtering",
-      "description" : "Arguments for filtering the dataset",
-      "arguments" : [
-        {
-          "type" : "string",
-          "name" : "--donor_id",
-          "description" : "Donor ID to filter for (1, 2, or 3). If not specified, all donors are included.",
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--cell_type",
-          "description" : "Cell type to filter for (T cells, B cells, NK cells, or Myeloid). If not specified, all cell types are included.",
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--perturbation",
-          "description" : "Perturbation to filter for. If not specified, all perturbations are included.",
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        }
-      ]
-    },
-    {
-      "name" : "Dataset Metadata",
-      "description" : "Metadata about the dataset",
-      "arguments" : [
-        {
-          "type" : "string",
-          "name" : "--dataset_id",
-          "description" : "Unique identifier for the dataset",
-          "default" : [
-            "openproblems_op3"
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--dataset_name",
-          "description" : "Human-readable name for the dataset",
-          "default" : [
-            "OP3: single-cell multimodal dataset in PBMCs for perturbation prediction benchmarking"
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--dataset_summary",
-          "description" : "Short summary of the dataset",
-          "default" : [
-            "The Open Problems Perurbation Prediction (OP3) dataset with small molecule perturbations in PBMCs"
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--dataset_description",
-          "description" : "Detailed description of the dataset",
-          "default" : [
-            "The OP3 dataset is to-date the largest single-cell small molecule perturbation dataset in primary tissue with multiple donor replicates."
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "dataset_reference",
-          "description" : "Bibtex reference of the paper in which the dataset was published.",
-          "default" : [
-            "GSE279945"
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--dataset_url",
-          "description" : "Link to the original source of the dataset.",
-          "default" : [
-            "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE279nnn/GSE279945/suppl/GSE279945_sc_counts_processed.h5ad"
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        }
-      ]
-    },
-    {
-      "name" : "Arguments",
+      "name" : "Output",
+      "description" : "Output parameters",
       "arguments" : [
         {
           "type" : "file",
@@ -3440,6 +3296,166 @@ meta = [
           "direction" : "output",
           "multiple" : false,
           "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--output_compression",
+          "default" : [
+            "gzip"
+          ],
+          "required" : false,
+          "choices" : [
+            "gzip",
+            "lzf"
+          ],
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        }
+      ]
+    },
+    {
+      "name" : "Input",
+      "arguments" : [
+        {
+          "type" : "file",
+          "name" : "--input",
+          "description" : "Input url to the .h5ad file.",
+          "example" : [
+            "https:/ftp.ncbi.nlm.nih.gov/geo/series/GSE279nnn/GSE279945/suppl/GSE279945_sc_counts_processed.h5ad"
+          ],
+          "default" : [
+            "https:/ftp.ncbi.nlm.nih.gov/geo/series/GSE279nnn/GSE279945/suppl/GSE279945_sc_counts_processed.h5ad"
+          ],
+          "must_exist" : true,
+          "create_parent" : true,
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--var_feature_name",
+          "description" : "Location of where to find the feature names. Can be set to index if the feature names are the index.",
+          "default" : [
+            "index"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        }
+      ]
+    },
+    {
+      "name" : "Data Filtering",
+      "description" : "Arguments for filtering the dataset",
+      "arguments" : [
+        {
+          "type" : "string",
+          "name" : "--donor_id",
+          "description" : "Donor ID to filter for (1, 2, or 3). If not specified, all donors are included.",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--cell_type",
+          "description" : "Cell type to filter for (T cells, B cells, NK cells, or Myeloid). If not specified, all cell types are included.",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--perturbation",
+          "description" : "Perturbation to filter for. If not specified, all perturbations are included.",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        }
+      ]
+    },
+    {
+      "name" : "Dataset Metadata",
+      "description" : "Metadata about the dataset",
+      "arguments" : [
+        {
+          "type" : "string",
+          "name" : "--dataset_id",
+          "description" : "Unique identifier for the dataset",
+          "default" : [
+            "openproblems_op3"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--dataset_name",
+          "description" : "Human-readable name for the dataset",
+          "default" : [
+            "OP3: single-cell multimodal dataset in PBMCs for perturbation prediction benchmarking"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--dataset_summary",
+          "description" : "Short summary of the dataset",
+          "default" : [
+            "The Open Problems Perurbation Prediction (OP3) dataset with small molecule perturbations in PBMCs"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--dataset_description",
+          "description" : "Detailed description of the dataset",
+          "default" : [
+            "The OP3 dataset is to-date the largest single-cell small molecule perturbation dataset in primary tissue with multiple donor replicates."
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "dataset_reference",
+          "description" : "Bibtex reference of the paper in which the dataset was published.",
+          "default" : [
+            "GSE279945"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--dataset_url",
+          "description" : "Link to the original source of the dataset.",
+          "default" : [
+            "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE279nnn/GSE279945/suppl/GSE279945_sc_counts_processed.h5ad"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
         }
       ]
     }
@@ -3546,7 +3562,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/loaders/scrnaseq/openproblems_op3",
     "viash_version" : "0.9.4",
-    "git_commit" : "3521aa50a3ed54ad769b428a3a4872085398b752",
+    "git_commit" : "fbc3fe654c05974b0707a172a7ecde71173d9c4c",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -3616,6 +3632,8 @@ logging.basicConfig(level=logging.INFO)
 ## VIASH START
 # The following code has been auto-generated by Viash.
 par = {
+  'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'var_feature_name': $( if [ ! -z ${VIASH_PAR_VAR_FEATURE_NAME+x} ]; then echo "r'${VIASH_PAR_VAR_FEATURE_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'donor_id': $( if [ ! -z ${VIASH_PAR_DONOR_ID+x} ]; then echo "r'${VIASH_PAR_DONOR_ID//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3626,8 +3644,7 @@ par = {
   'dataset_summary': $( if [ ! -z ${VIASH_PAR_DATASET_SUMMARY+x} ]; then echo "r'${VIASH_PAR_DATASET_SUMMARY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'dataset_description': $( if [ ! -z ${VIASH_PAR_DATASET_DESCRIPTION+x} ]; then echo "r'${VIASH_PAR_DATASET_DESCRIPTION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'dataset_reference': $( if [ ! -z ${VIASH_PAR_DATASET_REFERENCE+x} ]; then echo "r'${VIASH_PAR_DATASET_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'dataset_url': $( if [ ! -z ${VIASH_PAR_DATASET_URL+x} ]; then echo "r'${VIASH_PAR_DATASET_URL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
+  'dataset_url': $( if [ ! -z ${VIASH_PAR_DATASET_URL+x} ]; then echo "r'${VIASH_PAR_DATASET_URL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),

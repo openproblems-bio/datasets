@@ -4175,6 +4175,21 @@ meta = [
         },
         {
           "type" : "string",
+          "name" : "--output_compression",
+          "default" : [
+            "gzip"
+          ],
+          "required" : false,
+          "choices" : [
+            "gzip",
+            "lzf"
+          ],
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
           "name" : "--obsm_embedding",
           "description" : "In which .obsm slot to store the resulting embedding.",
           "default" : [
@@ -4314,7 +4329,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/processors/svd",
     "viash_version" : "0.9.4",
-    "git_commit" : "3521aa50a3ed54ad769b428a3a4872085398b752",
+    "git_commit" : "fbc3fe654c05974b0707a172a7ecde71173d9c4c",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -4386,6 +4401,7 @@ par = {
   'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_mod2': $( if [ ! -z ${VIASH_PAR_OUTPUT_MOD2+x} ]; then echo "r'${VIASH_PAR_OUTPUT_MOD2//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obsm_embedding': $( if [ ! -z ${VIASH_PAR_OBSM_EMBEDDING+x} ]; then echo "r'${VIASH_PAR_OBSM_EMBEDDING//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'num_components': $( if [ ! -z ${VIASH_PAR_NUM_COMPONENTS+x} ]; then echo "int(r'${VIASH_PAR_NUM_COMPONENTS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi )
 }
@@ -4441,9 +4457,9 @@ if par["input_mod2"] is not None:
 
 
 print(">> Writing data", flush=True)
-adata.write_h5ad(par["output"])
+adata.write_h5ad(par["output"], compression=par["output_compression"])
 if par["input_mod2"] is not None:
-    adata2.write_h5ad(par["output_mod2"])
+    adata2.write_h5ad(par["output_mod2"], compression=par["output_compression"])
 VIASHMAIN
 python -B "$tempscript"
 '''

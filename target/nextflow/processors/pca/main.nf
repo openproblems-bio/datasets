@@ -3663,6 +3663,21 @@ meta = [
         },
         {
           "type" : "string",
+          "name" : "--output_compression",
+          "default" : [
+            "gzip"
+          ],
+          "required" : false,
+          "choices" : [
+            "gzip",
+            "lzf"
+          ],
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
           "name" : "--obsm_embedding",
           "description" : "In which .obsm slot to store the resulting embedding.",
           "default" : [
@@ -3816,7 +3831,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/processors/pca",
     "viash_version" : "0.9.4",
-    "git_commit" : "3521aa50a3ed54ad769b428a3a4872085398b752",
+    "git_commit" : "fbc3fe654c05974b0707a172a7ecde71173d9c4c",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -3886,6 +3901,7 @@ par = {
   'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_var_features': $( if [ ! -z ${VIASH_PAR_INPUT_VAR_FEATURES+x} ]; then echo "r'${VIASH_PAR_INPUT_VAR_FEATURES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obsm_embedding': $( if [ ! -z ${VIASH_PAR_OBSM_EMBEDDING+x} ]; then echo "r'${VIASH_PAR_OBSM_EMBEDDING//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'varm_loadings': $( if [ ! -z ${VIASH_PAR_VARM_LOADINGS+x} ]; then echo "r'${VIASH_PAR_VARM_LOADINGS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'uns_variance': $( if [ ! -z ${VIASH_PAR_UNS_VARIANCE+x} ]; then echo "r'${VIASH_PAR_UNS_VARIANCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3939,7 +3955,7 @@ adata.uns[par["uns_variance"]] = {
 }
 
 print(">> Writing data", flush=True)
-adata.write_h5ad(par['output'])
+adata.write_h5ad(par['output'], compression=par["output_compression"])
 VIASHMAIN
 python -B "$tempscript"
 '''

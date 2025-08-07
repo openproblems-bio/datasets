@@ -446,9 +446,9 @@ function ViashDockerfile {
 FROM openproblems/base_python:1
 ENTRYPOINT []
 LABEL org.opencontainers.image.description="Companion container for running component loaders/spatial zenodo"
-LABEL org.opencontainers.image.created="2025-07-29T11:18:17Z"
+LABEL org.opencontainers.image.created="2025-08-07T07:32:11Z"
 LABEL org.opencontainers.image.source="https://github.com/openproblems-bio/datasets"
-LABEL org.opencontainers.image.revision="3521aa50a3ed54ad769b428a3a4872085398b752"
+LABEL org.opencontainers.image.revision="fbc3fe654c05974b0707a172a7ecde71173d9c4c"
 LABEL org.opencontainers.image.version="build_main"
 
 VIASHDOCKER

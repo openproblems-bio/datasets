@@ -42,7 +42,7 @@ publish_dir: s3://openproblems-data/resources_test/common/multimodal
 HERE
 
 # nextflow run . \
-#   -main-script target/nextflow/datasets/workflows/multimodal/process_openproblems_neurips2022_pbmc/main.nf \
+#   -main-script target/nextflow/workflows/multimodal/process_openproblems_neurips2022_pbmc/main.nf \
 #   -profile docker \
 #   -resume \
 #   --publish_dir resources_test/common \
@@ -60,10 +60,10 @@ process {
 HERE
 
 
-tw launch https://github.com/openproblems-bio/openproblems.git \
-  --revision main_build \
+tw launch https://github.com/openproblems-bio/datasets.git \
+  --revision build/main \
   --pull-latest \
-  --main-script target/nextflow/datasets/workflows/multimodal/process_openproblems_neurips2022_pbmc/main.nf \
+  --main-script target/nextflow/workflows/multimodal/process_openproblems_neurips2022_pbmc/main.nf \
   --workspace 53907369739130 \
   --compute-env 1pK56PjjzeraOOC2LDZvN2 \
   --params-file "$params_file" \

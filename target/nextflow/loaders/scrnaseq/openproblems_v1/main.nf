@@ -3035,164 +3035,8 @@ meta = [
   "version" : "build_main",
   "argument_groups" : [
     {
-      "name" : "Inputs",
-      "arguments" : [
-        {
-          "type" : "string",
-          "name" : "--input_id",
-          "description" : "The ID of the dataset in OpenProblems v1",
-          "required" : true,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--obs_cell_type",
-          "description" : "Location of where to find the observation cell types.",
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--obs_batch",
-          "description" : "Location of where to find the observation batch IDs.",
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--obs_tissue",
-          "description" : "Location of where to find the observation tissue information.",
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--layer_counts",
-          "description" : "In which layer to find the counts matrix. Leave undefined to use `.X`.",
-          "example" : [
-            "counts"
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "boolean",
-          "name" : "--sparse",
-          "description" : "Convert layers to a sparse CSR format.",
-          "default" : [
-            true
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--var_feature_id",
-          "description" : "Location of where to find the feature IDs. Can be set to index if the feature IDs are the index.",
-          "example" : [
-            "gene_ids"
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--var_feature_name",
-          "description" : "Location of where to find the feature names. Can be set to index if the feature names are the index.",
-          "default" : [
-            "index"
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        }
-      ]
-    },
-    {
-      "name" : "Metadata",
-      "arguments" : [
-        {
-          "type" : "string",
-          "name" : "--dataset_id",
-          "description" : "Unique identifier of the dataset.",
-          "required" : true,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--dataset_name",
-          "description" : "Nicely formatted name.",
-          "required" : true,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--dataset_url",
-          "description" : "Link to the original source of the dataset.",
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--dataset_reference",
-          "description" : "Bibtex reference of the paper in which the dataset was published.",
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--dataset_summary",
-          "description" : "Short description of the dataset.",
-          "required" : true,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--dataset_description",
-          "description" : "Long description of the dataset.",
-          "required" : true,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--dataset_organism",
-          "description" : "The organism of the dataset.",
-          "required" : false,
-          "direction" : "input",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        }
-      ]
-    },
-    {
-      "name" : "Arguments",
+      "name" : "Output",
+      "description" : "Output parameters",
       "arguments" : [
         {
           "type" : "file",
@@ -3452,6 +3296,178 @@ meta = [
           "direction" : "output",
           "multiple" : false,
           "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--output_compression",
+          "default" : [
+            "gzip"
+          ],
+          "required" : false,
+          "choices" : [
+            "gzip",
+            "lzf"
+          ],
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        }
+      ]
+    },
+    {
+      "name" : "Inputs",
+      "arguments" : [
+        {
+          "type" : "string",
+          "name" : "--input_id",
+          "description" : "The ID of the dataset in OpenProblems v1",
+          "required" : true,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--obs_cell_type",
+          "description" : "Location of where to find the observation cell types.",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--obs_batch",
+          "description" : "Location of where to find the observation batch IDs.",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--obs_tissue",
+          "description" : "Location of where to find the observation tissue information.",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--layer_counts",
+          "description" : "In which layer to find the counts matrix. Leave undefined to use `.X`.",
+          "example" : [
+            "counts"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "boolean",
+          "name" : "--sparse",
+          "description" : "Convert layers to a sparse CSR format.",
+          "default" : [
+            true
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--var_feature_id",
+          "description" : "Location of where to find the feature IDs. Can be set to index if the feature IDs are the index.",
+          "example" : [
+            "gene_ids"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--var_feature_name",
+          "description" : "Location of where to find the feature names. Can be set to index if the feature names are the index.",
+          "default" : [
+            "index"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        }
+      ]
+    },
+    {
+      "name" : "Metadata",
+      "arguments" : [
+        {
+          "type" : "string",
+          "name" : "--dataset_id",
+          "description" : "Unique identifier of the dataset.",
+          "required" : true,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--dataset_name",
+          "description" : "Nicely formatted name.",
+          "required" : true,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--dataset_url",
+          "description" : "Link to the original source of the dataset.",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--dataset_reference",
+          "description" : "Bibtex reference of the paper in which the dataset was published.",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--dataset_summary",
+          "description" : "Short description of the dataset.",
+          "required" : true,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--dataset_description",
+          "description" : "Long description of the dataset.",
+          "required" : true,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--dataset_organism",
+          "description" : "The organism of the dataset.",
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
         }
       ]
     }
@@ -3570,7 +3586,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/loaders/scrnaseq/openproblems_v1",
     "viash_version" : "0.9.4",
-    "git_commit" : "3521aa50a3ed54ad769b428a3a4872085398b752",
+    "git_commit" : "fbc3fe654c05974b0707a172a7ecde71173d9c4c",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -3638,6 +3654,8 @@ import scipy
 ## VIASH START
 # The following code has been auto-generated by Viash.
 par = {
+  'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_id': $( if [ ! -z ${VIASH_PAR_INPUT_ID+x} ]; then echo "r'${VIASH_PAR_INPUT_ID//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_cell_type': $( if [ ! -z ${VIASH_PAR_OBS_CELL_TYPE+x} ]; then echo "r'${VIASH_PAR_OBS_CELL_TYPE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_batch': $( if [ ! -z ${VIASH_PAR_OBS_BATCH+x} ]; then echo "r'${VIASH_PAR_OBS_BATCH//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3652,8 +3670,7 @@ par = {
   'dataset_reference': $( if [ ! -z ${VIASH_PAR_DATASET_REFERENCE+x} ]; then echo "r'${VIASH_PAR_DATASET_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'dataset_summary': $( if [ ! -z ${VIASH_PAR_DATASET_SUMMARY+x} ]; then echo "r'${VIASH_PAR_DATASET_SUMMARY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'dataset_description': $( if [ ! -z ${VIASH_PAR_DATASET_DESCRIPTION+x} ]; then echo "r'${VIASH_PAR_DATASET_DESCRIPTION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'dataset_organism': $( if [ ! -z ${VIASH_PAR_DATASET_ORGANISM+x} ]; then echo "r'${VIASH_PAR_DATASET_ORGANISM//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
+  'dataset_organism': $( if [ ! -z ${VIASH_PAR_DATASET_ORGANISM+x} ]; then echo "r'${VIASH_PAR_DATASET_ORGANISM//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3788,7 +3805,7 @@ else:
         print(f"Warning: key '{par['var_feature_id']}' could not be found in adata.var.", flush=True)
 
 print("Writing adata to file", flush=True)
-adata.write_h5ad(par["output"], compression="gzip")
+adata.write_h5ad(par["output"], compression=par["output_compression"])
 VIASHMAIN
 python -B "$tempscript"
 '''

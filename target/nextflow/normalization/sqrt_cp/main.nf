@@ -3575,6 +3575,21 @@ meta = [
         },
         {
           "type" : "string",
+          "name" : "--output_compression",
+          "default" : [
+            "gzip"
+          ],
+          "required" : false,
+          "choices" : [
+            "gzip",
+            "lzf"
+          ],
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
           "name" : "--normalization_id",
           "description" : "The normalization id to store in the dataset metadata. If not specified, the functionality name will be used.",
           "required" : false,
@@ -3725,7 +3740,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/normalization/sqrt_cp",
     "viash_version" : "0.9.4",
-    "git_commit" : "3521aa50a3ed54ad769b428a3a4872085398b752",
+    "git_commit" : "fbc3fe654c05974b0707a172a7ecde71173d9c4c",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -3793,6 +3808,7 @@ import numpy as np
 par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'normalization_id': $( if [ ! -z ${VIASH_PAR_NORMALIZATION_ID+x} ]; then echo "r'${VIASH_PAR_NORMALIZATION_ID//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'layer_output': $( if [ ! -z ${VIASH_PAR_LAYER_OUTPUT+x} ]; then echo "r'${VIASH_PAR_LAYER_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obs_size_factors': $( if [ ! -z ${VIASH_PAR_OBS_SIZE_FACTORS+x} ]; then echo "r'${VIASH_PAR_OBS_SIZE_FACTORS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),

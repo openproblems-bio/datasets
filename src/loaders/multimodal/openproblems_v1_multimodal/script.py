@@ -19,7 +19,7 @@ par = {
     "dataset_organism": "[homo_sapiens, mus_musculus]",
 }
 meta = {
-    "resources_dir": "src/datasets/loaders/openproblems_v1/"
+    "resources_dir": "src/loaders/openproblems_v1/"
 }
 ## VIASH END
 

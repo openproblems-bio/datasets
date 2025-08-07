@@ -3693,6 +3693,21 @@ meta = [
         },
         {
           "type" : "string",
+          "name" : "--output_compression",
+          "default" : [
+            "gzip"
+          ],
+          "required" : false,
+          "choices" : [
+            "gzip",
+            "lzf"
+          ],
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
           "name" : "--key_added",
           "description" : "The neighbors data is added to `.uns[key_added]`, \ndistances are stored in `.obsp[key_added+'_distances']` and \nconnectivities in `.obsp[key_added+'_connectivities']`.\n",
           "default" : [
@@ -3822,7 +3837,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/processors/knn",
     "viash_version" : "0.9.4",
-    "git_commit" : "3521aa50a3ed54ad769b428a3a4872085398b752",
+    "git_commit" : "fbc3fe654c05974b0707a172a7ecde71173d9c4c",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -3891,6 +3906,7 @@ par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'key_added': $( if [ ! -z ${VIASH_PAR_KEY_ADDED+x} ]; then echo "r'${VIASH_PAR_KEY_ADDED//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'num_neighbors': $( if [ ! -z ${VIASH_PAR_NUM_NEIGHBORS+x} ]; then echo "int(r'${VIASH_PAR_NUM_NEIGHBORS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi )
 }
@@ -3932,7 +3948,7 @@ sc.pp.neighbors(
 )
 
 print(">> Writing data", flush=True)
-adata.write_h5ad(par['output'])
+adata.write_h5ad(par['output'], compression=par["output_compression"])
 VIASHMAIN
 python -B "$tempscript"
 '''

@@ -1,0 +1,11 @@
+- id: cxg_immune_cell_atlas
+  species: homo_sapiens
+  census_version: "2023-07-25"
+  obs_value_filter: "dataset_id == '1b9d8702-5af8-4142-85ed-020eb06ec4f6' and donor_id in ['A29', 'A31', 'A35']"
+  obs_batch: donor_id
+  dataset_name: Immune Cell Atlas
+  dataset_summary: Cross-tissue immune cell analysis reveals tissue-specific features in humans
+  dataset_description: Despite their crucial role in health and disease, our knowledge of immune cells within human tissues remains limited. We surveyed the immune compartment of 16 tissues from 12 adult donors by single-cell RNA sequencing and VDJ sequencing generating a dataset of ~360,000 cells. To systematically resolve immune cell heterogeneity across tissues, we developed CellTypist, a machine learning tool for rapid and precise cell type annotation. Using this approach, combined with detailed curation, we determined the tissue distribution of finely phenotyped immune cell types, revealing hitherto unappreciated tissue-specific features and clonal architecture of T and B cells. Our multitissue approach lays the foundation for identifying highly resolved immune cell types by leveraging a common reference dataset, tissue-integrated expression analysis, and antigen receptor sequencing.
+  dataset_url: https://cellxgene.cziscience.com/collections/62ef75e4-cbea-454e-a0ce-998ec40223d3
+  dataset_reference: dominguez2022crosstissue
+  dataset_organism: homo_sapiens

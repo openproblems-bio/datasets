@@ -6,7 +6,7 @@ workflow run_wf {
   output_ch = input_ch
 
     // extract the dataset metadata
-    | extract_metadata.run(
+    | extract_uns_metadata.run(
       fromState: [input: "input"],
       toState: [output: "output"]
     )

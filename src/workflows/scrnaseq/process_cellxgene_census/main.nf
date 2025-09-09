@@ -128,7 +128,7 @@ workflow run_wf {
       [id, state + [output_dataset: state.output_knn]]
     }
 
-    | extract_metadata.run(
+    | extract_uns_metadata.run(
       fromState: { id, state ->
         def schema = findArgumentSchema(meta.config, "output_dataset")
         // workaround: convert GString to String

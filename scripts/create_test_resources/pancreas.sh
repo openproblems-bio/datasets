@@ -20,7 +20,7 @@ KEEP_FEATURES=`cat $DATASET_DIR/temp_g2m_genes_tirosh_hm.txt $DATASET_DIR/temp_s
 nextflow run . \
   -main-script target/nextflow/workflows/scrnaseq/process_openproblems_v1/main.nf \
   -profile docker \
-  -c src/wf_utils/labels_ci.config \
+  -c common/nextflow_helpers/labels_ci.config \
   -resume \
   --id pancreas \
   --input_id pancreas \

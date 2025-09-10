@@ -23,7 +23,7 @@ nextflow run . \
   -main-script target/nextflow/workflows/extract_dataset_info/main.nf \
   -profile docker \
   -resume \
-  -c src/wf_utils/labels_ci.config \
+  -c common/nextflow_helpers/labels_ci.config \
   -entry auto \
   --input_states "$DATASETS_DIR/**/state.yaml" \
   --rename_keys 'input:output_dataset' \

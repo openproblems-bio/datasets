@@ -150,7 +150,7 @@ workflow run_wf {
       [id, state + ["output_mod1": state.hvg_mod1, "output_mod2": state.hvg_mod2]]
     }
 
-    | extract_metadata.run(
+    | extract_uns_metadata.run(
       key: "extract_metadata_mod1",
       fromState: { id, state ->
         def schema = findArgumentSchema(meta.config, "output_mod1")
@@ -166,7 +166,7 @@ workflow run_wf {
       toState: ["output_meta_mod1": "output"]
     )
 
-    | extract_metadata.run(
+    | extract_uns_metadata.run(
       key: "extract_metadata_mod2",
       fromState: { id, state ->
         def schema = findArgumentSchema(meta.config, "output_mod2")

@@ -40,7 +40,7 @@ HERE
 
 nextflow run . \
   -main-script target/nextflow/workflows/scrnaseq/process_cellxgene_census/main.nf \
-  -c src/wf_utils/labels_ci.config \
+  -c common/nextflow_helpers/labels_ci.config \
   -profile docker \
   -params-file "/tmp/params.yaml"
 

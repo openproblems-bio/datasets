@@ -449,9 +449,9 @@ RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "scikit-learn"
 
 LABEL org.opencontainers.image.description="Companion container for running component processors svd"
-LABEL org.opencontainers.image.created="2025-08-07T07:32:11Z"
+LABEL org.opencontainers.image.created="2025-09-10T06:23:48Z"
 LABEL org.opencontainers.image.source="https://github.com/openproblems-bio/datasets"
-LABEL org.opencontainers.image.revision="fbc3fe654c05974b0707a172a7ecde71173d9c4c"
+LABEL org.opencontainers.image.revision="106edbdeae9775d71bdfb4e2dcca67e187dc843b"
 LABEL org.opencontainers.image.version="build_main"
 
 VIASHDOCKER

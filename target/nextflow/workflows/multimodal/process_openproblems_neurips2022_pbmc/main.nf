@@ -4021,7 +4021,7 @@ meta = [
     "engine" : "native",
     "output" : "target/nextflow/workflows/multimodal/process_openproblems_neurips2022_pbmc",
     "viash_version" : "0.9.4",
-    "git_commit" : "fbc3fe654c05974b0707a172a7ecde71173d9c4c",
+    "git_commit" : "106edbdeae9775d71bdfb4e2dcca67e187dc843b",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -4237,7 +4237,7 @@ workflow run_wf {
       [id, state + ["output_mod1": state.hvg_mod1, "output_mod2": state.hvg_mod2]]
     }
 
-    | extract_metadata.run(
+    | extract_uns_metadata.run(
       key: "extract_metadata_mod1",
       fromState: { id, state ->
         def schema = findArgumentSchema(meta.config, "output_mod1")
@@ -4253,7 +4253,7 @@ workflow run_wf {
       toState: ["output_meta_mod1": "output"]
     )
 
-    | extract_metadata.run(
+    | extract_uns_metadata.run(
       key: "extract_metadata_mod2",
       fromState: { id, state ->
         def schema = findArgumentSchema(meta.config, "output_mod2")

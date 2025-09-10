@@ -5266,7 +5266,7 @@ meta = [
     "engine" : "native",
     "output" : "target/nextflow/workflows/scrnaseq/process_openproblems_op3",
     "viash_version" : "0.9.4",
-    "git_commit" : "fbc3fe654c05974b0707a172a7ecde71173d9c4c",
+    "git_commit" : "106edbdeae9775d71bdfb4e2dcca67e187dc843b",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {

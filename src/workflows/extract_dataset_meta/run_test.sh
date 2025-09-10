@@ -23,7 +23,7 @@ nextflow run . \
   -main-script target/nextflow/workflows/extract_dataset_meta/main.nf \
   -profile docker \
   -resume \
-  -c src/wf_utils/labels_ci.config \
+  -c common/nextflow_helpers/labels_ci.config \
   --input $DATASETS_DIR \
   --output meta.yaml \
   --publish_dir "$OUTPUT_DIR"

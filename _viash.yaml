@@ -1,6 +1,6 @@
 name: datasets
 organization: openproblems-bio
-viash_version: 0.9.4
+viash_version: 0.9.7
 
 description: |
   Datasets for benchmarking open problems in single-cell analysis.
@@ -27,7 +27,7 @@ repositories:
   - name: openproblems
     type: github
     repo: openproblems-bio/openproblems
-    tag: build/main
+    tag: v3.0.0
 
 info:
   test_resources:

@@ -157,7 +157,7 @@ dependencies:
   - name: processors/svd
   - name: processors/hvg
   - name: utils/extract_uns_metadata
-    repository: openproblems
+    package: openproblems
   # test_resources:
   #   - type: nextflow_script
   #     path: main.nf

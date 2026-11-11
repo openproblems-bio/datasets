@@ -162,6 +162,6 @@ dependencies:
   - name: processors/hvg
   - name: processors/knn
   - name: utils/extract_uns_metadata
-    repository: openproblems
+    package: openproblems
 runners:
   - type: nextflow

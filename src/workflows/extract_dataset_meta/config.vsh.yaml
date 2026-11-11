@@ -20,6 +20,6 @@ resources:
     entrypoint: run_wf
 dependencies:
   - name: utils/extract_uns_metadata
-    repository: openproblems
+    package: openproblems
 runners:
   - type: nextflow

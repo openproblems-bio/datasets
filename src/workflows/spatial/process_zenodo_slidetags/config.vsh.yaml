@@ -135,6 +135,6 @@ dependencies:
   - name: normalization/l1_sqrt
   - name: processors/subsample
   - name: utils/extract_uns_metadata
-    repository: openproblems
+    package: openproblems
 runners:
   - type: nextflow

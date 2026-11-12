@@ -46,17 +46,26 @@ def link_to_github(notebook):
   transform.save()
 
 
-def run_workflow(workflow, params):
-  """Run a workflow of this repository, return the directory with its outputs."""
+def run_workflow(workflow, params, highmem=None):
+  """Run a workflow of this repository, return the directory with its outputs.
+
+  `highmem` overrides the memory of processes labelled `highmem` (e.g. "64.GB"),
+  for workflows that load large source files.
+  """
   output_dir = Path(tempfile.mkdtemp())
   params_file = output_dir / "params.json"
   params_file.write_text(json.dumps({**params, "publish_dir": str(output_dir)}))
+  configs = ["-c", "common/nextflow_helpers/labels_ci.config"]
+  if highmem is not None:
+    memory_config = output_dir / "memory.config"
+    memory_config.write_text(f"process {{\n  withLabel: highmem {{ memory = {highmem} }}\n}}\n")
+    configs += ["-c", str(memory_config)]
   subprocess.run(
     [
       "nextflow", "run", ".",
       "-main-script", f"target/nextflow/workflows/{workflow}/main.nf",
       "-profile", "docker",
-      "-c", "common/nextflow_helpers/labels_ci.config",
+      *configs,
       "-params-file", str(params_file),
     ],
     cwd=REPO_ROOT,

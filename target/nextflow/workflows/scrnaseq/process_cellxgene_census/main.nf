@@ -3363,7 +3363,7 @@ meta = [
           "description" : "This dataset contains both raw counts and normalized data matrices,\nas well as a PCA embedding, HVG selection and a kNN graph.",
           "info" : {
             "format" : {
-              "type" : "h5ad",
+              "type" : "anndata_zarr",
               "obsp" : [
                 {
                   "type" : "double",
@@ -3677,25 +3677,11 @@ meta = [
             }
           },
           "example" : [
-            "resources_test/common/pancreas/dataset.h5ad"
+            "resources_test/common/pancreas/dataset.anndata.zarr"
           ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : true,
-          "direction" : "output",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "file",
-          "name" : "--output_meta",
-          "description" : "Dataset metadata",
-          "default" : [
-            "dataset_metadata.yaml"
-          ],
-          "must_exist" : true,
-          "create_parent" : true,
-          "required" : false,
           "direction" : "output",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3708,7 +3694,7 @@ meta = [
           "description" : "This dataset contains raw counts and metadata as output by a dataset loader.\n\nThe format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n",
           "info" : {
             "format" : {
-              "type" : "h5ad",
+              "type" : "anndata_zarr",
               "layers" : [
                 {
                   "type" : "integer",
@@ -3950,7 +3936,7 @@ meta = [
             }
           },
           "example" : [
-            "resources_test/common/pancreas/raw.h5ad"
+            "resources_test/common/pancreas/raw.anndata.zarr"
           ],
           "must_exist" : true,
           "create_parent" : true,
@@ -3967,7 +3953,7 @@ meta = [
           "description" : "This dataset contains raw counts and metadata as output by a dataset loader.\n\nThe format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n",
           "info" : {
             "format" : {
-              "type" : "h5ad",
+              "type" : "anndata_zarr",
               "layers" : [
                 {
                   "type" : "integer",
@@ -4227,7 +4213,7 @@ meta = [
             }
           },
           "example" : [
-            "resources_test/common/pancreas/normalized.h5ad"
+            "resources_test/common/pancreas/normalized.anndata.zarr"
           ],
           "must_exist" : true,
           "create_parent" : true,
@@ -4244,7 +4230,7 @@ meta = [
           "description" : "This dataset contains raw counts and metadata as output by a dataset loader.\n\nThe format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n",
           "info" : {
             "format" : {
-              "type" : "h5ad",
+              "type" : "anndata_zarr",
               "obsm" : [
                 {
                   "type" : "double",
@@ -4483,13 +4469,13 @@ meta = [
                 {
                   "type" : "string",
                   "name" : "sex_ontology_term_id",
-                  "description" : "Ontology term identifier for the biol''' + '''ogical sex, ensuring standardized classification of sex. Only `PATO:0000383`, `PATO:0000384` and `PATO:0001340` are allowed.",
+                  "description" : "Ontology term identifier for the biological sex, ensuring standardized classification of sex. Only `PATO:0000383`, `PATO:0000384` and `PATO:0001340` are allowed.",
                   "required" : false
                 },
                 {
                   "type" : "string",
                   "name" : "suspension_type",
-                  "description" : "Type of suspension or medium in which the cells were stored or processed, important for understanding cell handling and conditions.",
+                  "description" : "Type of suspension''' + ''' or medium in which the cells were stored or processed, important for understanding cell handling and conditions.",
                   "required" : false
                 },
                 {
@@ -4538,7 +4524,7 @@ meta = [
             }
           },
           "example" : [
-            "resources_test/common/pancreas/pca.h5ad"
+            "resources_test/common/pancreas/pca.anndata.zarr"
           ],
           "must_exist" : true,
           "create_parent" : true,
@@ -4555,7 +4541,7 @@ meta = [
           "description" : "This dataset contains raw counts and metadata as output by a dataset loader.\n\nThe format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n",
           "info" : {
             "format" : {
-              "type" : "h5ad",
+              "type" : "anndata_zarr",
               "var" : [
                 {
                   "type" : "string",
@@ -4827,7 +4813,7 @@ meta = [
             }
           },
           "example" : [
-            "resources_test/common/pancreas/hvg.h5ad"
+            "resources_test/common/pancreas/hvg.anndata.zarr"
           ],
           "must_exist" : true,
           "create_parent" : true,
@@ -4844,7 +4830,7 @@ meta = [
           "description" : "This dataset contains raw counts and metadata as output by a dataset loader.\n\nThe format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n",
           "info" : {
             "format" : {
-              "type" : "h5ad",
+              "type" : "anndata_zarr",
               "obsp" : [
                 {
                   "type" : "double",
@@ -5158,7 +5144,7 @@ meta = [
             }
           },
           "example" : [
-            "resources_test/common/pancreas/knn.h5ad"
+            "resources_test/common/pancreas/knn.anndata.zarr"
           ],
           "must_exist" : true,
           "create_parent" : true,
@@ -5176,10 +5162,6 @@ meta = [
       "path" : "main.nf",
       "is_executable" : true,
       "entrypoint" : "run_wf"
-    },
-    {
-      "type" : "file",
-      "path" : "/common/nextflow_helpers/helper.nf"
     }
   ],
   "description" : "Fetch and process datasets originating from the CELLxGENE census.\n",
@@ -5242,14 +5224,6 @@ meta = [
       "repository" : {
         "type" : "local"
       }
-    },
-    {
-      "name" : "utils/extract_uns_metadata",
-      "repository" : {
-        "type" : "github",
-        "repo" : "openproblems-bio/openproblems",
-        "tag" : "build/main"
-      }
     }
   ],
   "repositories" : [
@@ -5308,7 +5282,7 @@ meta = [
     "engine" : "native",
     "output" : "target/nextflow/workflows/scrnaseq/process_cellxgene_census",
     "viash_version" : "0.9.7",
-    "git_commit" : "65cde757bf02fe01910849b08bc312778d0648a2",
+    "git_commit" : "427dc48e2122448a392b66f15b3f49cb4df88847",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -5336,7 +5310,7 @@ meta = [
     "source" : "src",
     "target" : "target",
     "config_mods" : [
-      ".runners[.type == \\"nextflow\\"].config.labels := { lowmem : \\"memory = 20.Gb\\", midmem : \\"memory = 50.Gb\\", highmem : \\"memory = 100.Gb\\", lowcpu : \\"cpus = 5\\", midcpu : \\"cpus = 15\\", highcpu : \\"cpus = 30\\", lowtime : \\"time = 1.h\\", midtime : \\"time = 4.h\\", hightime : \\"time = 8.h\\", veryhightime : \\"time = 24.h\\" }\n"
+      ".runners[.type == \\"nextflow\\"].config.labels := { lowmem : \\"memory = 20.Gb\\", midmem : \\"memory = 50.Gb\\", highmem : \\"memory = 100.Gb\\", lowcpu : \\"cpus = 5\\", midcpu : \\"cpus = 15\\", highcpu : \\"cpus = 30\\", lowtime : \\"time = 1.h\\", midtime : \\"time = 4.h\\", hightime : \\"time = 8.h\\", veryhightime : \\"time = 24.h\\" }\n.engines[.type == \\"docker\\"].setup += { type: \\"docker\\", env: [\\"ANNDATA_ZARR_WRITE_FORMAT=3\\"] }\n"
     ],
     "keywords" : [
       "openproblems",
@@ -5370,12 +5344,9 @@ include { subsample } from "${meta.resources_dir}/../../../../nextflow/processor
 include { pca } from "${meta.resources_dir}/../../../../nextflow/processors/pca/main.nf"
 include { hvg } from "${meta.resources_dir}/../../../../nextflow/processors/hvg/main.nf"
 include { knn } from "${meta.resources_dir}/../../../../nextflow/processors/knn/main.nf"
-include { extract_uns_metadata } from "${meta.root_dir}/dependencies/github/openproblems-bio/openproblems/build/main/nextflow/utils/extract_uns_metadata/main.nf"
 
 // inner workflow
 // user-provided Nextflow code
-include { findArgumentSchema } from "${meta.resources_dir}/helper.nf"
-
 workflow auto {
   findStates(params, meta.config)
     | meta.workflow.run(
@@ -5504,25 +5475,9 @@ workflow run_wf {
       [id, state + [output_dataset: state.output_knn]]
     }
 
-    | extract_uns_metadata.run(
-      fromState: { id, state ->
-        def schema = findArgumentSchema(meta.config, "output_dataset")
-        // workaround: convert GString to String
-        schema = iterateMap(schema, { it instanceof GString ? it.toString() : it })
-        def schemaYaml = tempFile("schema.yaml")
-        writeYaml(schema, schemaYaml)
-        [
-          "input": state.output_dataset,
-          "schema": schemaYaml
-        ]
-      },
-      toState: ["output_meta": "output"]
-    )
-
     // only output the files for which an output file was specified
     | setState([
       "output_dataset",
-      "output_meta",
       "output_raw",
       "output_normalized",
       "output_pca",

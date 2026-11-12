@@ -3055,7 +3055,7 @@ meta = [
           "description" : "This dataset contains raw counts and metadata as output by a dataset loader.\n\nThe format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n",
           "info" : {
             "format" : {
-              "type" : "h5ad",
+              "type" : "anndata_zarr",
               "obsm" : [
                 {
                   "type" : "double",
@@ -3349,7 +3349,7 @@ meta = [
             }
           },
           "example" : [
-            "resources_test/common/pancreas/pca.h5ad"
+            "resources_test/common/pancreas/pca.anndata.zarr"
           ],
           "must_exist" : true,
           "create_parent" : true,
@@ -3378,7 +3378,7 @@ meta = [
           "description" : "This dataset contains raw counts and metadata as output by a dataset loader.\n\nThe format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n",
           "info" : {
             "format" : {
-              "type" : "h5ad",
+              "type" : "anndata_zarr",
               "obsp" : [
                 {
                   "type" : "double",
@@ -3692,27 +3692,12 @@ meta = [
             }
           },
           "example" : [
-            "resources_test/common/pancreas/knn.h5ad"
+            "resources_test/common/pancreas/knn.anndata.zarr"
           ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : true,
           "direction" : "output",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--output_compression",
-          "default" : [
-            "gzip"
-          ],
-          "required" : false,
-          "choices" : [
-            "gzip",
-            "lzf"
-          ],
-          "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
         },
@@ -3734,6 +3719,18 @@ meta = [
           "description" : "The size of local neighborhood (in terms of number of neighboring data points) used for manifold approximation.",
           "default" : [
             15
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "integer",
+          "name" : "--seed",
+          "description" : "Random seed, set for reproducible results.",
+          "default" : [
+            0
           ],
           "required" : false,
           "direction" : "input",
@@ -3835,7 +3832,15 @@ meta = [
       "type" : "docker",
       "id" : "docker",
       "image" : "openproblems/base_python:1",
-      "namespace_separator" : "/"
+      "namespace_separator" : "/",
+      "setup" : [
+        {
+          "type" : "docker",
+          "env" : [
+            "ANNDATA_ZARR_WRITE_FORMAT=3"
+          ]
+        }
+      ]
     }
   ],
   "build_info" : {
@@ -3844,7 +3849,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/processors/knn",
     "viash_version" : "0.9.7",
-    "git_commit" : "65cde757bf02fe01910849b08bc312778d0648a2",
+    "git_commit" : "427dc48e2122448a392b66f15b3f49cb4df88847",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -3872,7 +3877,7 @@ meta = [
     "source" : "src",
     "target" : "target",
     "config_mods" : [
-      ".runners[.type == \\"nextflow\\"].config.labels := { lowmem : \\"memory = 20.Gb\\", midmem : \\"memory = 50.Gb\\", highmem : \\"memory = 100.Gb\\", lowcpu : \\"cpus = 5\\", midcpu : \\"cpus = 15\\", highcpu : \\"cpus = 30\\", lowtime : \\"time = 1.h\\", midtime : \\"time = 4.h\\", hightime : \\"time = 8.h\\", veryhightime : \\"time = 24.h\\" }\n"
+      ".runners[.type == \\"nextflow\\"].config.labels := { lowmem : \\"memory = 20.Gb\\", midmem : \\"memory = 50.Gb\\", highmem : \\"memory = 100.Gb\\", lowcpu : \\"cpus = 5\\", midcpu : \\"cpus = 15\\", highcpu : \\"cpus = 30\\", lowtime : \\"time = 1.h\\", midtime : \\"time = 4.h\\", hightime : \\"time = 8.h\\", veryhightime : \\"time = 24.h\\" }\n.engines[.type == \\"docker\\"].setup += { type: \\"docker\\", env: [\\"ANNDATA_ZARR_WRITE_FORMAT=3\\"] }\n"
     ],
     "keywords" : [
       "openproblems",
@@ -3904,7 +3909,7 @@ def innerWorkflowFactory(args) {
   def rawScript = '''set -e
 tempscript=".viash_script.py"
 cat > "$tempscript" << VIASHMAIN
-
+import anndata as ad
 import scanpy as sc
 
 ### VIASH START
@@ -3913,9 +3918,9 @@ par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'key_added': $( if [ ! -z ${VIASH_PAR_KEY_ADDED+x} ]; then echo "r'${VIASH_PAR_KEY_ADDED//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'num_neighbors': $( if [ ! -z ${VIASH_PAR_NUM_NEIGHBORS+x} ]; then echo "int(r'${VIASH_PAR_NUM_NEIGHBORS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi )
+  'num_neighbors': $( if [ ! -z ${VIASH_PAR_NUM_NEIGHBORS+x} ]; then echo "int(r'${VIASH_PAR_NUM_NEIGHBORS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'seed': $( if [ ! -z ${VIASH_PAR_SEED+x} ]; then echo "int(r'${VIASH_PAR_SEED//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3944,18 +3949,19 @@ dep = {
 ### VIASH END
 
 print(">> Load data", flush=True)
-adata = sc.read(par['input'])
+adata = ad.read_zarr(par['input'])
 
 print(">> Run kNN", flush=True)
 sc.pp.neighbors(
     adata,
     use_rep='X_pca',
     key_added=par['key_added'],
-    n_neighbors=par['num_neighbors']
+    n_neighbors=par['num_neighbors'],
+    random_state=par['seed']
 )
 
 print(">> Writing data", flush=True)
-adata.write_h5ad(par['output'], compression=par["output_compression"])
+adata.write_zarr(par['output'])
 VIASHMAIN
 python -B "$tempscript"
 '''

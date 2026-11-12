@@ -3295,7 +3295,7 @@ meta = [
           "description" : "This dataset contains both raw counts and normalized data matrices,\nas well as a SVD embedding and a HVG selection.\n\nThe format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n",
           "info" : {
             "format" : {
-              "type" : "h5ad",
+              "type" : "anndata_zarr",
               "layers" : [
                 {
                   "type" : "integer",
@@ -3557,7 +3557,7 @@ meta = [
             }
           },
           "example" : [
-            "resources_test/common/pancreas/dataset.h5ad"
+            "resources_test/common/pancreas/dataset.anndata.zarr"
           ],
           "must_exist" : true,
           "create_parent" : true,
@@ -3574,7 +3574,7 @@ meta = [
           "description" : "This dataset contains both raw counts and normalized data matrices,\nas well as a SVD embedding and a HVG selection.\n\nThe format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n",
           "info" : {
             "format" : {
-              "type" : "h5ad",
+              "type" : "anndata_zarr",
               "layers" : [
                 {
                   "type" : "integer",
@@ -3836,35 +3836,7 @@ meta = [
             }
           },
           "example" : [
-            "resources_test/common/pancreas/dataset.h5ad"
-          ],
-          "must_exist" : true,
-          "create_parent" : true,
-          "required" : false,
-          "direction" : "output",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "file",
-          "name" : "--output_meta_mod1",
-          "description" : "Dataset metadata",
-          "example" : [
-            "dataset_metadata_mod1.yaml"
-          ],
-          "must_exist" : true,
-          "create_parent" : true,
-          "required" : false,
-          "direction" : "output",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "file",
-          "name" : "--output_meta_mod2",
-          "description" : "Dataset metadata",
-          "example" : [
-            "dataset_metadata_mod2.yaml"
+            "resources_test/common/pancreas/dataset.anndata.zarr"
           ],
           "must_exist" : true,
           "create_parent" : true,
@@ -3882,10 +3854,6 @@ meta = [
       "path" : "main.nf",
       "is_executable" : true,
       "entrypoint" : "run_wf"
-    },
-    {
-      "type" : "file",
-      "path" : "/common/nextflow_helpers/helper.nf"
     }
   ],
   "description" : "Fetch and process Neurips 2022 multimodal datasets\n",
@@ -3956,14 +3924,6 @@ meta = [
       }
     },
     {
-      "name" : "utils/extract_uns_metadata",
-      "repository" : {
-        "type" : "github",
-        "repo" : "openproblems-bio/openproblems",
-        "tag" : "build/main"
-      }
-    },
-    {
       "name" : "utils/decompress_gzip",
       "repository" : {
         "type" : "github",
@@ -4028,7 +3988,7 @@ meta = [
     "engine" : "native",
     "output" : "target/nextflow/workflows/multimodal/process_openproblems_neurips2022_pbmc",
     "viash_version" : "0.9.7",
-    "git_commit" : "65cde757bf02fe01910849b08bc312778d0648a2",
+    "git_commit" : "427dc48e2122448a392b66f15b3f49cb4df88847",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -4056,7 +4016,7 @@ meta = [
     "source" : "src",
     "target" : "target",
     "config_mods" : [
-      ".runners[.type == \\"nextflow\\"].config.labels := { lowmem : \\"memory = 20.Gb\\", midmem : \\"memory = 50.Gb\\", highmem : \\"memory = 100.Gb\\", lowcpu : \\"cpus = 5\\", midcpu : \\"cpus = 15\\", highcpu : \\"cpus = 30\\", lowtime : \\"time = 1.h\\", midtime : \\"time = 4.h\\", hightime : \\"time = 8.h\\", veryhightime : \\"time = 24.h\\" }\n"
+      ".runners[.type == \\"nextflow\\"].config.labels := { lowmem : \\"memory = 20.Gb\\", midmem : \\"memory = 50.Gb\\", highmem : \\"memory = 100.Gb\\", lowcpu : \\"cpus = 5\\", midcpu : \\"cpus = 15\\", highcpu : \\"cpus = 30\\", lowtime : \\"time = 1.h\\", midtime : \\"time = 4.h\\", hightime : \\"time = 8.h\\", veryhightime : \\"time = 24.h\\" }\n.engines[.type == \\"docker\\"].setup += { type: \\"docker\\", env: [\\"ANNDATA_ZARR_WRITE_FORMAT=3\\"] }\n"
     ],
     "keywords" : [
       "openproblems",
@@ -4091,13 +4051,10 @@ include { atac_tfidf } from "${meta.resources_dir}/../../../../nextflow/normaliz
 include { subsample } from "${meta.resources_dir}/../../../../nextflow/processors/subsample/main.nf"
 include { svd } from "${meta.resources_dir}/../../../../nextflow/processors/svd/main.nf"
 include { hvg } from "${meta.resources_dir}/../../../../nextflow/processors/hvg/main.nf"
-include { extract_uns_metadata } from "${meta.root_dir}/dependencies/github/openproblems-bio/openproblems/build/main/nextflow/utils/extract_uns_metadata/main.nf"
 include { decompress_gzip } from "${meta.root_dir}/dependencies/github/openproblems-bio/openproblems/build/main/nextflow/utils/decompress_gzip/main.nf"
 
 // inner workflow
 // user-provided Nextflow code
-include { findArgumentSchema } from "${meta.resources_dir}/helper.nf"
-
 workflow run_wf {
   take:
   input_ch
@@ -4244,44 +4201,10 @@ workflow run_wf {
       [id, state + ["output_mod1": state.hvg_mod1, "output_mod2": state.hvg_mod2]]
     }
 
-    | extract_uns_metadata.run(
-      key: "extract_metadata_mod1",
-      fromState: { id, state ->
-        def schema = findArgumentSchema(meta.config, "output_mod1")
-        // workaround: convert GString to String
-        schema = iterateMap(schema, { it instanceof GString ? it.toString() : it })
-        def schemaYaml = tempFile("schema.yaml")
-        writeYaml(schema, schemaYaml)
-        [
-          "input": state.output_mod1,
-          "schema": schemaYaml
-        ]
-      },
-      toState: ["output_meta_mod1": "output"]
-    )
-
-    | extract_uns_metadata.run(
-      key: "extract_metadata_mod2",
-      fromState: { id, state ->
-        def schema = findArgumentSchema(meta.config, "output_mod2")
-        // workaround: convert GString to String
-        schema = iterateMap(schema, { it instanceof GString ? it.toString() : it })
-        def schemaYaml = tempFile("schema.yaml")
-        writeYaml(schema, schemaYaml)
-        [
-          "input": state.output_mod2,
-          "schema": schemaYaml
-        ]
-      },
-      toState: ["output_meta_mod2": "output"]
-    )
-
     // only output the files for which an output file was specified
     | setState([
       "output_mod1",
       "output_mod2",
-      "output_meta_mod1",
-      "output_meta_mod2",
       "_meta"
     ])
 

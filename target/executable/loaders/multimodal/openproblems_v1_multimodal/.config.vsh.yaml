@@ -147,7 +147,7 @@ argument_groups:
       \ loader.\n\nThe format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n"
     info:
       format:
-        type: "h5ad"
+        type: "anndata_zarr"
         layers:
         - type: "integer"
           name: "counts"
@@ -353,7 +353,7 @@ argument_groups:
           description: "The tissue of the sample in the dataset."
           required: false
     example:
-    - "resources_test/common/pancreas/raw.h5ad"
+    - "resources_test/common/pancreas/raw.anndata.zarr"
     must_exist: true
     create_parent: true
     required: false
@@ -368,7 +368,7 @@ argument_groups:
       \ loader.\n\nThe format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n"
     info:
       format:
-        type: "h5ad"
+        type: "anndata_zarr"
         layers:
         - type: "integer"
           name: "counts"
@@ -574,7 +574,7 @@ argument_groups:
           description: "The tissue of the sample in the dataset."
           required: false
     example:
-    - "resources_test/common/pancreas/raw.h5ad"
+    - "resources_test/common/pancreas/raw.anndata.zarr"
     must_exist: true
     create_parent: true
     required: false
@@ -640,14 +640,22 @@ runners:
 engines:
 - type: "docker"
   id: "docker"
-  image: "python:3.10"
+  image: "openproblems/base_python:1"
   namespace_separator: "/"
   setup:
+  - type: "apt"
+    packages:
+    - "git"
+    interactive: false
   - type: "docker"
     run:
     - "git clone -b 'v0.8.0' --depth 1 https://github.com/openproblems-bio/openproblems.git\
-      \ /opt/openproblems && \\\n  pip install --no-cache-dir 'setuptools<70' && \\\
-      \n  pip install --no-cache-dir --editable /opt/openproblems\n"
+      \ /opt/openproblems && \\\n  pip install --no-cache-dir 'setuptools<81' decorator\
+      \ && \\\n  pip install --no-cache-dir --no-deps --editable /opt/openproblems\
+      \ scprep\n"
+  - type: "docker"
+    env:
+    - "ANNDATA_ZARR_WRITE_FORMAT=3"
   entrypoint: []
   cmd: null
 build_info:
@@ -657,7 +665,7 @@ build_info:
   output: "target/executable/loaders/multimodal/openproblems_v1_multimodal"
   executable: "target/executable/loaders/multimodal/openproblems_v1_multimodal/openproblems_v1_multimodal"
   viash_version: "0.9.7"
-  git_commit: "65cde757bf02fe01910849b08bc312778d0648a2"
+  git_commit: "427dc48e2122448a392b66f15b3f49cb4df88847"
   git_remote: "https://github.com/openproblems-bio/datasets"
 package_config:
   name: "datasets"
@@ -681,7 +689,8 @@ package_config:
     , midmem : \"memory = 50.Gb\", highmem : \"memory = 100.Gb\", lowcpu : \"cpus\
     \ = 5\", midcpu : \"cpus = 15\", highcpu : \"cpus = 30\", lowtime : \"time = 1.h\"\
     , midtime : \"time = 4.h\", hightime : \"time = 8.h\", veryhightime : \"time =\
-    \ 24.h\" }\n"
+    \ 24.h\" }\n.engines[.type == \"docker\"].setup += { type: \"docker\", env: [\"\
+    ANNDATA_ZARR_WRITE_FORMAT=3\"] }\n"
   keywords:
   - "openproblems"
   - "benchmarking"

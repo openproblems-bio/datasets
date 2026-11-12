@@ -9,11 +9,11 @@ meta = {
 }
 ## VIASH END
 
-input_path = f"{meta['resources_dir']}/pancreas/dataset.h5ad"
-input = ad.read_h5ad(input_path)
+input_path = f"{meta['resources_dir']}/pancreas/dataset.anndata.zarr"
+input = ad.read_zarr(input_path)
 
 def test_even_sampling(run_component):
-    output_path = "output.h5ad"
+    output_path = "output.zarr"
     run_component([
         "--input", input_path,
         "--output", output_path,
@@ -27,14 +27,14 @@ def test_even_sampling(run_component):
     assert os.path.exists(output_path), "Output file not found"
 
     # Check that test output fits expected API
-    output = ad.read_h5ad(output_path)
+    output = ad.read_zarr(output_path)
 
     assert output.n_obs <= 100, "n_obs should be <= 100"
     assert output.n_vars <= 120, "n_vars should be <= 100"
 
 
 def test_keep_functionality(run_component):
-    output_path = "output.h5ad"
+    output_path = "output.zarr"
 
     # keep_features = list(input.var_names[:10])
     # use genes with high enough expression
@@ -53,7 +53,7 @@ def test_keep_functionality(run_component):
     assert os.path.exists(output_path), "Output file not found"
 
     # Check that test output fits expected API
-    output = ad.read_h5ad(output_path)
+    output = ad.read_zarr(output_path)
 
     assert output.n_obs <= 500, "n_obs should be <= 500"
     assert output.n_vars <= 500, "n_vars should be <= 500"

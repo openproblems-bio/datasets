@@ -118,11 +118,6 @@ argument_groups:
         __merge__: /src/api/file_common_dataset.yaml
         direction: output
         required: true
-      - name: --output_meta
-        direction: output
-        type: file
-        description: Dataset metadata
-        default: dataset_metadata.yaml
       - name: --output_raw
         __merge__: /src/api/file_raw.yaml
         direction: output
@@ -147,7 +142,6 @@ resources:
   - type: nextflow_script
     path: main.nf
     entrypoint: run_wf
-  - path: /common/nextflow_helpers/helper.nf
 dependencies:
   - name: loaders/scrnaseq/openproblems_v1
   - name: normalization/log_cp
@@ -158,8 +152,6 @@ dependencies:
   - name: processors/pca
   - name: processors/hvg
   - name: processors/knn
-  - name: utils/extract_uns_metadata
-    repository: openproblems
   # test_resources:
   #   - type: nextflow_script
   #     path: main.nf

@@ -2,12 +2,12 @@ from os import path
 import subprocess
 import anndata as ad
 
-input = "neurips2021_bmmc_cite.h5ad"
+input = "neurips2021_bmmc_cite.zarr"
 mod1 = "GEX"
 mod2 = "ADT"
 
-output_mod1_file = "output_mod1.h5ad"
-output_mod2_file = "output_mod2.h5ad"
+output_mod1_file = "output_mod1.zarr"
+output_mod2_file = "output_mod2.zarr"
 
 input_url = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE194nnn/GSE194122/suppl/GSE194122%5Fopenproblems%5Fneurips2021%5Fcite%5FBMMC%5Fprocessed%2Eh5ad%2Egz"
 
@@ -63,8 +63,8 @@ assert path.exists(output_mod1_file), "Output mod1 file does not exist"
 assert path.exists(output_mod2_file), "Output mod2 file does not exist"
 
 print(">> Read output anndata", flush=True)
-output_mod1 = ad.read_h5ad(output_mod1_file)
-output_mod2 = ad.read_h5ad(output_mod2_file)
+output_mod1 = ad.read_zarr(output_mod1_file)
+output_mod2 = ad.read_zarr(output_mod2_file)
 
 print(f"output_mod1: {output_mod1}", flush=True)
 print(f"output_mod2: {output_mod2}", flush=True)

@@ -11,7 +11,7 @@ par = {
     "obs_tissue": "source",
     "obs_cell_type": "cell_type",
     "layer_counts": "counts",
-    "output": "test_data.h5ad",
+    "output": "test_data.zarr",
     "dataset_name": "name",
     "dataset_url": "https://some.url",
     "dataset_reference": "reference",
@@ -172,5 +172,5 @@ for key in metadata_fields:
         mod2.uns[key] = par[key]
 
 print("Writing adata to file", flush=True)
-mod1.write_h5ad(par["output_mod1"], compression="gzip")
-mod2.write_h5ad(par["output_mod2"], compression="gzip")
+mod1.write_zarr(par["output_mod1"])
+mod2.write_zarr(par["output_mod2"])

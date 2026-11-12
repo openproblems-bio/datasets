@@ -3295,6 +3295,12 @@ meta = [
             "squidpy"
           ],
           "upgrade" : true
+        },
+        {
+          "type" : "docker",
+          "env" : [
+            "ANNDATA_ZARR_WRITE_FORMAT=3"
+          ]
         }
       ]
     }
@@ -3305,7 +3311,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/loaders/spatial/tenx_visium",
     "viash_version" : "0.9.7",
-    "git_commit" : "65cde757bf02fe01910849b08bc312778d0648a2",
+    "git_commit" : "427dc48e2122448a392b66f15b3f49cb4df88847",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -3333,7 +3339,7 @@ meta = [
     "source" : "src",
     "target" : "target",
     "config_mods" : [
-      ".runners[.type == \\"nextflow\\"].config.labels := { lowmem : \\"memory = 20.Gb\\", midmem : \\"memory = 50.Gb\\", highmem : \\"memory = 100.Gb\\", lowcpu : \\"cpus = 5\\", midcpu : \\"cpus = 15\\", highcpu : \\"cpus = 30\\", lowtime : \\"time = 1.h\\", midtime : \\"time = 4.h\\", hightime : \\"time = 8.h\\", veryhightime : \\"time = 24.h\\" }\n"
+      ".runners[.type == \\"nextflow\\"].config.labels := { lowmem : \\"memory = 20.Gb\\", midmem : \\"memory = 50.Gb\\", highmem : \\"memory = 100.Gb\\", lowcpu : \\"cpus = 5\\", midcpu : \\"cpus = 15\\", highcpu : \\"cpus = 30\\", lowtime : \\"time = 1.h\\", midtime : \\"time = 4.h\\", hightime : \\"time = 8.h\\", veryhightime : \\"time = 24.h\\" }\n.engines[.type == \\"docker\\"].setup += { type: \\"docker\\", env: [\\"ANNDATA_ZARR_WRITE_FORMAT=3\\"] }\n"
     ],
     "keywords" : [
       "openproblems",
@@ -3472,7 +3478,7 @@ for key in metadata_fields:
     adata.uns[key] = par[key]
 
 print("Writing adata to file", flush=True)
-adata.write_h5ad(par["dataset"], compression="gzip")
+adata.write_zarr(par["dataset"])
 VIASHMAIN
 python -B "$tempscript"
 '''

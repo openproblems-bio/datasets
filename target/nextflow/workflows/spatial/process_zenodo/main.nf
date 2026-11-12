@@ -3069,7 +3069,7 @@ meta = [
           "description" : "Output h5ad file",
           "info" : {
             "format" : {
-              "type" : "h5ad",
+              "type" : "anndata_zarr",
               "layers" : [
                 {
                   "type" : "integer",
@@ -3325,25 +3325,11 @@ meta = [
             }
           },
           "example" : [
-            "resources_test/common/mouse_brain_coronal/dataset.h5ad"
+            "resources_test/common/mouse_brain_coronal/dataset.anndata.zarr"
           ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : true,
-          "direction" : "output",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "file",
-          "name" : "--output_meta",
-          "description" : "Dataset metadata",
-          "default" : [
-            "dataset_metadata.yaml"
-          ],
-          "must_exist" : true,
-          "create_parent" : true,
-          "required" : false,
           "direction" : "output",
           "multiple" : false,
           "multiple_sep" : ";"
@@ -3564,10 +3550,6 @@ meta = [
       "path" : "main.nf",
       "is_executable" : true,
       "entrypoint" : "run_wf"
-    },
-    {
-      "type" : "file",
-      "path" : "/common/nextflow_helpers/helper.nf"
     }
   ],
   "description" : "Download and process DBiT seq, MERFISH, seqFISH, Slide-seq v2, STARmap, and Stereo-seq data from Zenodo.\n",
@@ -3611,14 +3593,6 @@ meta = [
       "name" : "processors/subsample",
       "repository" : {
         "type" : "local"
-      }
-    },
-    {
-      "name" : "utils/extract_uns_metadata",
-      "repository" : {
-        "type" : "github",
-        "repo" : "openproblems-bio/openproblems",
-        "tag" : "build/main"
       }
     }
   ],
@@ -3678,7 +3652,7 @@ meta = [
     "engine" : "native",
     "output" : "target/nextflow/workflows/spatial/process_zenodo",
     "viash_version" : "0.9.7",
-    "git_commit" : "65cde757bf02fe01910849b08bc312778d0648a2",
+    "git_commit" : "427dc48e2122448a392b66f15b3f49cb4df88847",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -3706,7 +3680,7 @@ meta = [
     "source" : "src",
     "target" : "target",
     "config_mods" : [
-      ".runners[.type == \\"nextflow\\"].config.labels := { lowmem : \\"memory = 20.Gb\\", midmem : \\"memory = 50.Gb\\", highmem : \\"memory = 100.Gb\\", lowcpu : \\"cpus = 5\\", midcpu : \\"cpus = 15\\", highcpu : \\"cpus = 30\\", lowtime : \\"time = 1.h\\", midtime : \\"time = 4.h\\", hightime : \\"time = 8.h\\", veryhightime : \\"time = 24.h\\" }\n"
+      ".runners[.type == \\"nextflow\\"].config.labels := { lowmem : \\"memory = 20.Gb\\", midmem : \\"memory = 50.Gb\\", highmem : \\"memory = 100.Gb\\", lowcpu : \\"cpus = 5\\", midcpu : \\"cpus = 15\\", highcpu : \\"cpus = 30\\", lowtime : \\"time = 1.h\\", midtime : \\"time = 4.h\\", hightime : \\"time = 8.h\\", veryhightime : \\"time = 24.h\\" }\n.engines[.type == \\"docker\\"].setup += { type: \\"docker\\", env: [\\"ANNDATA_ZARR_WRITE_FORMAT=3\\"] }\n"
     ],
     "keywords" : [
       "openproblems",
@@ -3737,12 +3711,9 @@ include { log_scran_pooling } from "${meta.resources_dir}/../../../../nextflow/n
 include { sqrt_cp } from "${meta.resources_dir}/../../../../nextflow/normalization/sqrt_cp/main.nf"
 include { l1_sqrt } from "${meta.resources_dir}/../../../../nextflow/normalization/l1_sqrt/main.nf"
 include { subsample } from "${meta.resources_dir}/../../../../nextflow/processors/subsample/main.nf"
-include { extract_uns_metadata } from "${meta.root_dir}/dependencies/github/openproblems-bio/openproblems/build/main/nextflow/utils/extract_uns_metadata/main.nf"
 
 // inner workflow
 // user-provided Nextflow code
-include { findArgumentSchema } from "${meta.resources_dir}/helper.nf"
-
 workflow auto {
   findStates(params, meta.config)
     | meta.workflow.run(
@@ -3848,25 +3819,9 @@ workflow run_wf {
       [id, state + [output_dataset: state.output_normalized]]
     }
 
-    | extract_uns_metadata.run(
-      fromState: { id, state ->
-        def schema = findArgumentSchema(meta.config, "output_dataset")
-        // workaround: convert GString to String
-        schema = iterateMap(schema, { it instanceof GString ? it.toString() : it })
-        def schemaYaml = tempFile("schema.yaml")
-        writeYaml(schema, schemaYaml)
-        [
-          "input": state.output_dataset,
-          "schema": schemaYaml
-        ]
-      },
-      toState: ["output_meta": "output"]
-    )
-
     // only output the files for which an output file was specified
     | setState([
       "output_dataset",
-      "output_meta",
       "_meta"
     ])
 

@@ -9,7 +9,7 @@ dataset_url = "https://singlecell.broadinstitute.org/single_cell/study/SCP815/se
 dataset_summary = "Highly sensitive spatial transcriptomics at near-cellular resolution with Slide-seqV2"
 dataset_description = "Gene expression library of mouse olfactory bulk puck profiled using Slide-seq V2"
 dataset_organism = "Mus musculus"
-dataset = "dataset.h5ad"
+dataset = "dataset.zarr"
 
 print(">> Running script", flush=True)
 out = subprocess.run(
@@ -38,7 +38,7 @@ print(">> Checking whether output file exists", flush=True)
 assert os.path.exists(dataset), "Output does not exist"
 
 print(">> Read output anndata", flush=True)
-adata = ad.read_h5ad(dataset)
+adata = ad.read_zarr(dataset)
 
 print(adata)
 

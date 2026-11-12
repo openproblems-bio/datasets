@@ -12,7 +12,7 @@ par = {
     "obs_batch": "tech",
     "obs_tissue": "tissue",
     "layer_counts": "counts",
-    "output": "test_data.h5ad",
+    "output": "test_data.zarr",
 }
 meta = {
     "resources_dir": "src/datasets/loaders/openproblems_v1/"
@@ -132,4 +132,4 @@ else:
         print(f"Warning: key '{par['var_feature_id']}' could not be found in adata.var.", flush=True)
 
 print("Writing adata to file", flush=True)
-adata.write_h5ad(par["output"], compression=par["output_compression"])
+adata.write_zarr(par["output"])

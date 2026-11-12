@@ -3180,7 +3180,7 @@ meta = [
           "description" : "This dataset contains raw counts and metadata as output by a dataset loader.\n\nThe format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n",
           "info" : {
             "format" : {
-              "type" : "h5ad",
+              "type" : "anndata_zarr",
               "layers" : [
                 {
                   "type" : "integer",
@@ -3422,7 +3422,7 @@ meta = [
             }
           },
           "example" : [
-            "resources_test/common/pancreas/raw.h5ad"
+            "resources_test/common/pancreas/raw.anndata.zarr"
           ],
           "must_exist" : true,
           "create_parent" : true,
@@ -3439,7 +3439,7 @@ meta = [
           "description" : "This dataset contains raw counts and metadata as output by a dataset loader.\n\nThe format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n",
           "info" : {
             "format" : {
-              "type" : "h5ad",
+              "type" : "anndata_zarr",
               "layers" : [
                 {
                   "type" : "integer",
@@ -3681,7 +3681,7 @@ meta = [
             }
           },
           "example" : [
-            "resources_test/common/pancreas/raw.h5ad"
+            "resources_test/common/pancreas/raw.anndata.zarr"
           ],
           "must_exist" : true,
           "create_parent" : true,
@@ -3765,7 +3765,15 @@ meta = [
       "type" : "docker",
       "id" : "docker",
       "image" : "openproblems/base_python:1",
-      "namespace_separator" : "/"
+      "namespace_separator" : "/",
+      "setup" : [
+        {
+          "type" : "docker",
+          "env" : [
+            "ANNDATA_ZARR_WRITE_FORMAT=3"
+          ]
+        }
+      ]
     }
   ],
   "build_info" : {
@@ -3774,7 +3782,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/loaders/multimodal/openproblems_neurips2022_pbmc",
     "viash_version" : "0.9.7",
-    "git_commit" : "65cde757bf02fe01910849b08bc312778d0648a2",
+    "git_commit" : "427dc48e2122448a392b66f15b3f49cb4df88847",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -3802,7 +3810,7 @@ meta = [
     "source" : "src",
     "target" : "target",
     "config_mods" : [
-      ".runners[.type == \\"nextflow\\"].config.labels := { lowmem : \\"memory = 20.Gb\\", midmem : \\"memory = 50.Gb\\", highmem : \\"memory = 100.Gb\\", lowcpu : \\"cpus = 5\\", midcpu : \\"cpus = 15\\", highcpu : \\"cpus = 30\\", lowtime : \\"time = 1.h\\", midtime : \\"time = 4.h\\", hightime : \\"time = 8.h\\", veryhightime : \\"time = 24.h\\" }\n"
+      ".runners[.type == \\"nextflow\\"].config.labels := { lowmem : \\"memory = 20.Gb\\", midmem : \\"memory = 50.Gb\\", highmem : \\"memory = 100.Gb\\", lowcpu : \\"cpus = 5\\", midcpu : \\"cpus = 15\\", highcpu : \\"cpus = 30\\", lowtime : \\"time = 1.h\\", midtime : \\"time = 4.h\\", hightime : \\"time = 8.h\\", veryhightime : \\"time = 24.h\\" }\n.engines[.type == \\"docker\\"].setup += { type: \\"docker\\", env: [\\"ANNDATA_ZARR_WRITE_FORMAT=3\\"] }\n"
     ],
     "keywords" : [
       "openproblems",
@@ -3944,8 +3952,8 @@ for key in metadata_fields:
 
 
 print("Writing adata to file", flush=True)
-adata_mod1.write_h5ad(par["output_mod1"], compression="gzip")
-adata_mod2.write_h5ad(par["output_mod2"], compression="gzip")
+adata_mod1.write_zarr(par["output_mod1"])
+adata_mod2.write_zarr(par["output_mod2"])
 VIASHMAIN
 python -B "$tempscript"
 '''

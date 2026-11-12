@@ -3055,7 +3055,7 @@ meta = [
           "description" : "This dataset contains both raw counts and normalized data matrices,\nas well as a PCA embedding, HVG selection and a kNN graph.",
           "info" : {
             "format" : {
-              "type" : "h5ad",
+              "type" : "anndata_zarr",
               "obsp" : [
                 {
                   "type" : "double",
@@ -3369,7 +3369,7 @@ meta = [
             }
           },
           "example" : [
-            "resources_test/common/pancreas/dataset.h5ad"
+            "resources_test/common/pancreas/dataset.anndata.zarr"
           ],
           "must_exist" : true,
           "create_parent" : true,
@@ -3386,7 +3386,7 @@ meta = [
           "description" : "This dataset contains both raw counts and normalized data matrices,\nas well as a PCA embedding, HVG selection and a kNN graph.",
           "info" : {
             "format" : {
-              "type" : "h5ad",
+              "type" : "anndata_zarr",
               "obsp" : [
                 {
                   "type" : "double",
@@ -3700,7 +3700,7 @@ meta = [
             }
           },
           "example" : [
-            "resources_test/common/pancreas/dataset.h5ad"
+            "resources_test/common/pancreas/dataset.anndata.zarr"
           ],
           "must_exist" : true,
           "create_parent" : true,
@@ -3717,7 +3717,7 @@ meta = [
           "description" : "This dataset contains both raw counts and normalized data matrices,\nas well as a PCA embedding, HVG selection and a kNN graph.",
           "info" : {
             "format" : {
-              "type" : "h5ad",
+              "type" : "anndata_zarr",
               "obsp" : [
                 {
                   "type" : "double",
@@ -4031,7 +4031,7 @@ meta = [
             }
           },
           "example" : [
-            "resources_test/common/pancreas/dataset.h5ad"
+            "resources_test/common/pancreas/dataset.anndata.zarr"
           ],
           "must_exist" : true,
           "create_parent" : true,
@@ -4048,7 +4048,7 @@ meta = [
           "description" : "This dataset contains both raw counts and normalized data matrices,\nas well as a PCA embedding, HVG selection and a kNN graph.",
           "info" : {
             "format" : {
-              "type" : "h5ad",
+              "type" : "anndata_zarr",
               "obsp" : [
                 {
                   "type" : "double",
@@ -4362,27 +4362,12 @@ meta = [
             }
           },
           "example" : [
-            "resources_test/common/pancreas/dataset.h5ad"
+            "resources_test/common/pancreas/dataset.anndata.zarr"
           ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : false,
           "direction" : "output",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--output_compression",
-          "default" : [
-            "gzip"
-          ],
-          "required" : false,
-          "choices" : [
-            "gzip",
-            "lzf"
-          ],
-          "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
         },
@@ -4434,7 +4419,7 @@ meta = [
           "description" : "Categories indexes to be selected",
           "required" : false,
           "direction" : "input",
-         ''' + ''' "multiple" : true,
+          "multiple" : true,
           "multiple_sep" : ";"
         },
         {
@@ -4444,7 +4429,7 @@ meta = [
           "direction" : "input"
         },
         {
-          "type" : "integer",
+          "type" : "intege''' + '''r",
           "name" : "--seed",
           "description" : "A seed for the subsampling.",
           "example" : [
@@ -4560,6 +4545,14 @@ meta = [
       "id" : "docker",
       "image" : "openproblems/base_python:1",
       "namespace_separator" : "/",
+      "setup" : [
+        {
+          "type" : "docker",
+          "env" : [
+            "ANNDATA_ZARR_WRITE_FORMAT=3"
+          ]
+        }
+      ],
       "test_setup" : [
         {
           "type" : "python",
@@ -4578,7 +4571,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/processors/subsample",
     "viash_version" : "0.9.7",
-    "git_commit" : "65cde757bf02fe01910849b08bc312778d0648a2",
+    "git_commit" : "427dc48e2122448a392b66f15b3f49cb4df88847",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -4606,7 +4599,7 @@ meta = [
     "source" : "src",
     "target" : "target",
     "config_mods" : [
-      ".runners[.type == \\"nextflow\\"].config.labels := { lowmem : \\"memory = 20.Gb\\", midmem : \\"memory = 50.Gb\\", highmem : \\"memory = 100.Gb\\", lowcpu : \\"cpus = 5\\", midcpu : \\"cpus = 15\\", highcpu : \\"cpus = 30\\", lowtime : \\"time = 1.h\\", midtime : \\"time = 4.h\\", hightime : \\"time = 8.h\\", veryhightime : \\"time = 24.h\\" }\n"
+      ".runners[.type == \\"nextflow\\"].config.labels := { lowmem : \\"memory = 20.Gb\\", midmem : \\"memory = 50.Gb\\", highmem : \\"memory = 100.Gb\\", lowcpu : \\"cpus = 5\\", midcpu : \\"cpus = 15\\", highcpu : \\"cpus = 30\\", lowtime : \\"time = 1.h\\", midtime : \\"time = 4.h\\", hightime : \\"time = 8.h\\", veryhightime : \\"time = 24.h\\" }\n.engines[.type == \\"docker\\"].setup += { type: \\"docker\\", env: [\\"ANNDATA_ZARR_WRITE_FORMAT=3\\"] }\n"
     ],
     "keywords" : [
       "openproblems",
@@ -4638,8 +4631,8 @@ def innerWorkflowFactory(args) {
   def rawScript = '''set -e
 tempscript=".viash_script.py"
 cat > "$tempscript" << VIASHMAIN
+import anndata as ad
 import scanpy as sc
-import random
 import numpy as np
 
 ### VIASH START
@@ -4649,7 +4642,6 @@ par = {
   'input_mod2': $( if [ ! -z ${VIASH_PAR_INPUT_MOD2+x} ]; then echo "r'${VIASH_PAR_INPUT_MOD2//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_mod2': $( if [ ! -z ${VIASH_PAR_OUTPUT_MOD2+x} ]; then echo "r'${VIASH_PAR_OUTPUT_MOD2//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'n_obs': $( if [ ! -z ${VIASH_PAR_N_OBS+x} ]; then echo "int(r'${VIASH_PAR_N_OBS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'n_vars': $( if [ ! -z ${VIASH_PAR_N_VARS+x} ]; then echo "int(r'${VIASH_PAR_N_VARS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
   'keep_features': $( if [ ! -z ${VIASH_PAR_KEEP_FEATURES+x} ]; then echo "r'${VIASH_PAR_KEEP_FEATURES//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
@@ -4684,15 +4676,14 @@ dep = {
 
 ### VIASH END
 
-if par["seed"]:
-    print(f">> Setting seed to {par['seed']}", flush=True)
-    random.seed(par["seed"])
+print(f">> Setting seed to {par['seed']}", flush=True)
+rng = np.random.default_rng(par["seed"])
 
 print(">> Load data", flush=True)
-adata_input = sc.read_h5ad(par["input"])
+adata_input = ad.read_zarr(par["input"])
 
 if par["input_mod2"] is not None:
-    adata_mod2 = sc.read_h5ad(par["input_mod2"])
+    adata_mod2 = ad.read_zarr(par["input_mod2"])
 
 # copy counts to .X because otherwise filter_genes and filter_cells won't work
 adata_input.X = adata_input.layers["counts"]
@@ -4732,9 +4723,9 @@ if par.get("even"):
     probs = dict(zip(names, 1 / counts / len(names)))
     
     choice_probs = [ probs[batch] for batch in choice_batch ]
-    obs_index = np.random.choice(choice_ix, size=n_obs, replace=False, p=choice_probs)
+    obs_index = rng.choice(choice_ix, size=n_obs, replace=False, p=choice_probs)
 else:
-    obs_index = np.random.choice(np.where(obs_filt)[0], n_obs, replace=False)
+    obs_index = rng.choice(np.where(obs_filt)[0], n_obs, replace=False)
 
 # subsample obs
 adata_output = adata_input[obs_index].copy()
@@ -4763,12 +4754,12 @@ if par.get("keep_features"):
     initial_filt = adata_output.var_names.isin(par["keep_features"])
     initial_idx, *_ = initial_filt.nonzero()
     remaining_idx, *_ = (~initial_filt).nonzero()
-    rest_idx = remaining_idx[np.random.choice(len(remaining_idx), n_vars - len(initial_idx), replace=False)]
+    rest_idx = remaining_idx[rng.choice(len(remaining_idx), n_vars - len(initial_idx), replace=False)]
     var_ix = np.concatenate([initial_idx, rest_idx])
 else:
-    var_ix = np.random.choice(adata_output.shape[1], n_vars, replace=False)
+    var_ix = rng.choice(adata_output.shape[1], n_vars, replace=False)
     if par["input_mod2"] is not None:
-        var_ix_mod2 = np.random.choice(adata_output_mod2.shape[1], n_vars, replace=False)
+        var_ix_mod2 = rng.choice(adata_output_mod2.shape[1], n_vars, replace=False)
 
 #  subsample vars
 adata_output = adata_output[:, var_ix].copy()
@@ -4804,9 +4795,9 @@ if par["input_mod2"] is not None:
     del adata_output_mod2.X
 
 print(">> Writing data", flush=True)
-adata_output.write_h5ad(par["output"], compression=par["output_compression"])
+adata_output.write_zarr(par["output"])
 if par["output_mod2"] is not None:
-    adata_output_mod2.write_h5ad(par["output_mod2"], compression=par["output_compression"])
+    adata_output_mod2.write_zarr(par["output_mod2"])
 VIASHMAIN
 python -B "$tempscript"
 '''

@@ -3055,7 +3055,7 @@ meta = [
           "description" : "This dataset contains raw counts and metadata as output by a dataset loader.\n\nThe format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n",
           "info" : {
             "format" : {
-              "type" : "h5ad",
+              "type" : "anndata_zarr",
               "layers" : [
                 {
                   "type" : "integer",
@@ -3315,7 +3315,7 @@ meta = [
             }
           },
           "example" : [
-            "resources_test/common/pancreas/normalized.h5ad"
+            "resources_test/common/pancreas/normalized.anndata.zarr"
           ],
           "must_exist" : true,
           "create_parent" : true,
@@ -3332,7 +3332,7 @@ meta = [
           "description" : "This dataset contains raw counts and metadata as output by a dataset loader.\n\nThe format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n",
           "info" : {
             "format" : {
-              "type" : "h5ad",
+              "type" : "anndata_zarr",
               "layers" : [
                 {
                   "type" : "integer",
@@ -3592,7 +3592,7 @@ meta = [
             }
           },
           "example" : [
-            "resources_test/common/pancreas/normalized.h5ad"
+            "resources_test/common/pancreas/normalized.anndata.zarr"
           ],
           "must_exist" : true,
           "create_parent" : true,
@@ -3621,7 +3621,7 @@ meta = [
           "description" : "This dataset contains raw counts and metadata as output by a dataset loader.\n\nThe format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n",
           "info" : {
             "format" : {
-              "type" : "h5ad",
+              "type" : "anndata_zarr",
               "obsm" : [
                 {
                   "type" : "double",
@@ -3889,7 +3889,7 @@ meta = [
             }
           },
           "example" : [
-            "resources_test/common/pancreas/svd.h5ad"
+            "resources_test/common/pancreas/svd.anndata.zarr"
           ],
           "must_exist" : true,
           "create_parent" : true,
@@ -3906,7 +3906,7 @@ meta = [
           "description" : "This dataset contains raw counts and metadata as output by a dataset loader.\n\nThe format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n",
           "info" : {
             "format" : {
-              "type" : "h5ad",
+              "type" : "anndata_zarr",
               "obsm" : [
                 {
                   "type" : "double",
@@ -4174,27 +4174,12 @@ meta = [
             }
           },
           "example" : [
-            "resources_test/common/pancreas/svd.h5ad"
+            "resources_test/common/pancreas/svd.anndata.zarr"
           ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : false,
           "direction" : "output",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--output_compression",
-          "default" : [
-            "gzip"
-          ],
-          "required" : false,
-          "choices" : [
-            "gzip",
-            "lzf"
-          ],
-          "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
         },
@@ -4326,6 +4311,12 @@ meta = [
             "scikit-learn"
           ],
           "upgrade" : true
+        },
+        {
+          "type" : "docker",
+          "env" : [
+            "ANNDATA_ZARR_WRITE_FORMAT=3"
+          ]
         }
       ]
     }
@@ -4336,7 +4327,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/processors/svd",
     "viash_version" : "0.9.7",
-    "git_commit" : "65cde757bf02fe01910849b08bc312778d0648a2",
+    "git_commit" : "427dc48e2122448a392b66f15b3f49cb4df88847",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -4364,7 +4355,7 @@ meta = [
     "source" : "src",
     "target" : "target",
     "config_mods" : [
-      ".runners[.type == \\"nextflow\\"].config.labels := { lowmem : \\"memory = 20.Gb\\", midmem : \\"memory = 50.Gb\\", highmem : \\"memory = 100.Gb\\", lowcpu : \\"cpus = 5\\", midcpu : \\"cpus = 15\\", highcpu : \\"cpus = 30\\", lowtime : \\"time = 1.h\\", midtime : \\"time = 4.h\\", hightime : \\"time = 8.h\\", veryhightime : \\"time = 24.h\\" }\n"
+      ".runners[.type == \\"nextflow\\"].config.labels := { lowmem : \\"memory = 20.Gb\\", midmem : \\"memory = 50.Gb\\", highmem : \\"memory = 100.Gb\\", lowcpu : \\"cpus = 5\\", midcpu : \\"cpus = 15\\", highcpu : \\"cpus = 30\\", lowtime : \\"time = 1.h\\", midtime : \\"time = 4.h\\", hightime : \\"time = 8.h\\", veryhightime : \\"time = 24.h\\" }\n.engines[.type == \\"docker\\"].setup += { type: \\"docker\\", env: [\\"ANNDATA_ZARR_WRITE_FORMAT=3\\"] }\n"
     ],
     "keywords" : [
       "openproblems",
@@ -4408,7 +4399,6 @@ par = {
   'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_mod2': $( if [ ! -z ${VIASH_PAR_OUTPUT_MOD2+x} ]; then echo "r'${VIASH_PAR_OUTPUT_MOD2//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obsm_embedding': $( if [ ! -z ${VIASH_PAR_OBSM_EMBEDDING+x} ]; then echo "r'${VIASH_PAR_OBSM_EMBEDDING//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'num_components': $( if [ ! -z ${VIASH_PAR_NUM_COMPONENTS+x} ]; then echo "int(r'${VIASH_PAR_NUM_COMPONENTS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi )
 }
@@ -4439,9 +4429,9 @@ dep = {
 ## VIASH END
 
 print(">> Load data", flush=True)
-adata = ad.read_h5ad(par["input"])
+adata = ad.read_zarr(par["input"])
 if par["input_mod2"] is not None:
-    adata2 = ad.read_h5ad(par["input_mod2"])
+    adata2 = ad.read_zarr(par["input_mod2"])
 
 print(">> check parameters", flush=True)
 min_list = [par["num_components"], min(adata.layers[par["input_layer"]].shape) - 1]
@@ -4464,9 +4454,9 @@ if par["input_mod2"] is not None:
 
 
 print(">> Writing data", flush=True)
-adata.write_h5ad(par["output"], compression=par["output_compression"])
+adata.write_zarr(par["output"])
 if par["input_mod2"] is not None:
-    adata2.write_h5ad(par["output_mod2"], compression=par["output_compression"])
+    adata2.write_zarr(par["output_mod2"])
 VIASHMAIN
 python -B "$tempscript"
 '''

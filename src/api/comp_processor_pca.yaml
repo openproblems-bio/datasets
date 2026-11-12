@@ -24,11 +24,6 @@ arguments:
     direction: output
     __merge__: file_pca.yaml
     required: true
-  - name: "--output_compression"
-    type: string
-    choices: [gzip, lzf]
-    required: false
-    default: "gzip"
   - name: "--obsm_embedding"
     type: string
     default: "X_pca"
@@ -45,6 +40,10 @@ arguments:
     type: integer
     example: 25
     description: Number of principal components to compute. Defaults to 50, or 1 - minimum dimension size of selected representation.
+  - name: "--seed"
+    type: integer
+    default: 0
+    description: Random seed, set for reproducible results.
 test_resources:
   - path: /resources_test/common/pancreas
     dest: resources_test/common/pancreas

@@ -4,6 +4,18 @@
 
 * MINOR CHANGE: Failed Nextflow processes are no longer ignored, so a failing dataset fails the run.
 
+* MAJOR CHANGE: All loaders, components and workflows write AnnData zarr stores instead of h5ad files, and the file formats in `src/api` are now `anndata_zarr`. Every Docker image sets `ANNDATA_ZARR_WRITE_FORMAT=3`. Multimodal datasets are still two AnnData stores, spatial datasets one.
+
+* MAJOR CHANGE: Remove the `extract_uns_metadata` step and `--output_meta*` outputs from the workflows, as well as the `extract_dataset_info` and `extract_dataset_meta` workflows. Dataset metadata will be stored in LaminDB.
+
+* MINOR CHANGE: Remove the h5ad-only `--output_compression` argument.
+
+* MINOR CHANGE: The openproblems v1 loaders install openproblems v0.8.0 without its pinned 2022-era dependencies and run on `openproblems/base_python:1`, so they write the same zarr format as the other loaders.
+
+* BUG FIX: `processors/subsample` draws with a seeded numpy generator; `--seed` had no effect before.
+
+* BUG FIX: `processors/pca` runs on the features selected by `--input_var_features` (HVGs by default), which it previously ignored. `processors/pca` and `processors/knn` gain a `--seed` argument.
+
 * MINOR CHANGE: Update the `common` submodule, which adds `labels_denbi.config`.
 
 * MINOR CHANGE: Drop the custom `multiple_sep` from the CELLxGENE census loaders and workflow; pass multiple values with `;`.

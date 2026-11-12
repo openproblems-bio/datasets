@@ -15,8 +15,8 @@ par = {
   "dataset_summary": "value",
   "dataset_description": "value",
   "dataset_organism": "homo_sapiens",
-  "output_mod1": "output/mod1.h5ad",
-  "output_mod2": "output/mod2.h5ad"
+  "output_mod1": "output/mod1.zarr",
+  "output_mod2": "output/mod2.zarr"
 }
 meta = {
   "name": "openproblems_neurips2021_bmmc",
@@ -118,8 +118,8 @@ for key in metadata_fields:
         adata_mod2.uns[key] = par[key]
 
 print("Writing adata to file", flush=True)
-adata_mod1.write_h5ad(par["output_mod1"], compression="gzip")
-adata_mod2.write_h5ad(par["output_mod2"], compression="gzip")
+adata_mod1.write_zarr(par["output_mod1"])
+adata_mod2.write_zarr(par["output_mod2"])
 
 
 

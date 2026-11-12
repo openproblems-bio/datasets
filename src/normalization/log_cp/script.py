@@ -1,9 +1,10 @@
+import anndata as ad
 import scanpy as sc
 
 ## VIASH START
 par = {
-    'input': "resources_test/common/pancreas/dataset.h5ad",
-    'output': "output.h5ad",
+    'input': "resources_test/common/pancreas/dataset.anndata.zarr",
+    'output': "output.zarr",
     'layer_output': "log_cp10k",
     'obs_size_factors': "log_cp10k_size_factors",
     'n_cp': 1e6,
@@ -14,7 +15,7 @@ meta = {
 ## VIASH END
 
 print(">> Load data", flush=True)
-adata = sc.read_h5ad(par['input'])
+adata = ad.read_zarr(par['input'])
 
 print(">> Normalize data", flush=True)
 if par["n_cp"] == -1:
@@ -39,4 +40,4 @@ adata.obs[par["obs_size_factors"]] = norm["norm_factor"]
 adata.uns["normalization_id"] = par["normalization_id"] or meta['name']
 
 print(">> Write data", flush=True)
-adata.write_h5ad(par['output'], compression="gzip")
+adata.write_zarr(par['output'])

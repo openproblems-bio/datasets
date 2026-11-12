@@ -445,10 +445,11 @@ function ViashDockerfile {
     cat << 'VIASHDOCKER'
 FROM openproblems/base_python:1
 ENTRYPOINT []
+ENV ANNDATA_ZARR_WRITE_FORMAT=3
 LABEL org.opencontainers.image.description="Companion container for running component loaders/multimodal openproblems_neurips2022_pbmc"
-LABEL org.opencontainers.image.created="2026-11-12T13:29:10Z"
+LABEL org.opencontainers.image.created="2026-11-12T13:58:19Z"
 LABEL org.opencontainers.image.source="https://github.com/openproblems-bio/datasets"
-LABEL org.opencontainers.image.revision="65cde757bf02fe01910849b08bc312778d0648a2"
+LABEL org.opencontainers.image.revision="427dc48e2122448a392b66f15b3f49cb4df88847"
 LABEL org.opencontainers.image.version="build_main"
 
 VIASHDOCKER
@@ -623,7 +624,7 @@ function ViashHelp {
   echo "Outputs:"
   echo "    --output_mod1"
   echo "        type: file, output, file must exist"
-  echo "        example: resources_test/common/pancreas/raw.h5ad"
+  echo "        example: resources_test/common/pancreas/raw.anndata.zarr"
   echo "        This dataset contains raw counts and metadata as output by a dataset"
   echo "        loader."
   echo "        The format of this file is derived from the [CELLxGENE schema"
@@ -632,7 +633,7 @@ function ViashHelp {
   echo ""
   echo "    --output_mod2"
   echo "        type: file, output, file must exist"
-  echo "        example: resources_test/common/pancreas/raw.h5ad"
+  echo "        example: resources_test/common/pancreas/raw.anndata.zarr"
   echo "        This dataset contains raw counts and metadata as output by a dataset"
   echo "        loader."
   echo "        The format of this file is derived from the [CELLxGENE schema"
@@ -1349,8 +1350,8 @@ for key in metadata_fields:
 
 
 print("Writing adata to file", flush=True)
-adata_mod1.write_h5ad(par["output_mod1"], compression="gzip")
-adata_mod2.write_h5ad(par["output_mod2"], compression="gzip")
+adata_mod1.write_zarr(par["output_mod1"])
+adata_mod2.write_zarr(par["output_mod2"])
 VIASHMAIN
 python -B "\$tempscript" &
 wait "\$!"

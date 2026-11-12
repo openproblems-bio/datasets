@@ -445,10 +445,11 @@ function ViashDockerfile {
     cat << 'VIASHDOCKER'
 FROM openproblems/base_python:1
 ENTRYPOINT []
+ENV ANNDATA_ZARR_WRITE_FORMAT=3
 LABEL org.opencontainers.image.description="Companion container for running component loaders/spatial zenodo"
-LABEL org.opencontainers.image.created="2026-11-12T13:29:10Z"
+LABEL org.opencontainers.image.created="2026-11-12T13:58:19Z"
 LABEL org.opencontainers.image.source="https://github.com/openproblems-bio/datasets"
-LABEL org.opencontainers.image.revision="65cde757bf02fe01910849b08bc312778d0648a2"
+LABEL org.opencontainers.image.revision="427dc48e2122448a392b66f15b3f49cb4df88847"
 LABEL org.opencontainers.image.version="build_main"
 
 VIASHDOCKER
@@ -1353,7 +1354,7 @@ for key in metadata_fields:
         adata.uns[key] = par[key]
 
 print("Writing adata to file", flush=True)
-adata.write_h5ad(par["dataset"], compression="gzip")
+adata.write_zarr(par["dataset"])
 VIASHMAIN
 python -B "\$tempscript" &
 wait "\$!"

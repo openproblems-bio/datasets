@@ -443,16 +443,21 @@ function ViashDockerfile {
 
   if [[ "$engine_id" == "docker" ]]; then
     cat << 'VIASHDOCKER'
-FROM python:3.10
+FROM openproblems/base_python:1
 ENTRYPOINT []
-RUN git clone -b 'v0.8.0' --depth 1 https://github.com/openproblems-bio/openproblems.git /opt/openproblems && \
-  pip install --no-cache-dir 'setuptools<70' && \
-  pip install --no-cache-dir --editable /opt/openproblems
+RUN apt-get update && \
+  DEBIAN_FRONTEND=noninteractive apt-get install -y git && \
+  rm -rf /var/lib/apt/lists/*
 
+RUN git clone -b 'v0.8.0' --depth 1 https://github.com/openproblems-bio/openproblems.git /opt/openproblems && \
+  pip install --no-cache-dir 'setuptools<81' decorator && \
+  pip install --no-cache-dir --no-deps --editable /opt/openproblems scprep
+
+ENV ANNDATA_ZARR_WRITE_FORMAT=3
 LABEL org.opencontainers.image.description="Companion container for running component loaders/multimodal openproblems_v1_multimodal"
-LABEL org.opencontainers.image.created="2026-11-12T13:29:09Z"
+LABEL org.opencontainers.image.created="2026-11-12T13:58:19Z"
 LABEL org.opencontainers.image.source="https://github.com/openproblems-bio/datasets"
-LABEL org.opencontainers.image.revision="65cde757bf02fe01910849b08bc312778d0648a2"
+LABEL org.opencontainers.image.revision="427dc48e2122448a392b66f15b3f49cb4df88847"
 LABEL org.opencontainers.image.version="build_main"
 
 VIASHDOCKER
@@ -645,7 +650,7 @@ function ViashHelp {
   echo "Outputs:"
   echo "    --output_mod1"
   echo "        type: file, output, file must exist"
-  echo "        example: resources_test/common/pancreas/raw.h5ad"
+  echo "        example: resources_test/common/pancreas/raw.anndata.zarr"
   echo "        This dataset contains raw counts and metadata as output by a dataset"
   echo "        loader."
   echo "        The format of this file is derived from the [CELLxGENE schema"
@@ -654,7 +659,7 @@ function ViashHelp {
   echo ""
   echo "    --output_mod2"
   echo "        type: file, output, file must exist"
-  echo "        example: resources_test/common/pancreas/raw.h5ad"
+  echo "        example: resources_test/common/pancreas/raw.anndata.zarr"
   echo "        This dataset contains raw counts and metadata as output by a dataset"
   echo "        loader."
   echo "        The format of this file is derived from the [CELLxGENE schema"
@@ -1491,8 +1496,8 @@ for key in metadata_fields:
         mod2.uns[key] = par[key]
 
 print("Writing adata to file", flush=True)
-mod1.write_h5ad(par["output_mod1"], compression="gzip")
-mod2.write_h5ad(par["output_mod2"], compression="gzip")
+mod1.write_zarr(par["output_mod1"])
+mod2.write_zarr(par["output_mod2"])
 VIASHMAIN
 python -B "\$tempscript" &
 wait "\$!"

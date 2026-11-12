@@ -108,21 +108,10 @@ argument_groups:
       - name: --output_mod2
         direction: output
         __merge__: /src/api/file_multimodal_dataset.yaml
-      - name: --output_meta_mod1
-        direction: output
-        type: file
-        description: Dataset metadata
-        example: dataset_metadata_mod1.yaml
-      - name: --output_meta_mod2
-        direction: output
-        type: file
-        description: Dataset metadata
-        example: dataset_metadata_mod2.yaml
 resources:
   - type: nextflow_script
     path: main.nf
     entrypoint: run_wf
-  - path: /common/nextflow_helpers/helper.nf
 dependencies:
   - name: loaders/multimodal/openproblems_neurips2022_pbmc
   - name: normalization/log_cp
@@ -134,8 +123,6 @@ dependencies:
   - name: processors/subsample
   - name: processors/svd
   - name: processors/hvg
-  - name: utils/extract_uns_metadata
-    repository: openproblems
   - name: utils/decompress_gzip
     repository: openproblems
   # test_resources:

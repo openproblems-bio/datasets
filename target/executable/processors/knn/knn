@@ -445,10 +445,11 @@ function ViashDockerfile {
     cat << 'VIASHDOCKER'
 FROM openproblems/base_python:1
 ENTRYPOINT []
+ENV ANNDATA_ZARR_WRITE_FORMAT=3
 LABEL org.opencontainers.image.description="Companion container for running component processors knn"
-LABEL org.opencontainers.image.created="2026-11-12T13:29:09Z"
+LABEL org.opencontainers.image.created="2026-11-12T13:58:18Z"
 LABEL org.opencontainers.image.source="https://github.com/openproblems-bio/datasets"
-LABEL org.opencontainers.image.revision="65cde757bf02fe01910849b08bc312778d0648a2"
+LABEL org.opencontainers.image.revision="427dc48e2122448a392b66f15b3f49cb4df88847"
 LABEL org.opencontainers.image.version="build_main"
 
 VIASHDOCKER
@@ -573,7 +574,7 @@ function ViashHelp {
   echo "Arguments:"
   echo "    --input"
   echo "        type: file, required parameter, file must exist"
-  echo "        example: resources_test/common/pancreas/pca.h5ad"
+  echo "        example: resources_test/common/pancreas/pca.anndata.zarr"
   echo "        This dataset contains raw counts and metadata as output by a dataset"
   echo "        loader."
   echo "        The format of this file is derived from the [CELLxGENE schema"
@@ -587,17 +588,12 @@ function ViashHelp {
   echo ""
   echo "    --output"
   echo "        type: file, required parameter, output, file must exist"
-  echo "        example: resources_test/common/pancreas/knn.h5ad"
+  echo "        example: resources_test/common/pancreas/knn.anndata.zarr"
   echo "        This dataset contains raw counts and metadata as output by a dataset"
   echo "        loader."
   echo "        The format of this file is derived from the [CELLxGENE schema"
   echo "       "
   echo "v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md)."
-  echo ""
-  echo "    --output_compression"
-  echo "        type: string"
-  echo "        default: gzip"
-  echo "        choices: [ gzip, lzf ]"
   echo ""
   echo "    --key_added"
   echo "        type: string"
@@ -611,6 +607,11 @@ function ViashHelp {
   echo "        default: 15"
   echo "        The size of local neighborhood (in terms of number of neighboring data"
   echo "        points) used for manifold approximation."
+  echo ""
+  echo "    --seed"
+  echo "        type: integer"
+  echo "        default: 0"
+  echo "        Random seed, set for reproducible results."
   echo ""
   echo "Viash built in Computational Requirements:"
   echo "    ---cpus=INT"
@@ -695,17 +696,6 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_OUTPUT=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --output_compression)
-            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_COMPRESSION="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_compression. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --output_compression=*)
-            [ -n "$VIASH_PAR_OUTPUT_COMPRESSION" ] && ViashError Bad arguments for option \'--output_compression=*\': \'$VIASH_PAR_OUTPUT_COMPRESSION\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_COMPRESSION=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
         --key_added)
             [ -n "$VIASH_PAR_KEY_ADDED" ] && ViashError Bad arguments for option \'--key_added\': \'$VIASH_PAR_KEY_ADDED\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_KEY_ADDED="$2"
@@ -726,6 +716,17 @@ while [[ $# -gt 0 ]]; do
         --num_neighbors=*)
             [ -n "$VIASH_PAR_NUM_NEIGHBORS" ] && ViashError Bad arguments for option \'--num_neighbors=*\': \'$VIASH_PAR_NUM_NEIGHBORS\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_NUM_NEIGHBORS=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --seed)
+            [ -n "$VIASH_PAR_SEED" ] && ViashError Bad arguments for option \'--seed\': \'$VIASH_PAR_SEED\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_SEED="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --seed. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --seed=*)
+            [ -n "$VIASH_PAR_SEED" ] && ViashError Bad arguments for option \'--seed=*\': \'$VIASH_PAR_SEED\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_SEED=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         ---engine)
@@ -935,14 +936,14 @@ fi
 if [ -z ${VIASH_PAR_INPUT_LAYER+x} ]; then
   VIASH_PAR_INPUT_LAYER="normalized"
 fi
-if [ -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then
-  VIASH_PAR_OUTPUT_COMPRESSION="gzip"
-fi
 if [ -z ${VIASH_PAR_KEY_ADDED+x} ]; then
   VIASH_PAR_KEY_ADDED="knn"
 fi
 if [ -z ${VIASH_PAR_NUM_NEIGHBORS+x} ]; then
   VIASH_PAR_NUM_NEIGHBORS="15"
+fi
+if [ -z ${VIASH_PAR_SEED+x} ]; then
+  VIASH_PAR_SEED="0"
 fi
 
 # check whether required files exist
@@ -955,6 +956,12 @@ fi
 if [[ -n "$VIASH_PAR_NUM_NEIGHBORS" ]]; then
   if ! [[ "$VIASH_PAR_NUM_NEIGHBORS" =~ ^[-+]?[0-9]+$ ]]; then
     ViashError '--num_neighbors' has to be an integer. Use "--help" to get more information on the parameters.
+    exit 1
+  fi
+fi
+if [[ -n "$VIASH_PAR_SEED" ]]; then
+  if ! [[ "$VIASH_PAR_SEED" =~ ^[-+]?[0-9]+$ ]]; then
+    ViashError '--seed' has to be an integer. Use "--help" to get more information on the parameters.
     exit 1
   fi
 fi
@@ -1029,19 +1036,6 @@ if [[ -n "$VIASH_META_MEMORY_PIB" ]]; then
     ViashError 'memory_pib' has to be a long. Use "--help" to get more information on the parameters.
     exit 1
   fi
-fi
-
-# check whether value is belongs to a set of choices
-if [ ! -z "$VIASH_PAR_OUTPUT_COMPRESSION" ]; then
-  VIASH_PAR_OUTPUT_COMPRESSION_CHOICES=("gzip;lzf")
-  IFS=';'
-  set -f
-  if ! [[ ";${VIASH_PAR_OUTPUT_COMPRESSION_CHOICES[*]};" =~ ";$VIASH_PAR_OUTPUT_COMPRESSION;" ]]; then
-    ViashError '--output_compression' specified value of \'$VIASH_PAR_OUTPUT_COMPRESSION\' is not in the list of allowed values. Use "--help" to get more information on the parameters.
-    exit 1
-  fi
-  set +f
-  unset IFS
 fi
 
 # create parent directories of output files, if so desired
@@ -1128,7 +1122,7 @@ function interrupt {
 trap clean_up EXIT
 trap interrupt INT SIGINT
 cat > "\$tempscript" << 'VIASHMAIN'
-
+import anndata as ad
 import scanpy as sc
 
 ### VIASH START
@@ -1137,9 +1131,9 @@ par = {
   'input': $( if [ ! -z ${VIASH_PAR_INPUT+x} ]; then echo "r'${VIASH_PAR_INPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'key_added': $( if [ ! -z ${VIASH_PAR_KEY_ADDED+x} ]; then echo "r'${VIASH_PAR_KEY_ADDED//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'num_neighbors': $( if [ ! -z ${VIASH_PAR_NUM_NEIGHBORS+x} ]; then echo "int(r'${VIASH_PAR_NUM_NEIGHBORS//\'/\'\"\'\"r\'}')"; else echo None; fi )
+  'num_neighbors': $( if [ ! -z ${VIASH_PAR_NUM_NEIGHBORS+x} ]; then echo "int(r'${VIASH_PAR_NUM_NEIGHBORS//\'/\'\"\'\"r\'}')"; else echo None; fi ),
+  'seed': $( if [ ! -z ${VIASH_PAR_SEED+x} ]; then echo "int(r'${VIASH_PAR_SEED//\'/\'\"\'\"r\'}')"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1168,18 +1162,19 @@ dep = {
 ### VIASH END
 
 print(">> Load data", flush=True)
-adata = sc.read(par['input'])
+adata = ad.read_zarr(par['input'])
 
 print(">> Run kNN", flush=True)
 sc.pp.neighbors(
     adata,
     use_rep='X_pca',
     key_added=par['key_added'],
-    n_neighbors=par['num_neighbors']
+    n_neighbors=par['num_neighbors'],
+    random_state=par['seed']
 )
 
 print(">> Writing data", flush=True)
-adata.write_h5ad(par['output'], compression=par["output_compression"])
+adata.write_zarr(par['output'])
 VIASHMAIN
 python -B "\$tempscript" &
 wait "\$!"

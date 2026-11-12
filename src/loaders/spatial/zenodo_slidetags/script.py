@@ -11,7 +11,7 @@ par = {
     "dataset_url": "https://www.nature.com/articles/s41586-023-06837-4",
     "dataset_summary": "Slide-tags enables single-nucleus barcoding for multimodal spatial genomics",
     "dataset_organism": "Homo sapiens",
-    "dataset": "dataset.h5ad",
+    "dataset": "dataset.zarr",
     "spot_filter_min_genes": 200,
     "gene_filter_min_spots": 50,
     "remove_mitochondrial": True
@@ -100,4 +100,4 @@ for key in metadata_fields:
         adata.uns[key] = par[key]
 
 print("Writing adata to file", flush=True)
-adata.write_h5ad(par["dataset"], compression="gzip")
+adata.write_zarr(par["dataset"])

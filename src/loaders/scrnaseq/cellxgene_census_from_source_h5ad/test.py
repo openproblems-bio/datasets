@@ -13,7 +13,7 @@ meta = {
 ## VIASH END
 
 def test_cellxgene_extract_metadata_expression(run_component, tmp_path):
-    output_file = tmp_path / "output.h5ad"
+    output_file = tmp_path / "output.zarr"
 
     run_component([
         "--input_id", "0895c838-e550-48a3-a777-dbcd35d30272",
@@ -31,7 +31,7 @@ def test_cellxgene_extract_metadata_expression(run_component, tmp_path):
     # check whether file exists
     assert os.path.exists(output_file), "Output file does not exist"
 
-    adata = ad.read_h5ad(output_file)
+    adata = ad.read_zarr(output_file)
 
     # check obs
     assert not adata.obs.empty, ".obs should not be empty"

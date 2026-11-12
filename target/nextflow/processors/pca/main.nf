@@ -3055,7 +3055,7 @@ meta = [
           "description" : "This dataset contains raw counts and metadata as output by a dataset loader.\n\nThe format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n",
           "info" : {
             "format" : {
-              "type" : "h5ad",
+              "type" : "anndata_zarr",
               "var" : [
                 {
                   "type" : "string",
@@ -3327,7 +3327,7 @@ meta = [
             }
           },
           "example" : [
-            "resources_test/common/pancreas/hvg.h5ad"
+            "resources_test/common/pancreas/hvg.anndata.zarr"
           ],
           "must_exist" : true,
           "create_parent" : true,
@@ -3368,7 +3368,7 @@ meta = [
           "description" : "This dataset contains raw counts and metadata as output by a dataset loader.\n\nThe format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n",
           "info" : {
             "format" : {
-              "type" : "h5ad",
+              "type" : "anndata_zarr",
               "obsm" : [
                 {
                   "type" : "double",
@@ -3662,27 +3662,12 @@ meta = [
             }
           },
           "example" : [
-            "resources_test/common/pancreas/pca.h5ad"
+            "resources_test/common/pancreas/pca.anndata.zarr"
           ],
           "must_exist" : true,
           "create_parent" : true,
           "required" : true,
           "direction" : "output",
-          "multiple" : false,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--output_compression",
-          "default" : [
-            "gzip"
-          ],
-          "required" : false,
-          "choices" : [
-            "gzip",
-            "lzf"
-          ],
-          "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
         },
@@ -3728,6 +3713,18 @@ meta = [
           "description" : "Number of principal components to compute. Defaults to 50, or 1 - minimum dimension size of selected representation.",
           "example" : [
             25
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "integer",
+          "name" : "--seed",
+          "description" : "Random seed, set for reproducible results.",
+          "default" : [
+            0
           ],
           "required" : false,
           "direction" : "input",
@@ -3829,7 +3826,15 @@ meta = [
       "type" : "docker",
       "id" : "docker",
       "image" : "openproblems/base_python:1",
-      "namespace_separator" : "/"
+      "namespace_separator" : "/",
+      "setup" : [
+        {
+          "type" : "docker",
+          "env" : [
+            "ANNDATA_ZARR_WRITE_FORMAT=3"
+          ]
+        }
+      ]
     }
   ],
   "build_info" : {
@@ -3838,7 +3843,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/processors/pca",
     "viash_version" : "0.9.7",
-    "git_commit" : "65cde757bf02fe01910849b08bc312778d0648a2",
+    "git_commit" : "427dc48e2122448a392b66f15b3f49cb4df88847",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -3866,7 +3871,7 @@ meta = [
     "source" : "src",
     "target" : "target",
     "config_mods" : [
-      ".runners[.type == \\"nextflow\\"].config.labels := { lowmem : \\"memory = 20.Gb\\", midmem : \\"memory = 50.Gb\\", highmem : \\"memory = 100.Gb\\", lowcpu : \\"cpus = 5\\", midcpu : \\"cpus = 15\\", highcpu : \\"cpus = 30\\", lowtime : \\"time = 1.h\\", midtime : \\"time = 4.h\\", hightime : \\"time = 8.h\\", veryhightime : \\"time = 24.h\\" }\n"
+      ".runners[.type == \\"nextflow\\"].config.labels := { lowmem : \\"memory = 20.Gb\\", midmem : \\"memory = 50.Gb\\", highmem : \\"memory = 100.Gb\\", lowcpu : \\"cpus = 5\\", midcpu : \\"cpus = 15\\", highcpu : \\"cpus = 30\\", lowtime : \\"time = 1.h\\", midtime : \\"time = 4.h\\", hightime : \\"time = 8.h\\", veryhightime : \\"time = 24.h\\" }\n.engines[.type == \\"docker\\"].setup += { type: \\"docker\\", env: [\\"ANNDATA_ZARR_WRITE_FORMAT=3\\"] }\n"
     ],
     "keywords" : [
       "openproblems",
@@ -3898,7 +3903,8 @@ def innerWorkflowFactory(args) {
   def rawScript = '''set -e
 tempscript=".viash_script.py"
 cat > "$tempscript" << VIASHMAIN
-
+import anndata as ad
+import numpy as np
 import scanpy as sc
 
 ### VIASH START
@@ -3908,11 +3914,11 @@ par = {
   'input_layer': $( if [ ! -z ${VIASH_PAR_INPUT_LAYER+x} ]; then echo "r'${VIASH_PAR_INPUT_LAYER//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'input_var_features': $( if [ ! -z ${VIASH_PAR_INPUT_VAR_FEATURES+x} ]; then echo "r'${VIASH_PAR_INPUT_VAR_FEATURES//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'output_compression': $( if [ ! -z ${VIASH_PAR_OUTPUT_COMPRESSION+x} ]; then echo "r'${VIASH_PAR_OUTPUT_COMPRESSION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obsm_embedding': $( if [ ! -z ${VIASH_PAR_OBSM_EMBEDDING+x} ]; then echo "r'${VIASH_PAR_OBSM_EMBEDDING//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'varm_loadings': $( if [ ! -z ${VIASH_PAR_VARM_LOADINGS+x} ]; then echo "r'${VIASH_PAR_VARM_LOADINGS//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'uns_variance': $( if [ ! -z ${VIASH_PAR_UNS_VARIANCE+x} ]; then echo "r'${VIASH_PAR_UNS_VARIANCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'num_components': $( if [ ! -z ${VIASH_PAR_NUM_COMPONENTS+x} ]; then echo "int(r'${VIASH_PAR_NUM_COMPONENTS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi )
+  'num_components': $( if [ ! -z ${VIASH_PAR_NUM_COMPONENTS+x} ]; then echo "int(r'${VIASH_PAR_NUM_COMPONENTS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'seed': $( if [ ! -z ${VIASH_PAR_SEED+x} ]; then echo "int(r'${VIASH_PAR_SEED//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3941,28 +3947,38 @@ dep = {
 ### VIASH END
 
 print(">> Load data", flush=True)
-adata = sc.read(par['input'])
+adata = ad.read_zarr(par['input'])
 
 print(">> Look for layer", flush=True)
 layer = adata.X if not par['input_layer'] else adata.layers[par['input_layer']]
 
+print(">> Select features", flush=True)
+if par["input_var_features"]:
+    feature_mask = adata.var[par["input_var_features"]].to_numpy(dtype=bool)
+else:
+    feature_mask = np.ones(adata.n_vars, dtype=bool)
+
 print(">> Run PCA", flush=True)
 X_pca, loadings, variance, variance_ratio = sc.tl.pca(
-    layer, 
-    n_comps=par["num_components"], 
+    layer[:, feature_mask],
+    n_comps=par["num_components"],
+    random_state=par["seed"],
     return_info=True
 )
 
 print(">> Storing output", flush=True)
 adata.obsm[par["obsm_embedding"]] = X_pca
-adata.varm[par["varm_loadings"]] = loadings.T
+# features that were not selected get zero loadings
+full_loadings = np.zeros((adata.n_vars, loadings.shape[0]), dtype=loadings.dtype)
+full_loadings[feature_mask] = loadings.T
+adata.varm[par["varm_loadings"]] = full_loadings
 adata.uns[par["uns_variance"]] = {
     "variance": variance, 
     "variance_ratio": variance_ratio
 }
 
 print(">> Writing data", flush=True)
-adata.write_h5ad(par['output'], compression=par["output_compression"])
+adata.write_zarr(par['output'])
 VIASHMAIN
 python -B "$tempscript"
 '''

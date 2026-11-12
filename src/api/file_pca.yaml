@@ -1,11 +1,11 @@
 __merge__: file_hvg.yaml
 type: file
-example: "resources_test/common/pancreas/pca.h5ad"
+example: "resources_test/common/pancreas/pca.anndata.zarr"
 label: "Dataset+HVG+PCA"
 summary: "A normalised dataset with a PCA embedding"
 info:
   format:
-    type: h5ad
+    type: anndata_zarr
     obsm:
       - type: double
         name: X_pca

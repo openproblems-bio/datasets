@@ -17,8 +17,7 @@ par = {
     "dataset_name": "OP3: single-cell multimodal dataset in PBMCs for perturbation prediction benchmarking",
     "dataset_summary": "The Open Problems Perurbation Prediction (OP3) dataset with small molecule perturbations in PBMCs",
     "dataset_description": "The OP3 dataset is to-date the largest single-cell small molecule perturbation dataset in primary tissue with multiple donor replicates.",
-    "output": "output.h5ad",
-    "output_compression": "gzip"
+    "output": "output.zarr",
 }
 meta = {}
 ## VIASH END
@@ -149,7 +148,7 @@ def print_summary(adata):
 def write_anndata(adata, par):
     """Write AnnData object to file."""
     logger.info(f"Writing AnnData object to '{par['output']}'")
-    adata.write_h5ad(par["output"], compression=par["output_compression"])
+    adata.write_zarr(par["output"])
 
 # Instead of defining main() and calling it at the end, write the code directly
 logger.info("Starting OP3 loader")

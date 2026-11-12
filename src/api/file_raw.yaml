@@ -1,5 +1,5 @@
 type: file
-example: "resources_test/common/pancreas/raw.h5ad"
+example: "resources_test/common/pancreas/raw.anndata.zarr"
 label: "Raw dataset"
 summary: An unprocessed dataset as output by a dataset loader.
 description: |
@@ -8,7 +8,7 @@ description: |
   The format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).
 info:
   format:
-    type: h5ad
+    type: anndata_zarr
     layers: 
       - type: integer
         name: counts

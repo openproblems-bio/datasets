@@ -17,8 +17,7 @@ param_list:
 normalization_methods: [log_cp10k]
 n_obs: 600
 n_vars: 500
-output_dataset: '$id/dataset.h5ad'
-output_meta: '$id/dataset_metadata.yaml'
+output_dataset: '$id/dataset.anndata.zarr'
 output_state: '$id/state.yaml'
 output_raw: force_null
 output_normalized: force_null

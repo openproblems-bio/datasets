@@ -17,8 +17,7 @@ par = {
     "dataset_summary": "summ",
     "dataset_description": "desc",
     "dataset_organism": "mus_musculus",
-    "output": "output.h5ad",
-    "output_compression": "gzip",
+    "output": "output.zarr",
 }
 ## VIASH END
 
@@ -94,7 +93,7 @@ def print_summary(adata):
 def write_anndata(adata, par):
     logger.info("Writing AnnData object to '%s'", par["output"])
 
-    adata.write_h5ad(par["output"], compression=par["output_compression"])
+    adata.write_zarr(par["output"])
 
 def main(par, meta):
     adata = get_anndata(par)

@@ -1,12 +1,12 @@
 type: file
-example: "resources_test/common/mouse_brain_coronal/dataset.h5ad"
+example: "resources_test/common/mouse_brain_coronal/dataset.anndata.zarr"
 label: "Common dataset"
 summary: An unprocessed dataset as output by the common dataset processing pipeline.
 description: |
   This dataset contains both raw counts and normalized data matrices.
 info:
   format:
-    type: h5ad
+    type: anndata_zarr
     layers: 
       - type: integer
         name: counts

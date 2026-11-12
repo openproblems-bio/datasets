@@ -16,8 +16,8 @@ meta = {
 
 def test_op3(run_component, tmp_path):
     """Test the OP3 loader."""
-    input_file = tmp_path / "input.h5ad"  # Convert to string to be safe
-    output_file = tmp_path / "output.h5ad"  # Convert to string to be safe
+    input_file = tmp_path / "input.zarr"  # Convert to string to be safe
+    output_file = tmp_path / "output.zarr"  # Convert to string to be safe
 
     # download file
     url = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE279nnn/GSE279945/suppl/GSE279945_sc_counts_processed.h5ad"
@@ -36,14 +36,13 @@ def test_op3(run_component, tmp_path):
         "--dataset_summary", "Test summary for OP3 dataset",
         "--dataset_description", "Test description for OP3 dataset",
         "--dataset_url", "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE279nnn/GSE279945/suppl/GSE279945_sc_counts_processed.h5ad",
-        "--output", str(output_file),
-        "--output_compression", "gzip"
+        "--output", str(output_file)
     ])
 
     # check whether file exists
     assert output_file.exists(), f"Output file {output_file} does not exist"
 
-    adata = ad.read_h5ad(output_file)
+    adata = ad.read_zarr(output_file)
 
     # check obs
     assert not adata.obs.empty, ".obs should not be empty"

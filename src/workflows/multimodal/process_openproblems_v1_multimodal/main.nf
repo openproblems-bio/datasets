@@ -1,5 +1,3 @@
-include { findArgumentSchema } from "${meta.resources_dir}/helper.nf"
-
 workflow auto {
   findStates(params, meta.config)
     | meta.workflow.run(
@@ -158,44 +156,11 @@ workflow run_wf {
       ]]
     }
 
-    | extract_uns_metadata.run(
-      key: "extract_metadata_mod1",
-      fromState: { id, state ->
-        def schema = findArgumentSchema(meta.config, "output_mod1")
-        // workaround: convert GString to String
-        schema = iterateMap(schema, { it instanceof GString ? it.toString() : it })
-        def schemaYaml = tempFile("schema.yaml")
-        writeYaml(schema, schemaYaml)
-        [
-          "input": state.output_mod1,
-          "schema": schemaYaml
-        ]
-      },
-      toState: ["output_meta_mod1": "output"]
-    )
-
-    | extract_uns_metadata.run(
-      key: "extract_metadata_mod2",
-      fromState: { id, state ->
-        def schema = findArgumentSchema(meta.config, "output_mod2")
-        // workaround: convert GString to String
-        schema = iterateMap(schema, { it instanceof GString ? it.toString() : it })
-        def schemaYaml = tempFile("schema.yaml")
-        writeYaml(schema, schemaYaml)
-        [
-          "input": state.output_mod2,
-          "schema": schemaYaml
-        ]
-      },
-      toState: ["output_meta_mod2": "output"]
-    )
     
     // only output the files for which an output file was specified
     | setState([
       "output_mod1",
       "output_mod2",
-      "output_meta_mod1",
-      "output_meta_mod2",
       "_meta"
     ])
 

@@ -6,15 +6,16 @@ library(Matrix, warn.conflicts = FALSE)
 
 ## VIASH START
 par <- list(
-  input = "resources_test/label_projection/pancreas/datas.h5ad",
-  output = "output.scran.h5ad",
+  input = "resources_test/common/pancreas/raw.anndata.zarr",
+  output = "output.scran.zarr",
   layer_output = "log_scran_pooling",
   obs_size_factors = "size_factors_log_scran_pooling"
 )
 ## VIASH END
 
 cat(">> Load data\n")
-adata <- anndata::read_h5ad(par$input)
+# anndata::read_zarr() calls itself in R anndata 0.8.0, read through python instead
+adata <- reticulate::import("anndata")$read_zarr(par$input)
 counts <- as(t(adata$layers[["counts"]]), "CsparseMatrix")
 
 cat(">> Normalizing data\n")
@@ -35,4 +36,4 @@ if (is.null(norm_id)) {
 adata$uns[["normalization_id"]] <- norm_id
 
 cat(">> Writing to file\n")
-zzz <- adata$write_h5ad(par$output, compression = "gzip")
+zzz <- adata$write_zarr(par$output)

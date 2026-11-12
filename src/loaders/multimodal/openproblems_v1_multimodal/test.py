@@ -8,8 +8,8 @@ obs_cell_type = "cell_name"
 obs_batch = "replicate"
 obs_tissue = None
 
-output_mod1_file = "output_mod1.h5ad"
-output_mod2_file = "output_mod2.h5ad"
+output_mod1_file = "output_mod1.zarr"
+output_mod2_file = "output_mod2.zarr"
 
 print(">> Running script", flush=True)
 out = subprocess.run(
@@ -44,8 +44,8 @@ assert path.exists(output_mod1_file), "Output mod1 file does not exist"
 assert path.exists(output_mod2_file), "Output mod2 file does not exist"
 
 print(">> Read output anndata", flush=True)
-output_mod1 = ad.read_h5ad(output_mod1_file)
-output_mod2 = ad.read_h5ad(output_mod2_file)
+output_mod1 = ad.read_zarr(output_mod1_file)
+output_mod2 = ad.read_zarr(output_mod2_file)
 
 print(f"output_mod1: {output_mod1}", flush=True)
 print(f"output_mod2: {output_mod2}", flush=True)

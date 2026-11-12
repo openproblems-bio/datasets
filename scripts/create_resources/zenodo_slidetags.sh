@@ -51,8 +51,7 @@ param_list:
     remove_mitochondrial: false
 
 normalization_methods: [log_cp10k]
-output_dataset: '$id/dataset.h5ad'
-output_meta: '$id/dataset_metadata.yaml'
+output_dataset: '$id/dataset.anndata.zarr'
 output_state: '$id/state.yaml'
 output_raw: force_null
 output_normalized: force_null

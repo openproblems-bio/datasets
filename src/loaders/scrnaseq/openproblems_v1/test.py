@@ -4,7 +4,7 @@ import anndata as ad
 
 input_id = "pancreas"
 dataset_id = "openproblems_v1/" + input_id
-output = "dataset.h5ad"
+output = "dataset.zarr"
 obs_cell_type = "celltype"
 obs_batch = "tech"
 
@@ -39,7 +39,7 @@ print(">> Checking whether file exists", flush=True)
 assert path.exists(output), "Output does not exist"
 
 print(">> Read output anndata", flush=True)
-adata = ad.read_h5ad(output)
+adata = ad.read_zarr(output)
 
 print(adata)
 

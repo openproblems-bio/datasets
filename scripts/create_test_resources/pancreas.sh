@@ -6,7 +6,7 @@ REPO_ROOT=$(git rev-parse --show-toplevel)
 # ensure that the command below is run from the root of the repository
 cd "$REPO_ROOT"
 
-DATASET_DIR=resources_test/common/scrnaseq
+DATASET_DIR=resources_test/common
 
 set -e
 
@@ -14,7 +14,7 @@ mkdir -p $DATASET_DIR
 
 wget https://raw.githubusercontent.com/theislab/scib/c993ffd9ccc84ae0b1681928722ed21985fb91d1/scib/resources/g2m_genes_tirosh_hm.txt -O $DATASET_DIR/temp_g2m_genes_tirosh_hm.txt
 wget https://raw.githubusercontent.com/theislab/scib/c993ffd9ccc84ae0b1681928722ed21985fb91d1/scib/resources/s_genes_tirosh_hm.txt -O $DATASET_DIR/temp_s_genes_tirosh_hm.txt
-KEEP_FEATURES=`cat $DATASET_DIR/temp_g2m_genes_tirosh_hm.txt $DATASET_DIR/temp_s_genes_tirosh_hm.txt | paste -sd ":" -`
+KEEP_FEATURES=`cat $DATASET_DIR/temp_g2m_genes_tirosh_hm.txt $DATASET_DIR/temp_s_genes_tirosh_hm.txt | paste -sd ";" -`
 
 # download dataset
 nextflow run . \
@@ -34,21 +34,20 @@ nextflow run . \
   --dataset_summary "Human pancreas cells dataset from the scIB benchmarks" \
   --dataset_description "Human pancreatic islet scRNA-seq data from 6 datasets across technologies (CEL-seq, CEL-seq2, Smart-seq2, inDrop, Fluidigm C1, and SMARTER-seq)." \
   --dataset_organism "homo_sapiens" \
-  --keep_cell_type_categories "acinar:beta" \
-  --keep_batch_categories "celseq:inDrop4:smarter" \
+  --keep_cell_type_categories "acinar;beta" \
+  --keep_batch_categories "celseq;inDrop4;smarter" \
   --keep_features "$KEEP_FEATURES" \
   --seed 123 \
   --normalization_methods log_cp10k \
   --do_subsample true \
   --n_obs 600 \
   --n_vars 1500 \
-  --output_raw '$id/raw.h5ad' \
-  --output_normalized '$id/normalized.h5ad' \
-  --output_hvg '$id/hvg.h5ad' \
-  --output_pca '$id/pca.h5ad' \
-  --output_knn '$id/knn.h5ad' \
-  --output_dataset '$id/dataset.h5ad' \
-  --output_meta '$id/dataset_meta.yaml' \
+  --output_raw '$id/raw.anndata.zarr' \
+  --output_normalized '$id/normalized.anndata.zarr' \
+  --output_hvg '$id/hvg.anndata.zarr' \
+  --output_pca '$id/pca.anndata.zarr' \
+  --output_knn '$id/knn.anndata.zarr' \
+  --output_dataset '$id/dataset.anndata.zarr' \
   --output_state '$id/state.yaml' \
   --publish_dir "$DATASET_DIR"
 

@@ -14,8 +14,8 @@ par = {
   "dataset_summary": "Neurips22 competition dataset",
   "dataset_description": "The dataset for this competition comprises single-cell multiomics data collected from mobilized peripheral CD34+ hematopoietic stem and progenitor cells (HSPCs) isolated from four healthy human donors.",
   "dataset_organism": "homo_sapiens",
-  "output_mod1": "output/mod1.h5ad",
-  "output_mod2": "output/mod2.h5ad"
+  "output_mod1": "output/mod1.zarr",
+  "output_mod2": "output/mod2.zarr"
 }
 meta = {
   "name": "openproblems_neurips2022_pbmc",
@@ -86,8 +86,8 @@ for key in metadata_fields:
 
 
 print("Writing adata to file", flush=True)
-adata_mod1.write_h5ad(par["output_mod1"], compression="gzip")
-adata_mod2.write_h5ad(par["output_mod2"], compression="gzip")
+adata_mod1.write_zarr(par["output_mod1"])
+adata_mod2.write_zarr(par["output_mod2"])
 
 
 

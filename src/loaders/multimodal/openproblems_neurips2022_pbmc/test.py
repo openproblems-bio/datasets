@@ -4,13 +4,13 @@ import anndata as ad
 
 # TODO: update once data is public
 
-input_mod1 = "cite_rna_merged.h5ad" #change data set path after loading manually?
-input_mod2 = "cite_prot_merged.h5ad" #change data set path after loading manually?
+input_mod1 = "cite_rna_merged.zarr" #change data set path after loading manually?
+input_mod2 = "cite_prot_merged.zarr" #change data set path after loading manually?
 mod1 = "GEX"
 mod2 = "ADT"
 
-output_mod1_file = "output_mod1.h5ad"
-output_mod2_file = "output_mod2.h5ad"
+output_mod1_file = "output_mod1.zarr"
+output_mod2_file = "output_mod2.zarr"
 
 input_url_mod1 = "s3://openproblems-nextflow/datasets_private/neurips2022/cite_rna_merged.h5ad"
 input_url_mod2 = "s3://openproblems-nextflow/datasets_private/neurips2022/cite_prot_merged.h5ad"
@@ -70,8 +70,8 @@ assert path.exists(output_mod1_file), "Output mod1 file does not exist"
 assert path.exists(output_mod2_file), "Output mod2 file does not exist"
 
 print(">> Read output anndata", flush=True)
-output_mod1 = ad.read_h5ad(output_mod1_file)
-output_mod2 = ad.read_h5ad(output_mod2_file)
+output_mod1 = ad.read_zarr(output_mod1_file)
+output_mod2 = ad.read_zarr(output_mod2_file)
 
 print(f"output_mod1: {output_mod1}", flush=True)
 print(f"output_mod2: {output_mod2}", flush=True)

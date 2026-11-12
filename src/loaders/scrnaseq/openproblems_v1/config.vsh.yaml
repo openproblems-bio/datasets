@@ -76,13 +76,16 @@ test_resources:
     path: test.py
 engines:
   - type: docker
-    image: python:3.10
+    image: openproblems/base_python:1
     setup:
+      - type: apt
+        packages: git
+      # openproblems v0.8.0 pins 2022-era dependencies, use the ones in the image instead
       - type: docker
         run: |
           git clone -b 'v0.8.0' --depth 1 https://github.com/openproblems-bio/openproblems.git /opt/openproblems && \
-            pip install --no-cache-dir 'setuptools<70' && \
-            pip install --no-cache-dir --editable /opt/openproblems
+            pip install --no-cache-dir 'setuptools<81' decorator && \
+            pip install --no-cache-dir --no-deps --editable /opt/openproblems scprep
 runners:
   - type: executable
   - type: nextflow

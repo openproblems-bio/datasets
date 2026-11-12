@@ -11,4 +11,4 @@ permissions:
 
 jobs:
   test:
-    uses: edaro/viash-actions/.github/workflows/test.yaml@main
+    uses: edaro/viash-actions/.github/workflows/test.yaml@v7

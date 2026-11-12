@@ -16,11 +16,6 @@ resources:
 engines:
   - type: docker
     image: openproblems/base_python:1
-    setup:
-      - type: python
-        packages:
-          - scprep
-          - numpy<2
 runners:
   - type: executable
   - type: nextflow

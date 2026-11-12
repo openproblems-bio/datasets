@@ -53,7 +53,6 @@ argument_groups:
             the `obs_batch_separator`.
         required: false
         multiple: true
-        multiple_sep: ','
         example: [batch]
       - name: --obs_batch_separator
         type: string

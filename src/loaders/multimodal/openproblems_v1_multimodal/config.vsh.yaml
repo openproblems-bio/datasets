@@ -74,19 +74,18 @@ argument_groups:
 resources:
   - type: python_script
     path: script.py
+  - path: /src/helper_functions/openproblems_v1_download.py
 test_resources:
   - type: python_script
     path: test.py
 engines:
   - type: docker
-    image: openproblems/base_python:1
+    image: python:3.10
     setup:
-      - type: apt
-        packages: git
       - type: docker
         run: |
           git clone -b 'v0.8.0' --depth 1 https://github.com/openproblems-bio/openproblems.git /opt/openproblems && \
-            pip install --no-cache-dir -r /opt/openproblems/docker/openproblems/requirements.txt && \
+            pip install --no-cache-dir 'setuptools<70' && \
             pip install --no-cache-dir --editable /opt/openproblems
 runners:
   - type: executable

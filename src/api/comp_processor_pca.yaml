@@ -40,6 +40,10 @@ arguments:
     type: integer
     example: 25
     description: Number of principal components to compute. Defaults to 50, or 1 - minimum dimension size of selected representation.
+  - name: "--seed"
+    type: integer
+    default: 0
+    description: Random seed, set for reproducible results.
 test_resources:
   - path: /resources_test/common/pancreas
     dest: resources_test/common/pancreas

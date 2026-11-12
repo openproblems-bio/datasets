@@ -1,6 +1,8 @@
 # datasets v0.2.0 (unreleased)
 
-* MAJOR CHANGE: Bump Viash to 0.10.0-RC1 and rename `repository` to `package` in dependencies.
+* MINOR CHANGE: Bump Viash to 0.9.7.
+
+* MINOR CHANGE: Failed Nextflow processes are no longer ignored, so a failing dataset fails the run.
 
 * MINOR CHANGE: Update the `common` submodule, which adds `labels_denbi.config`.
 

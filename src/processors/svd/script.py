@@ -14,9 +14,9 @@ par = {
 ## VIASH END
 
 print(">> Load data", flush=True)
-adata = ad.read(par["input"])
+adata = ad.read_h5ad(par["input"])
 if par["input_mod2"] is not None:
-    adata2 = ad.read(par["input_mod2"])
+    adata2 = ad.read_h5ad(par["input_mod2"])
 
 print(">> check parameters", flush=True)
 min_list = [par["num_components"], min(adata.layers[par["input_layer"]].shape) - 1]

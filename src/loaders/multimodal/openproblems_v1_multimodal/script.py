@@ -1,3 +1,4 @@
+import sys
 from typing import Any, Callable, Dict, Tuple
 import openproblems as op
 import scanpy as sc
@@ -23,6 +24,9 @@ meta = {
 }
 ## VIASH END
 
+sys.path.append(meta["resources_dir"])
+from openproblems_v1_download import use_plain_downloads
+
 
 # make dataset lookup table
 # If need be, this could be stored in a separate yaml file
@@ -31,6 +35,9 @@ dataset_funs: Dict[str, Tuple[Callable, Dict[str, Any]]] = {
     "scicar_cell_lines": (op.data.multimodal.scicar.load_scicar_cell_lines, {}),
     "scicar_mouse_kidney": (op.data.multimodal.scicar.load_scicar_mouse_kidney, {}),
 }
+
+# download without scprep's spoofed user agent
+use_plain_downloads()
 
 # fetch dataset
 dataset_fun, kwargs = dataset_funs[par["input_id"]]

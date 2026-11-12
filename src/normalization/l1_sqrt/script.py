@@ -1,6 +1,6 @@
 import anndata as ad
-import scprep
 import numpy as np
+import scipy.sparse as sp
 
 ## VIASH START
 par = {
@@ -16,9 +16,13 @@ print("Load data", flush=True)
 adata = ad.read_h5ad(par['input'])
 
 print("Normalize data", flush=True)
-# libsize and sqrt L1 norm
-sqrt_data = scprep.utils.matrix_transform(adata.layers['counts'], np.sqrt)
-l1_sqrt, libsize = scprep.normalize.library_size_normalize(sqrt_data, rescale=1, return_library_size=True)
+# sqrt of the counts
+sqrt_data = sp.csr_matrix(adata.layers['counts'], copy=True)
+sqrt_data.data = np.sqrt(sqrt_data.data)
+
+# l1 normalize each cell, leaving empty cells at zero
+libsize = np.asarray(sqrt_data.sum(axis=1)).ravel()
+l1_sqrt = sp.diags(1 / np.where(libsize == 0, 1, libsize)) @ sqrt_data
 l1_sqrt = l1_sqrt.tocsr()
 
 print("Store output in adata", flush=True)

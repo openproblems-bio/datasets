@@ -30,8 +30,7 @@ param_list:
     dataset_organism: homo_sapiens
 
 normalization_methods: [log_cp10k, sqrt_cp10k, l1_sqrt]
-output_dataset: '$id/dataset.h5ad'
-output_meta: '$id/dataset_metadata.yaml'
+output_dataset: '$id/dataset.anndata.zarr'
 output_state: '$id/state.yaml'
 output_raw: force_null
 output_normalized: force_null

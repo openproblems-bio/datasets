@@ -29,10 +29,8 @@ param_list:
 dataset_url: "https://www.kaggle.com/competitions/open-problems-multimodal/data"
 dataset_reference: lance2024predicting
 normalization_methods: [log_cp10k, sqrt_cp10k, l1_sqrt]
-output_mod1: '$id/dataset_mod1.h5ad'
-output_mod2: '$id/dataset_mod2.h5ad'
-output_meta_mod1: '$id/dataset_metadata_mod1.yaml'
-output_meta_mod2: '$id/dataset_metadata_mod2.yaml'
+output_mod1: '$id/dataset_mod1.anndata.zarr'
+output_mod2: '$id/dataset_mod2.anndata.zarr'
 output_state: '$id/state.yaml'
 publish_dir: s3://openproblems-data/resources/datasets/multimodal
 HERE

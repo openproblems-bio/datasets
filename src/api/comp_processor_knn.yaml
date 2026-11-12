@@ -31,6 +31,10 @@ arguments:
     type: integer
     default: 15
     description: "The size of local neighborhood (in terms of number of neighboring data points) used for manifold approximation."
+  - name: "--seed"
+    type: integer
+    default: 0
+    description: Random seed, set for reproducible results.
 test_resources:
   - path: /resources_test/common/pancreas
     dest: resources_test/common/pancreas

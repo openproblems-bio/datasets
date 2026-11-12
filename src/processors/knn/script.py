@@ -7,7 +7,8 @@ par = {
   'input_layer': 'normalized',
   'output': 'dataset.zarr',
   'key_added': 'knn',
-  'n_neighbors': 15
+  'num_neighbors': 15,
+  'seed': 0
 }
 ### VIASH END
 
@@ -19,7 +20,8 @@ sc.pp.neighbors(
     adata,
     use_rep='X_pca',
     key_added=par['key_added'],
-    n_neighbors=par['num_neighbors']
+    n_neighbors=par['num_neighbors'],
+    random_state=par['seed']
 )
 
 print(">> Writing data", flush=True)

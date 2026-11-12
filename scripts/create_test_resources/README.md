@@ -4,12 +4,12 @@ Each notebook in this directory creates one set of test resources: it runs a wor
 
 | Notebook | Collection |
 |---|---|
-| `pancreas.ipynb` | `resources_test/common/pancreas` |
-| `cxg_immune_cell_atlas.ipynb` | `resources_test/common/cxg_immune_cell_atlas` |
-| `cxg_mouse_pancreas_atlas.ipynb` | `resources_test/common/cxg_mouse_pancreas_atlas` |
-| `mouse_brain_coronal.ipynb` | `resources_test/common/mouse_brain_coronal` |
-| `neurips2021_bmmc.ipynb` | `resources_test/common/openproblems_neurips2021` |
-| `scicar_cell_lines.ipynb` | `resources_test/common/scicar_cell_lines` |
+| `pancreas.ipynb` | `resources_test/datasets/pancreas` |
+| `cxg_immune_cell_atlas.ipynb` | `resources_test/datasets/cxg_immune_cell_atlas` |
+| `cxg_mouse_pancreas_atlas.ipynb` | `resources_test/datasets/cxg_mouse_pancreas_atlas` |
+| `mouse_brain_coronal.ipynb` | `resources_test/datasets/mouse_brain_coronal` |
+| `neurips2021_bmmc.ipynb` | `resources_test/datasets/openproblems_neurips2021` |
+| `scicar_cell_lines.ipynb` | `resources_test/datasets/scicar_cell_lines` |
 
 `neurips2022_pbmc.sh` has not been converted yet, as its input data is not public.
 

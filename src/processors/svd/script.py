@@ -4,9 +4,9 @@ import sklearn.decomposition
 
 ## VIASH START
 par = {
-    "input": "resources_test/common/scicar_cell_lines/normalized_mod1.h5ad",
-    "input_mod2": "resources_test/common/scicar_cell_lines/normalized_mod2.h5ad",
-    "output": "output.h5ad",
+    "input": "resources_test/common/scicar_cell_lines/normalized_mod1.anndata.zarr",
+    "input_mod2": "resources_test/common/scicar_cell_lines/normalized_mod2.anndata.zarr",
+    "output": "output.zarr",
     "input_layer": "normalized",
     "obsm_embedding": "X_svd",
     "num_components": 100,
@@ -14,9 +14,9 @@ par = {
 ## VIASH END
 
 print(">> Load data", flush=True)
-adata = ad.read_h5ad(par["input"])
+adata = ad.read_zarr(par["input"])
 if par["input_mod2"] is not None:
-    adata2 = ad.read_h5ad(par["input_mod2"])
+    adata2 = ad.read_zarr(par["input_mod2"])
 
 print(">> check parameters", flush=True)
 min_list = [par["num_components"], min(adata.layers[par["input_layer"]].shape) - 1]
@@ -39,6 +39,6 @@ if par["input_mod2"] is not None:
 
 
 print(">> Writing data", flush=True)
-adata.write_h5ad(par["output"], compression=par["output_compression"])
+adata.write_zarr(par["output"])
 if par["input_mod2"] is not None:
-    adata2.write_h5ad(par["output_mod2"], compression=par["output_compression"])
+    adata2.write_zarr(par["output_mod2"])

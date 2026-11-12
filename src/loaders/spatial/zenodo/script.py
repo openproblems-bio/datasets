@@ -10,7 +10,7 @@ par = {
     "dataset_url": "https://singlecell.broadinstitute.org/single_cell/study/SCP815/sensitive-spatial-genome-wide-expression-profiling-at-cellular-resolution#study-summary",
     "dataset_summary": "Highly sensitive spatial transcriptomics at near-cellular resolution with Slide-seqV2",
     "dataset_organism": "Mus musculus",
-    "dataset": "dataset.h5ad",
+    "dataset": "dataset.zarr",
     "spot_filter_min_genes": 10,
     "gene_filter_min_spots": 500,
     "remove_mitochondrial": True
@@ -82,4 +82,4 @@ for key in metadata_fields:
         adata.uns[key] = par[key]
 
 print("Writing adata to file", flush=True)
-adata.write_h5ad(par["dataset"], compression="gzip")
+adata.write_zarr(par["dataset"])

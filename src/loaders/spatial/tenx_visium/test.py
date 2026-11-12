@@ -10,7 +10,7 @@ dataset_url = "https://www.10xgenomics.com/datasets/mouse-brain-coronal-section-
 dataset_summary = "Gene expression library of Mouse Brain (CytAssist FFPE) using the Mouse Whole Transcriptome Probe Set"
 dataset_description = "CytAssist_FFPE_Mouse_Brain_Rep1 - Gene expression library of Mouse Brain (CytAssist FFPE) using the Mouse Whole Transcriptome Probe Set"
 dataset_organism = "Mus musculus"
-dataset = "dataset.h5ad"
+dataset = "dataset.zarr"
 
 print(">> Running script", flush=True)
 out = subprocess.run(
@@ -40,7 +40,7 @@ print(">> Checking whether output file exists", flush=True)
 assert os.path.exists(dataset), "Output does not exist"
 
 print(">> Read output anndata", flush=True)
-adata = ad.read_h5ad(dataset)
+adata = ad.read_zarr(dataset)
 
 print(adata)
 

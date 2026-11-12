@@ -1,11 +1,12 @@
+import anndata as ad
 import scanpy as sc
 import random
 import numpy as np
 
 ### VIASH START
 par = {
-    "input": "resources_test/common/scicar_cell_lines/temp_mod1_full.h5ad",
-    "input_mod2": "resources_test/common/scicar_cell_lines/temp_mod2_full.h5ad",
+    "input": "resources_test/common/scicar_cell_lines/temp_mod1_full.anndata.zarr",
+    "input_mod2": "resources_test/common/scicar_cell_lines/temp_mod2_full.anndata.zarr",
     "n_obs": 600,
     "n_vars": 1500,
     "keep_cell_type_categories": None,
@@ -14,8 +15,8 @@ par = {
     "keep_cell_type_categories": None,
     "keep_batch_categories": None,
     "even": False,
-    "output": "subsample_mod1.h5ad",
-    "output_mod2": "subsample_mod2.h5ad",
+    "output": "subsample_mod1.zarr",
+    "output_mod2": "subsample_mod2.zarr",
     "seed": 123
 }
 ### VIASH END
@@ -25,10 +26,10 @@ if par["seed"]:
     random.seed(par["seed"])
 
 print(">> Load data", flush=True)
-adata_input = sc.read_h5ad(par["input"])
+adata_input = ad.read_zarr(par["input"])
 
 if par["input_mod2"] is not None:
-    adata_mod2 = sc.read_h5ad(par["input_mod2"])
+    adata_mod2 = ad.read_zarr(par["input_mod2"])
 
 # copy counts to .X because otherwise filter_genes and filter_cells won't work
 adata_input.X = adata_input.layers["counts"]
@@ -140,6 +141,6 @@ if par["input_mod2"] is not None:
     del adata_output_mod2.X
 
 print(">> Writing data", flush=True)
-adata_output.write_h5ad(par["output"], compression=par["output_compression"])
+adata_output.write_zarr(par["output"])
 if par["output_mod2"] is not None:
-    adata_output_mod2.write_h5ad(par["output_mod2"], compression=par["output_compression"])
+    adata_output_mod2.write_zarr(par["output_mod2"])

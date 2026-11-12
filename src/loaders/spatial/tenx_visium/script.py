@@ -12,7 +12,7 @@ par = {
   "dataset_url": "https://www.10xgenomics.com/datasets/mouse-brain-coronal-section-1-ffpe-2-standard",
   "dataset_summary": "Gene expression library of Mouse Brain (CytAssist FFPE) using the Mouse Whole Transcriptome Probe Set",
   "dataset_organism": "Mus musculus",
-  "dataset": "dataset.h5ad",
+  "dataset": "dataset.zarr",
   "spot_filter_min_genes": 200,
   "gene_filter_min_spots": 50,
   "remove_mitochondrial": True
@@ -79,4 +79,4 @@ for key in metadata_fields:
     adata.uns[key] = par[key]
 
 print("Writing adata to file", flush=True)
-adata.write_h5ad(par["dataset"], compression="gzip")
+adata.write_zarr(par["dataset"])

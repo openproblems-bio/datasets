@@ -1,11 +1,11 @@
-
+import anndata as ad
 import scanpy as sc
 
 ### VIASH START
 par = {
-  'input': 'resources_test/common/pancreas/dataset.h5ad',
+  'input': 'resources_test/common/pancreas/dataset.anndata.zarr',
   'input_layer': 'log_cp10k',
-  'output': 'dataset.h5ad',
+  'output': 'dataset.zarr',
   'obsm_embedding': 'X_pca',
   'varm_loadings': 'pca_loadings',
   'uns_variance': 'pca_variance',
@@ -14,7 +14,7 @@ par = {
 ### VIASH END
 
 print(">> Load data", flush=True)
-adata = sc.read(par['input'])
+adata = ad.read_zarr(par['input'])
 
 print(">> Look for layer", flush=True)
 layer = adata.X if not par['input_layer'] else adata.layers[par['input_layer']]
@@ -35,4 +35,4 @@ adata.uns[par["uns_variance"]] = {
 }
 
 print(">> Writing data", flush=True)
-adata.write_h5ad(par['output'], compression=par["output_compression"])
+adata.write_zarr(par['output'])

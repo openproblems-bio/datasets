@@ -14,8 +14,3 @@ argument_groups:
         __merge__: file_raw.yaml
         direction: output
         required: true
-      - name: "--output_compression"
-        type: string
-        choices: [gzip, lzf]
-        required: false
-        default: "gzip"

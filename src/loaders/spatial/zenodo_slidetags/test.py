@@ -9,7 +9,7 @@ dataset_url = "https://www.nature.com/articles/s41586-023-06837-4"
 dataset_summary = "Slide-tags enables single-nucleus barcoding for multimodal spatial genomics"
 dataset_description = "A 100 mm2 region of the human prefrontal cortex from a neurotypical donor aged 78 years was profiled by Slide-tags"
 dataset_organism = "Homo sapiens"
-dataset = "dataset.h5ad"
+dataset = "dataset.zarr"
 
 print(">> Running script", flush=True)
 out = subprocess.run(
@@ -38,7 +38,7 @@ print(">> Checking whether output file exists", flush=True)
 assert os.path.exists(dataset), "Output does not exist"
 
 print(">> Read output anndata", flush=True)
-adata = ad.read_h5ad(dataset)
+adata = ad.read_zarr(dataset)
 
 print(adata)
 

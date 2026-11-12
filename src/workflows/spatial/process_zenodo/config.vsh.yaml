@@ -17,11 +17,6 @@ argument_groups:
         description: Output h5ad file
         required: true
         __merge__: /src/api/file_spatial_dataset.yaml
-      - name: --output_meta
-        direction: output
-        type: file
-        description: Dataset metadata
-        default: dataset_metadata.yaml
   - name: Metadata
     arguments:
       - name: --id
@@ -126,7 +121,6 @@ resources:
   - type: nextflow_script
     path: main.nf
     entrypoint: run_wf
-  - path: /common/nextflow_helpers/helper.nf
 dependencies:
   - name: loaders/spatial/zenodo
   - name: normalization/log_cp
@@ -134,7 +128,5 @@ dependencies:
   - name: normalization/sqrt_cp
   - name: normalization/l1_sqrt
   - name: processors/subsample
-  - name: utils/extract_uns_metadata
-    repository: openproblems
 runners:
   - type: nextflow

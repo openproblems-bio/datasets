@@ -34,4 +34,4 @@ info:
     # created by scripts/create_test_resources/pancreas.ipynb
     - path: lamin://openproblems/data-dev/collection/ncs5PXFnzfIzGEDe0000
       dest: resources_test/common/pancreas
-      strip_prefix: resources_test/common/pancreas/
+      strip_prefix: resources_test/datasets/pancreas/

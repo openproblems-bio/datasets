@@ -3311,7 +3311,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/loaders/spatial/tenx_visium",
     "viash_version" : "0.9.7",
-    "git_commit" : "0d0ffde1af9cbc25e5c229be015a52cfc2a2afec",
+    "git_commit" : "769a3213479589e1d621cfbb61a800fe7dc1e096",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -3323,7 +3323,7 @@ meta = [
         {
           "path" : "lamin://openproblems/data-dev/collection/ncs5PXFnzfIzGEDe0000",
           "dest" : "resources_test/common/pancreas",
-          "strip_prefix" : "resources_test/common/pancreas/"
+          "strip_prefix" : "resources_test/datasets/pancreas/"
         }
       ]
     },

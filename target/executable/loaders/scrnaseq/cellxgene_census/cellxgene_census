@@ -450,9 +450,9 @@ RUN pip install --upgrade pip && \
 
 ENV ANNDATA_ZARR_WRITE_FORMAT=3
 LABEL org.opencontainers.image.description="Companion container for running component loaders/scrnaseq cellxgene_census"
-LABEL org.opencontainers.image.created="2026-11-12T15:00:15Z"
+LABEL org.opencontainers.image.created="2026-11-12T19:07:27Z"
 LABEL org.opencontainers.image.source="https://github.com/openproblems-bio/datasets"
-LABEL org.opencontainers.image.revision="0d0ffde1af9cbc25e5c229be015a52cfc2a2afec"
+LABEL org.opencontainers.image.revision="769a3213479589e1d621cfbb61a800fe7dc1e096"
 LABEL org.opencontainers.image.version="build_main"
 
 VIASHDOCKER

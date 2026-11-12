@@ -1,3 +1,4 @@
+import sys
 from typing import Any, Callable, Dict, Tuple
 import openproblems as op
 import scanpy as sc
@@ -18,6 +19,9 @@ meta = {
 }
 ## VIASH END
 
+sys.path.append(meta["resources_dir"])
+from openproblems_v1_download import use_plain_downloads
+
 # make dataset lookup table
 # If need be, this could be stored in a separate yaml file
 dataset_funs: Dict[str, Tuple[Callable, Dict[str, Any]]] = {
@@ -37,6 +41,9 @@ dataset_funs: Dict[str, Tuple[Callable, Dict[str, Any]]] = {
     "tnbc_wu2021": (op.data.tnbc_wu2021.load_tnbc_data, {}),
     "zebrafish": (op.data.zebrafish.load_zebrafish, {})
 }
+
+# download without scprep's spoofed user agent
+use_plain_downloads()
 
 # fetch dataset
 dataset_fun, kwargs = dataset_funs[par["input_id"]]

@@ -74,6 +74,7 @@ argument_groups:
 resources:
   - type: python_script
     path: script.py
+  - path: /src/helper_functions/openproblems_v1_download.py
 test_resources:
   - type: python_script
     path: test.py

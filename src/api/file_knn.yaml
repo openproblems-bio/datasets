@@ -1,6 +1,6 @@
 __merge__: file_pca.yaml
 type: file
-example: "resources_test/common/pancreas/knn.anndata.zarr"
+example: "resources_test/common/pancreas/dataset.anndata.zarr"
 label: "Dataset+HVG+PCA+kNN"
 summary: "A normalised data with a PCA embedding, HVG selection and a kNN graph"
 info:

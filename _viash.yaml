@@ -25,7 +25,8 @@ repositories:
     tag: build/main
 info:
   test_resources:
-    - type: s3
-      path: s3://openproblems-data/resources_test/common
-      dest: resources_test/common
+    # created by scripts/create_test_resources/pancreas.ipynb
+    - path: lamin://openproblems/data-dev/collection/ncs5PXFnzfIzGEDe0000
+      dest: resources_test/common/pancreas
+      strip_prefix: resources_test/common/pancreas/
 version: build_main

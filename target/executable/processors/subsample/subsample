@@ -447,9 +447,9 @@ FROM openproblems/base_python:1
 ENTRYPOINT []
 ENV ANNDATA_ZARR_WRITE_FORMAT=3
 LABEL org.opencontainers.image.description="Companion container for running component processors subsample"
-LABEL org.opencontainers.image.created="2026-11-12T13:58:18Z"
+LABEL org.opencontainers.image.created="2026-11-12T15:00:15Z"
 LABEL org.opencontainers.image.source="https://github.com/openproblems-bio/datasets"
-LABEL org.opencontainers.image.revision="427dc48e2122448a392b66f15b3f49cb4df88847"
+LABEL org.opencontainers.image.revision="0d0ffde1af9cbc25e5c229be015a52cfc2a2afec"
 LABEL org.opencontainers.image.version="build_main"
 
 VIASHDOCKER

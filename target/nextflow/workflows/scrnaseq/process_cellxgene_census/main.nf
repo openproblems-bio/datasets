@@ -5144,7 +5144,7 @@ meta = [
             }
           },
           "example" : [
-            "resources_test/common/pancreas/knn.anndata.zarr"
+            "resources_test/common/pancreas/dataset.anndata.zarr"
           ],
           "must_exist" : true,
           "create_parent" : true,
@@ -5282,7 +5282,7 @@ meta = [
     "engine" : "native",
     "output" : "target/nextflow/workflows/scrnaseq/process_cellxgene_census",
     "viash_version" : "0.9.7",
-    "git_commit" : "427dc48e2122448a392b66f15b3f49cb4df88847",
+    "git_commit" : "0d0ffde1af9cbc25e5c229be015a52cfc2a2afec",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -5292,9 +5292,9 @@ meta = [
     "info" : {
       "test_resources" : [
         {
-          "type" : "s3",
-          "path" : "s3://openproblems-data/resources_test/common",
-          "dest" : "resources_test/common"
+          "path" : "lamin://openproblems/data-dev/collection/ncs5PXFnzfIzGEDe0000",
+          "dest" : "resources_test/common/pancreas",
+          "strip_prefix" : "resources_test/common/pancreas/"
         }
       ]
     },

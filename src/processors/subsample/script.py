@@ -1,6 +1,5 @@
 import anndata as ad
 import scanpy as sc
-import random
 import numpy as np
 
 ### VIASH START
@@ -21,9 +20,8 @@ par = {
 }
 ### VIASH END
 
-if par["seed"]:
-    print(f">> Setting seed to {par['seed']}", flush=True)
-    random.seed(par["seed"])
+print(f">> Setting seed to {par['seed']}", flush=True)
+rng = np.random.default_rng(par["seed"])
 
 print(">> Load data", flush=True)
 adata_input = ad.read_zarr(par["input"])
@@ -69,9 +67,9 @@ if par.get("even"):
     probs = dict(zip(names, 1 / counts / len(names)))
     
     choice_probs = [ probs[batch] for batch in choice_batch ]
-    obs_index = np.random.choice(choice_ix, size=n_obs, replace=False, p=choice_probs)
+    obs_index = rng.choice(choice_ix, size=n_obs, replace=False, p=choice_probs)
 else:
-    obs_index = np.random.choice(np.where(obs_filt)[0], n_obs, replace=False)
+    obs_index = rng.choice(np.where(obs_filt)[0], n_obs, replace=False)
 
 # subsample obs
 adata_output = adata_input[obs_index].copy()
@@ -100,12 +98,12 @@ if par.get("keep_features"):
     initial_filt = adata_output.var_names.isin(par["keep_features"])
     initial_idx, *_ = initial_filt.nonzero()
     remaining_idx, *_ = (~initial_filt).nonzero()
-    rest_idx = remaining_idx[np.random.choice(len(remaining_idx), n_vars - len(initial_idx), replace=False)]
+    rest_idx = remaining_idx[rng.choice(len(remaining_idx), n_vars - len(initial_idx), replace=False)]
     var_ix = np.concatenate([initial_idx, rest_idx])
 else:
-    var_ix = np.random.choice(adata_output.shape[1], n_vars, replace=False)
+    var_ix = rng.choice(adata_output.shape[1], n_vars, replace=False)
     if par["input_mod2"] is not None:
-        var_ix_mod2 = np.random.choice(adata_output_mod2.shape[1], n_vars, replace=False)
+        var_ix_mod2 = rng.choice(adata_output_mod2.shape[1], n_vars, replace=False)
 
 #  subsample vars
 adata_output = adata_output[:, var_ix].copy()

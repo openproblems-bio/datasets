@@ -103,6 +103,41 @@ def fix_splits(adata):
     return adata
     
 
+# CELLxGENE-style ontology term ids, from the cell type annotation and the
+# sample metadata of GEO series GSE279945
+CELL_TYPE_ONTOLOGY = {
+    "B cells": "CL:0000236",  # B cell
+    "T cells": "CL:0000084",  # T cell
+    "Myeloid cells": "CL:0000763",  # myeloid cell
+    "NK cells": "CL:0000623",  # natural killer cell
+}
+DONOR_ONTOLOGY = {
+    "Donor 1": {"sex_ontology_term_id": "PATO:0000383", "development_stage_ontology_term_id": "HsapDv:0000139"},  # female, 45
+    "Donor 2": {"sex_ontology_term_id": "PATO:0000384", "development_stage_ontology_term_id": "HsapDv:0000146"},  # male, 52
+    "Donor 3": {"sex_ontology_term_id": "PATO:0000384", "development_stage_ontology_term_id": "HsapDv:0000139"},  # male, 45
+}
+SAMPLE_ONTOLOGY = {
+    "assay_ontology_term_id": "EFO:0009922",  # 10x 3' v3
+    "tissue_ontology_term_id": "UBERON:0000178",  # blood
+    "disease_ontology_term_id": "PATO:0000461",  # normal
+    "self_reported_ethnicity_ontology_term_id": "HANCESTRO:0005",  # European ancestry, "caucasian" in GEO
+}
+
+
+def add_ontology_term_ids(adata):
+    obs = adata.obs
+    obs["cell_type_ontology_term_id"] = obs["cell_type"].map(CELL_TYPE_ONTOLOGY)
+    for column in ["sex_ontology_term_id", "development_stage_ontology_term_id"]:
+        obs[column] = obs["donor_id"].map({donor: terms[column] for donor, terms in DONOR_ONTOLOGY.items()})
+    for column, term in SAMPLE_ONTOLOGY.items():
+        obs[column] = term
+    columns = ["cell_type_ontology_term_id", *DONOR_ONTOLOGY["Donor 1"], *SAMPLE_ONTOLOGY]
+    for column in columns:
+        if obs[column].isna().any():
+            raise ValueError(f"Missing ontology term ids in obs['{column}']")
+        obs[column] = obs[column].astype("category")
+
+
 def move_x_to_layers(adata):
     """Move .X to .layers['counts'] and set X to None."""
     logger.info("Moving .X to .layers['counts']")
@@ -173,6 +208,9 @@ if par["perturbation"] is not None:
 
 # Fix splits after reannotation
 fix_splits(adata)
+
+# Add ontology term ids
+add_ontology_term_ids(adata)
 
 # Move X to layers and normalize
 move_x_to_layers(adata)

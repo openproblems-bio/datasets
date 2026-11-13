@@ -1,5 +1,6 @@
 name: process_openproblems_v1
 namespace: workflows/scrnaseq
+status: deprecated
 description: |
   Fetch and process legacy OpenProblems v1 datasets
 argument_groups:

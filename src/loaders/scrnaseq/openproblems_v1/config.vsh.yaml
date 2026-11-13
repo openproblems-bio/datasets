@@ -1,6 +1,7 @@
 __merge__: /src/api/comp_dataset_loader.yaml
 name: openproblems_v1
 namespace: loaders/scrnaseq
+status: deprecated
 description: Fetch a dataset from OpenProblems v1
 argument_groups:
   - name: Inputs

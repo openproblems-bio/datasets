@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# DEPRECATED: the openproblems v1 datasets are no longer maintained. Existing
+# benchmark results that use them remain available, but no new datasets are built.
+
 # get the root of the directory
 REPO_ROOT=$(git rev-parse --show-toplevel)
 

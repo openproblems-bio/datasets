@@ -3494,7 +3494,7 @@ meta = [
       "description" : "A dataset loader will typically have an identifier (e.g. a GEO identifier)\nor URL as input argument and additional arguments to define where the script needs to download a dataset from and how to process it.\n"
     }
   },
-  "status" : "enabled",
+  "status" : "deprecated",
   "scope" : {
     "image" : "public",
     "target" : "public"
@@ -3588,7 +3588,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/loaders/scrnaseq/openproblems_v1",
     "viash_version" : "0.9.7",
-    "git_commit" : "769a3213479589e1d621cfbb61a800fe7dc1e096",
+    "git_commit" : "ce53349bb67c487c7ba96277c4063275d5703287",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {

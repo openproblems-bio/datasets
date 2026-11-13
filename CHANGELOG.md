@@ -1,5 +1,7 @@
 # datasets v0.2.0 (unreleased)
 
+* DEPRECATION: The openproblems v1 loaders and workflows (`openproblems_v1`, `openproblems_v1_multimodal`, `process_openproblems_v1`, `process_openproblems_v1_multimodal`) are deprecated. Published benchmark results that use the v1 datasets remain, but no new v1 datasets are built.
+
 * MINOR CHANGE: Bump Viash to 0.9.7.
 
 * MINOR CHANGE: Failed Nextflow processes are no longer ignored, so a failing dataset fails the run.

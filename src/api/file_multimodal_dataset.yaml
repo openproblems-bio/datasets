@@ -1,5 +1,5 @@
 type: file
-example: "resources_test/common/pancreas/dataset.anndata.zarr"
+example: "resources_test/common/cxg_mouse_pancreas_atlas/dataset.anndata.zarr"
 label: "Common dataset"
 summary: A dataset processed by the common dataset processing pipeline. 
 description: |

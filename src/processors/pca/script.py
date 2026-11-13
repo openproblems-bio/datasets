@@ -4,7 +4,7 @@ import scanpy as sc
 
 ### VIASH START
 par = {
-  'input': 'resources_test/common/pancreas/dataset.anndata.zarr',
+  'input': 'resources_test/common/cxg_mouse_pancreas_atlas/dataset.anndata.zarr',
   'input_layer': 'log_cp10k',
   'output': 'dataset.zarr',
   'obsm_embedding': 'X_pca',

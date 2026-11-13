@@ -1,6 +1,6 @@
 __merge__: file_hvg.yaml
 type: file
-example: "resources_test/common/pancreas/pca.anndata.zarr"
+example: "resources_test/common/cxg_mouse_pancreas_atlas/pca.anndata.zarr"
 label: "Dataset+HVG+PCA"
 summary: "A normalised dataset with a PCA embedding"
 info:

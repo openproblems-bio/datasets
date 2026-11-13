@@ -6,7 +6,7 @@ library(Matrix, warn.conflicts = FALSE)
 
 ## VIASH START
 par <- list(
-  input = "resources_test/common/pancreas/raw.anndata.zarr",
+  input = "resources_test/common/cxg_mouse_pancreas_atlas/raw.anndata.zarr",
   output = "output.scran.zarr",
   layer_output = "log_scran_pooling",
   obs_size_factors = "size_factors_log_scran_pooling"

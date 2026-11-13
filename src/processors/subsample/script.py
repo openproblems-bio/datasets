@@ -55,8 +55,11 @@ if par.get("keep_cell_type_categories"):
 
 # subset by batch
 if par.get("keep_batch_categories"):
-    print(f">> Selecting cell_type_categories {par['keep_batch_categories']}")
+    print(f">> Selecting batch_categories {par['keep_batch_categories']}")
     obs_filt = obs_filt & adata_input.obs["batch"].isin(par["keep_batch_categories"])
+
+# don't draw more cells than are left after filtering
+n_obs = min(n_obs, int(obs_filt.sum()))
 
 # subsample evenly across batches or not
 if par.get("even"):

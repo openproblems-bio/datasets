@@ -1,6 +1,6 @@
 __merge__: file_raw.yaml
 type: file
-example: "resources_test/common/pancreas/normalized.anndata.zarr"
+example: "resources_test/common/cxg_mouse_pancreas_atlas/normalized.anndata.zarr"
 label: "Normalized dataset"
 summary: "A normalized dataset"
 info:

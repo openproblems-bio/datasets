@@ -4,7 +4,7 @@ import numpy as np
 
 ## VIASH START
 par = {
-    'input': "resources_test/common/pancreas/dataset.anndata.zarr",
+    'input': "resources_test/common/cxg_mouse_pancreas_atlas/dataset.anndata.zarr",
     'output': "output.zarr",
     'layer_output': "sqrt_cpm",
     'obs_size_factors': "size_factors_sqrt_cpm",

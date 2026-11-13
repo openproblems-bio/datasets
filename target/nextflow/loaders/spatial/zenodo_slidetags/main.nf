@@ -3294,7 +3294,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/loaders/spatial/zenodo_slidetags",
     "viash_version" : "0.9.7",
-    "git_commit" : "ce53349bb67c487c7ba96277c4063275d5703287",
+    "git_commit" : "5ab72c41ddb1fd6f9ea257999af3ac8de9e3542f",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -3304,9 +3304,9 @@ meta = [
     "info" : {
       "test_resources" : [
         {
-          "path" : "lamin://openproblems/data-dev/collection/ncs5PXFnzfIzGEDe0000",
-          "dest" : "resources_test/common/pancreas",
-          "strip_prefix" : "resources_test/datasets/pancreas/"
+          "path" : "lamin://openproblems/data-dev/collection/Ajn1Lo8zZomVzKtQ0001",
+          "dest" : "resources_test/common/cxg_mouse_pancreas_atlas",
+          "strip_prefix" : "resources_test/datasets/cxg_mouse_pancreas_atlas/"
         }
       ]
     },

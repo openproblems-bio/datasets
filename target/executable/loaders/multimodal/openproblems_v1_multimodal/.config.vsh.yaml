@@ -353,7 +353,7 @@ argument_groups:
           description: "The tissue of the sample in the dataset."
           required: false
     example:
-    - "resources_test/common/pancreas/raw.anndata.zarr"
+    - "resources_test/common/cxg_mouse_pancreas_atlas/raw.anndata.zarr"
     must_exist: true
     create_parent: true
     required: false
@@ -574,7 +574,7 @@ argument_groups:
           description: "The tissue of the sample in the dataset."
           required: false
     example:
-    - "resources_test/common/pancreas/raw.anndata.zarr"
+    - "resources_test/common/cxg_mouse_pancreas_atlas/raw.anndata.zarr"
     must_exist: true
     create_parent: true
     required: false
@@ -665,7 +665,7 @@ build_info:
   output: "target/executable/loaders/multimodal/openproblems_v1_multimodal"
   executable: "target/executable/loaders/multimodal/openproblems_v1_multimodal/openproblems_v1_multimodal"
   viash_version: "0.9.7"
-  git_commit: "ce53349bb67c487c7ba96277c4063275d5703287"
+  git_commit: "5ab72c41ddb1fd6f9ea257999af3ac8de9e3542f"
   git_remote: "https://github.com/openproblems-bio/datasets"
 package_config:
   name: "datasets"
@@ -673,9 +673,9 @@ package_config:
   description: "Datasets for benchmarking open problems in single-cell analysis.\n"
   info:
     test_resources:
-    - path: "lamin://openproblems/data-dev/collection/ncs5PXFnzfIzGEDe0000"
-      dest: "resources_test/common/pancreas"
-      strip_prefix: "resources_test/datasets/pancreas/"
+    - path: "lamin://openproblems/data-dev/collection/Ajn1Lo8zZomVzKtQ0001"
+      dest: "resources_test/common/cxg_mouse_pancreas_atlas"
+      strip_prefix: "resources_test/datasets/cxg_mouse_pancreas_atlas/"
   repositories:
   - type: "github"
     name: "openproblems"

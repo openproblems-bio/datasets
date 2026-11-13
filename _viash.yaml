@@ -25,8 +25,8 @@ repositories:
     tag: build/main
 info:
   test_resources:
-    # created by scripts/create_test_resources/pancreas.ipynb
-    - path: lamin://openproblems/data-dev/collection/ncs5PXFnzfIzGEDe0000
-      dest: resources_test/common/pancreas
-      strip_prefix: resources_test/datasets/pancreas/
+    # created by scripts/create_test_resources/cxg_mouse_pancreas_atlas.ipynb
+    - path: lamin://openproblems/data-dev/collection/Ajn1Lo8zZomVzKtQ0001
+      dest: resources_test/common/cxg_mouse_pancreas_atlas
+      strip_prefix: resources_test/datasets/cxg_mouse_pancreas_atlas/
 version: build_main

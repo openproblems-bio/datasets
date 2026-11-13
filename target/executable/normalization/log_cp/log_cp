@@ -447,9 +447,9 @@ FROM openproblems/base_python:1
 ENTRYPOINT []
 ENV ANNDATA_ZARR_WRITE_FORMAT=3
 LABEL org.opencontainers.image.description="Companion container for running component normalization log_cp"
-LABEL org.opencontainers.image.created="2026-11-13T09:11:23Z"
+LABEL org.opencontainers.image.created="2026-11-13T12:44:38Z"
 LABEL org.opencontainers.image.source="https://github.com/openproblems-bio/datasets"
-LABEL org.opencontainers.image.revision="ce53349bb67c487c7ba96277c4063275d5703287"
+LABEL org.opencontainers.image.revision="5ab72c41ddb1fd6f9ea257999af3ac8de9e3542f"
 LABEL org.opencontainers.image.version="build_main"
 
 VIASHDOCKER
@@ -574,7 +574,7 @@ function ViashHelp {
   echo "Arguments:"
   echo "    --input"
   echo "        type: file, required parameter, file must exist"
-  echo "        example: resources_test/common/pancreas/raw.anndata.zarr"
+  echo "        example: resources_test/common/cxg_mouse_pancreas_atlas/raw.anndata.zarr"
   echo "        This dataset contains raw counts and metadata as output by a dataset"
   echo "        loader."
   echo "        The format of this file is derived from the [CELLxGENE schema"
@@ -583,7 +583,8 @@ function ViashHelp {
   echo ""
   echo "    --output"
   echo "        type: file, required parameter, output, file must exist"
-  echo "        example: resources_test/common/pancreas/normalized.anndata.zarr"
+  echo "        example:"
+  echo "resources_test/common/cxg_mouse_pancreas_atlas/normalized.anndata.zarr"
   echo "        This dataset contains raw counts and metadata as output by a dataset"
   echo "        loader."
   echo "        The format of this file is derived from the [CELLxGENE schema"

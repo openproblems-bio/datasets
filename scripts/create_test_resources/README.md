@@ -13,6 +13,8 @@ Each notebook in this directory creates one set of test resources: it runs a wor
 
 `neurips2022_pbmc.sh` has not been converted yet, as its input data is not public.
 
+`pancreas.ipynb` and `scicar_cell_lines.ipynb` use the deprecated openproblems v1 datasets. Their collections stay available, but new tests should use the CELLxGENE test resources instead.
+
 ## Running a notebook
 
 You need Docker, Nextflow, the components built with `viash ns build --setup cachedbuild`, and write access to `openproblems/data-dev`. The `.lamin` directory in the root of this repository connects it to that instance. Run a notebook with:

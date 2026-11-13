@@ -1,5 +1,6 @@
 name: openproblems_v1_multimodal
 namespace: loaders/multimodal
+status: deprecated
 description: Fetch a dataset from OpenProblems v1
 argument_groups:
   - name: Inputs

@@ -1,6 +1,6 @@
 __merge__: file_normalized.yaml
 type: file
-example: "resources_test/common/pancreas/svd.anndata.zarr"
+example: "resources_test/common/cxg_mouse_pancreas_atlas/svd.anndata.zarr"
 label: "Dataset+SVD"
 summary: "A normalised dataset with a SVD embedding"
 info:

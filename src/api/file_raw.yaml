@@ -1,5 +1,5 @@
 type: file
-example: "resources_test/common/pancreas/raw.anndata.zarr"
+example: "resources_test/common/cxg_mouse_pancreas_atlas/raw.anndata.zarr"
 label: "Raw dataset"
 summary: An unprocessed dataset as output by a dataset loader.
 description: |

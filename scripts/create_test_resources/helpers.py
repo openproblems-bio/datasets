@@ -46,14 +46,15 @@ def link_to_github(notebook):
   transform.save()
 
 
-def run_workflow(workflow, params, highmem=None):
+def run_workflow(workflow, params, highmem=None, output_dir=None):
   """Run a workflow of this repository, return the directory with its outputs.
 
   `highmem` overrides the memory of processes labelled `highmem` (e.g. "64.GB"),
-  for workflows that load large source files.
+  for workflows that load large source files. Pass the `output_dir` of a previous
+  run to publish into the same directory.
   """
-  output_dir = Path(tempfile.mkdtemp())
-  params_file = output_dir / "params.json"
+  output_dir = Path(output_dir or tempfile.mkdtemp())
+  params_file = output_dir / f"params_{workflow.replace('/', '_')}.json"
   params_file.write_text(json.dumps({**params, "publish_dir": str(output_dir)}))
   configs = ["-c", "common/nextflow_helpers/labels_ci.config"]
   if highmem is not None:

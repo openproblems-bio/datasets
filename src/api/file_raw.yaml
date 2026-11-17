@@ -5,6 +5,8 @@ summary: An unprocessed dataset as output by a dataset loader.
 description: |
   This dataset contains raw counts and metadata as output by a dataset loader.
 
+  Cell metadata is annotated with ontology term ids, as in CELLxGENE: these are required for the assay, cell type, developmental stage, disease, self-reported ethnicity, sex and tissue.
+
   The format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).
 info:
   format:
@@ -28,7 +30,7 @@ info:
       - type: string
         name: assay_ontology_term_id
         description: Experimental Factor Ontology (`EFO:`) term identifier for the assay, providing a standardized reference to the assay type.
-        required: false
+        required: true
 
       - type: string
         name: cell_type
@@ -38,7 +40,7 @@ info:
       - type: string
         name: cell_type_ontology_term_id
         description: Cell Ontology (`CL:`) term identifier for the cell type, offering a standardized reference to the specific cell classification.
-        required: false
+        required: true
 
       - type: string
         name: development_stage
@@ -53,7 +55,7 @@ info:
           If the organism is human (`organism_ontology_term_id == 'NCBITaxon:9606'`), then the Human Developmental Stages (`HsapDv:`) ontology is used.  
           If the organism is mouse (`organism_ontology_term_id == 'NCBITaxon:10090'`), then the Mouse Developmental Stages (`MmusDv:`) ontology is used.
           Otherwise, the Uberon (`UBERON:`) ontology is used.
-        required: false
+        required: true
 
       - type: string
         name: disease
@@ -66,7 +68,7 @@ info:
           Ontology term identifier for the disease, enabling standardized disease classification and referencing.
 
           Must be a term from the Mondo Disease Ontology (`MONDO:`) ontology term, or `PATO:0000461` from the Phenotype And Trait Ontology (`PATO:`).
-        required: false
+        required: true
 
       - type: string
         name: donor_id
@@ -102,7 +104,7 @@ info:
           Ontology term identifier for the self-reported ethnicity, providing a standardized reference for ethnic classifications.
 
           If the organism is human (`organism_ontology_term_id == 'NCBITaxon:9606'`), then the Human Ancestry Ontology (`HANCESTRO:`) is used.
-        required: false
+        required: true
 
       - type: string
         name: sex
@@ -112,7 +114,7 @@ info:
       - type: string
         name: sex_ontology_term_id
         description: Ontology term identifier for the biological sex, ensuring standardized classification of sex. Only `PATO:0000383`, `PATO:0000384` and `PATO:0001340` are allowed.
-        required: false
+        required: true
 
       - type: string
         name: suspension_type
@@ -131,7 +133,7 @@ info:
 
           For organoid or tissue samples, the Uber-anatomy ontology (`UBERON:`) is used. The term ids must be a child term of `UBERON:0001062` (anatomical entity).
           For cell cultures, the Cell Ontology (`CL:`) is used. The term ids cannot be `CL:0000255`, `CL:0000257` or `CL:0000548`.
-        required: false
+        required: true
 
       - type: string
         name: tissue_general

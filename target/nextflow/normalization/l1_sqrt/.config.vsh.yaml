@@ -9,7 +9,10 @@ argument_groups:
     label: "Raw dataset"
     summary: "An unprocessed dataset as output by a dataset loader."
     description: "This dataset contains raw counts and metadata as output by a dataset\
-      \ loader.\n\nThe format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n"
+      \ loader.\n\nCell metadata is annotated with ontology term ids, as in CELLxGENE:\
+      \ these are required for the assay, cell type, developmental stage, disease,\
+      \ self-reported ethnicity, sex and tissue.\n\nThe format of this file is derived\
+      \ from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n"
     info:
       format:
         type: "anndata_zarr"
@@ -33,7 +36,7 @@ argument_groups:
           name: "assay_ontology_term_id"
           description: "Experimental Factor Ontology (`EFO:`) term identifier for\
             \ the assay, providing a standardized reference to the assay type."
-          required: false
+          required: true
         - type: "string"
           name: "cell_type"
           description: "Classification of the cell type based on its characteristics\
@@ -43,7 +46,7 @@ argument_groups:
           name: "cell_type_ontology_term_id"
           description: "Cell Ontology (`CL:`) term identifier for the cell type, offering\
             \ a standardized reference to the specific cell classification."
-          required: false
+          required: true
         - type: "string"
           name: "development_stage"
           description: "Stage of development of the organism or tissue from which\
@@ -58,7 +61,7 @@ argument_groups:
             If the organism is mouse (`organism_ontology_term_id == 'NCBITaxon:10090'`),\
             \ then the Mouse Developmental Stages (`MmusDv:`) ontology is used.\n\
             Otherwise, the Uberon (`UBERON:`) ontology is used.\n"
-          required: false
+          required: true
         - type: "string"
           name: "disease"
           description: "Information on any disease or pathological condition associated\
@@ -70,7 +73,7 @@ argument_groups:
             \ disease classification and referencing.\n\nMust be a term from the Mondo\
             \ Disease Ontology (`MONDO:`) ontology term, or `PATO:0000461` from the\
             \ Phenotype And Trait Ontology (`PATO:`).\n"
-          required: false
+          required: true
         - type: "string"
           name: "donor_id"
           description: "Identifier for the donor from whom the cell sample is obtained."
@@ -102,7 +105,7 @@ argument_groups:
             \ providing a standardized reference for ethnic classifications.\n\nIf\
             \ the organism is human (`organism_ontology_term_id == 'NCBITaxon:9606'`),\
             \ then the Human Ancestry Ontology (`HANCESTRO:`) is used.\n"
-          required: false
+          required: true
         - type: "string"
           name: "sex"
           description: "Biological sex of the donor or source organism, crucial for\
@@ -113,7 +116,7 @@ argument_groups:
           description: "Ontology term identifier for the biological sex, ensuring\
             \ standardized classification of sex. Only `PATO:0000383`, `PATO:0000384`\
             \ and `PATO:0001340` are allowed."
-          required: false
+          required: true
         - type: "string"
           name: "suspension_type"
           description: "Type of suspension or medium in which the cells were stored\
@@ -132,7 +135,7 @@ argument_groups:
             \ term of `UBERON:0001062` (anatomical entity).\nFor cell cultures, the\
             \ Cell Ontology (`CL:`) is used. The term ids cannot be `CL:0000255`,\
             \ `CL:0000257` or `CL:0000548`.\n"
-          required: false
+          required: true
         - type: "string"
           name: "tissue_general"
           description: "General category or classification of the tissue, useful for\
@@ -230,7 +233,10 @@ argument_groups:
     label: "Normalized dataset"
     summary: "A normalized dataset"
     description: "This dataset contains raw counts and metadata as output by a dataset\
-      \ loader.\n\nThe format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n"
+      \ loader.\n\nCell metadata is annotated with ontology term ids, as in CELLxGENE:\
+      \ these are required for the assay, cell type, developmental stage, disease,\
+      \ self-reported ethnicity, sex and tissue.\n\nThe format of this file is derived\
+      \ from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n"
     info:
       format:
         type: "anndata_zarr"
@@ -258,7 +264,7 @@ argument_groups:
           name: "assay_ontology_term_id"
           description: "Experimental Factor Ontology (`EFO:`) term identifier for\
             \ the assay, providing a standardized reference to the assay type."
-          required: false
+          required: true
         - type: "string"
           name: "cell_type"
           description: "Classification of the cell type based on its characteristics\
@@ -268,7 +274,7 @@ argument_groups:
           name: "cell_type_ontology_term_id"
           description: "Cell Ontology (`CL:`) term identifier for the cell type, offering\
             \ a standardized reference to the specific cell classification."
-          required: false
+          required: true
         - type: "string"
           name: "development_stage"
           description: "Stage of development of the organism or tissue from which\
@@ -283,7 +289,7 @@ argument_groups:
             If the organism is mouse (`organism_ontology_term_id == 'NCBITaxon:10090'`),\
             \ then the Mouse Developmental Stages (`MmusDv:`) ontology is used.\n\
             Otherwise, the Uberon (`UBERON:`) ontology is used.\n"
-          required: false
+          required: true
         - type: "string"
           name: "disease"
           description: "Information on any disease or pathological condition associated\
@@ -295,7 +301,7 @@ argument_groups:
             \ disease classification and referencing.\n\nMust be a term from the Mondo\
             \ Disease Ontology (`MONDO:`) ontology term, or `PATO:0000461` from the\
             \ Phenotype And Trait Ontology (`PATO:`).\n"
-          required: false
+          required: true
         - type: "string"
           name: "donor_id"
           description: "Identifier for the donor from whom the cell sample is obtained."
@@ -327,7 +333,7 @@ argument_groups:
             \ providing a standardized reference for ethnic classifications.\n\nIf\
             \ the organism is human (`organism_ontology_term_id == 'NCBITaxon:9606'`),\
             \ then the Human Ancestry Ontology (`HANCESTRO:`) is used.\n"
-          required: false
+          required: true
         - type: "string"
           name: "sex"
           description: "Biological sex of the donor or source organism, crucial for\
@@ -338,7 +344,7 @@ argument_groups:
           description: "Ontology term identifier for the biological sex, ensuring\
             \ standardized classification of sex. Only `PATO:0000383`, `PATO:0000384`\
             \ and `PATO:0001340` are allowed."
-          required: false
+          required: true
         - type: "string"
           name: "suspension_type"
           description: "Type of suspension or medium in which the cells were stored\
@@ -357,7 +363,7 @@ argument_groups:
             \ term of `UBERON:0001062` (anatomical entity).\nFor cell cultures, the\
             \ Cell Ontology (`CL:`) is used. The term ids cannot be `CL:0000255`,\
             \ `CL:0000257` or `CL:0000548`.\n"
-          required: false
+          required: true
         - type: "string"
           name: "tissue_general"
           description: "General category or classification of the tissue, useful for\
@@ -573,7 +579,7 @@ build_info:
   output: "target/nextflow/normalization/l1_sqrt"
   executable: "target/nextflow/normalization/l1_sqrt/main.nf"
   viash_version: "0.9.7"
-  git_commit: "5ab72c41ddb1fd6f9ea257999af3ac8de9e3542f"
+  git_commit: "ee5575cb14089f632c4acb54456152259e0f118f"
   git_remote: "https://github.com/openproblems-bio/datasets"
 package_config:
   name: "datasets"

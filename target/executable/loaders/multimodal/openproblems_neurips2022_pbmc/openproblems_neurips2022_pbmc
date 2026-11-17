@@ -447,9 +447,9 @@ FROM openproblems/base_python:1
 ENTRYPOINT []
 ENV ANNDATA_ZARR_WRITE_FORMAT=3
 LABEL org.opencontainers.image.description="Companion container for running component loaders/multimodal openproblems_neurips2022_pbmc"
-LABEL org.opencontainers.image.created="2026-11-13T12:44:38Z"
+LABEL org.opencontainers.image.created="2026-11-17T11:07:39Z"
 LABEL org.opencontainers.image.source="https://github.com/openproblems-bio/datasets"
-LABEL org.opencontainers.image.revision="5ab72c41ddb1fd6f9ea257999af3ac8de9e3542f"
+LABEL org.opencontainers.image.revision="ee5575cb14089f632c4acb54456152259e0f118f"
 LABEL org.opencontainers.image.version="build_main"
 
 VIASHDOCKER

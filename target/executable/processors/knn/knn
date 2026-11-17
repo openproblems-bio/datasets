@@ -447,9 +447,9 @@ FROM openproblems/base_python:1
 ENTRYPOINT []
 ENV ANNDATA_ZARR_WRITE_FORMAT=3
 LABEL org.opencontainers.image.description="Companion container for running component processors knn"
-LABEL org.opencontainers.image.created="2026-11-13T12:44:38Z"
+LABEL org.opencontainers.image.created="2026-11-17T11:07:38Z"
 LABEL org.opencontainers.image.source="https://github.com/openproblems-bio/datasets"
-LABEL org.opencontainers.image.revision="5ab72c41ddb1fd6f9ea257999af3ac8de9e3542f"
+LABEL org.opencontainers.image.revision="ee5575cb14089f632c4acb54456152259e0f118f"
 LABEL org.opencontainers.image.version="build_main"
 
 VIASHDOCKER
@@ -577,6 +577,9 @@ function ViashHelp {
   echo "        example: resources_test/common/cxg_mouse_pancreas_atlas/pca.anndata.zarr"
   echo "        This dataset contains raw counts and metadata as output by a dataset"
   echo "        loader."
+  echo "        Cell metadata is annotated with ontology term ids, as in CELLxGENE:"
+  echo "        these are required for the assay, cell type, developmental stage,"
+  echo "        disease, self-reported ethnicity, sex and tissue."
   echo "        The format of this file is derived from the [CELLxGENE schema"
   echo "       "
   echo "v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md)."
@@ -592,6 +595,9 @@ function ViashHelp {
   echo "resources_test/common/cxg_mouse_pancreas_atlas/dataset.anndata.zarr"
   echo "        This dataset contains raw counts and metadata as output by a dataset"
   echo "        loader."
+  echo "        Cell metadata is annotated with ontology term ids, as in CELLxGENE:"
+  echo "        these are required for the assay, cell type, developmental stage,"
+  echo "        disease, self-reported ethnicity, sex and tissue."
   echo "        The format of this file is derived from the [CELLxGENE schema"
   echo "       "
   echo "v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md)."

@@ -3175,8 +3175,8 @@ meta = [
         {
           "type" : "file",
           "name" : "--output_mod1",
-          "label" : "Raw dataset",
-          "summary" : "An unprocessed dataset as output by a dataset loader.",
+          "label" : "Raw multimodal dataset",
+          "summary" : "One modality of an unprocessed multimodal dataset as output by a dataset loader.",
           "description" : "This dataset contains raw counts and metadata as output by a dataset loader.\n\nThe format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n",
           "info" : {
             "format" : {
@@ -3434,8 +3434,8 @@ meta = [
         {
           "type" : "file",
           "name" : "--output_mod2",
-          "label" : "Raw dataset",
-          "summary" : "An unprocessed dataset as output by a dataset loader.",
+          "label" : "Raw multimodal dataset",
+          "summary" : "One modality of an unprocessed multimodal dataset as output by a dataset loader.",
           "description" : "This dataset contains raw counts and metadata as output by a dataset loader.\n\nThe format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n",
           "info" : {
             "format" : {
@@ -3782,7 +3782,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/loaders/multimodal/openproblems_neurips2022_pbmc",
     "viash_version" : "0.9.7",
-    "git_commit" : "5ab72c41ddb1fd6f9ea257999af3ac8de9e3542f",
+    "git_commit" : "ee5575cb14089f632c4acb54456152259e0f118f",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {

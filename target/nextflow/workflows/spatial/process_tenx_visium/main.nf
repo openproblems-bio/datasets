@@ -3661,7 +3661,7 @@ meta = [
     "engine" : "native",
     "output" : "target/nextflow/workflows/spatial/process_tenx_visium",
     "viash_version" : "0.9.7",
-    "git_commit" : "5ab72c41ddb1fd6f9ea257999af3ac8de9e3542f",
+    "git_commit" : "ee5575cb14089f632c4acb54456152259e0f118f",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {

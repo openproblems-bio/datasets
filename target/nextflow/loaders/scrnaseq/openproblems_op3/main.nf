@@ -3053,7 +3053,7 @@ meta = [
           "name" : "--output",
           "label" : "Raw dataset",
           "summary" : "An unprocessed dataset as output by a dataset loader.",
-          "description" : "This dataset contains raw counts and metadata as output by a dataset loader.\n\nThe format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n",
+          "description" : "This dataset contains raw counts and metadata as output by a dataset loader.\n\nCell metadata is annotated with ontology term ids, as in CELLxGENE: these are required for the assay, cell type, developmental stage, disease, self-reported ethnicity, sex and tissue.\n\nThe format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n",
           "info" : {
             "format" : {
               "type" : "anndata_zarr",
@@ -3082,7 +3082,7 @@ meta = [
                   "type" : "string",
                   "name" : "assay_ontology_term_id",
                   "description" : "Experimental Factor Ontology (`EFO:`) term identifier for the assay, providing a standardized reference to the assay type.",
-                  "required" : false
+                  "required" : true
                 },
                 {
                   "type" : "string",
@@ -3094,7 +3094,7 @@ meta = [
                   "type" : "string",
                   "name" : "cell_type_ontology_term_id",
                   "description" : "Cell Ontology (`CL:`) term identifier for the cell type, offering a standardized reference to the specific cell classification.",
-                  "required" : false
+                  "required" : true
                 },
                 {
                   "type" : "string",
@@ -3106,7 +3106,7 @@ meta = [
                   "type" : "string",
                   "name" : "development_stage_ontology_term_id",
                   "description" : "Ontology term identifier for the developmental stage, providing a standardized reference to the organism's developmental phase.\n\nIf the organism is human (`organism_ontology_term_id == 'NCBITaxon:9606'`), then the Human Developmental Stages (`HsapDv:`) ontology is used.  \nIf the organism is mouse (`organism_ontology_term_id == 'NCBITaxon:10090'`), then the Mouse Developmental Stages (`MmusDv:`) ontology is used.\nOtherwise, the Uberon (`UBERON:`) ontology is used.\n",
-                  "required" : false
+                  "required" : true
                 },
                 {
                   "type" : "string",
@@ -3118,7 +3118,7 @@ meta = [
                   "type" : "string",
                   "name" : "disease_ontology_term_id",
                   "description" : "Ontology term identifier for the disease, enabling standardized disease classification and referencing.\n\nMust be a term from the Mondo Disease Ontology (`MONDO:`) ontology term, or `PATO:0000461` from the Phenotype And Trait Ontology (`PATO:`).\n",
-                  "required" : false
+                  "required" : true
                 },
                 {
                   "type" : "string",
@@ -3154,7 +3154,7 @@ meta = [
                   "type" : "string",
                   "name" : "self_reported_ethnicity_ontology_term_id",
                   "description" : "Ontology term identifier for the self-reported ethnicity, providing a standardized reference for ethnic classifications.\n\nIf the organism is human (`organism_ontology_term_id == 'NCBITaxon:9606'`), then the Human Ancestry Ontology (`HANCESTRO:`) is used.\n",
-                  "required" : false
+                  "required" : true
                 },
                 {
                   "type" : "string",
@@ -3166,7 +3166,7 @@ meta = [
                   "type" : "string",
                   "name" : "sex_ontology_term_id",
                   "description" : "Ontology term identifier for the biological sex, ensuring standardized classification of sex. Only `PATO:0000383`, `PATO:0000384` and `PATO:0001340` are allowed.",
-                  "required" : false
+                  "required" : true
                 },
                 {
                   "type" : "string",
@@ -3184,7 +3184,7 @@ meta = [
                   "type" : "string",
                   "name" : "tissue_ontology_term_id",
                   "description" : "Ontology term identifier for the tissue, providing a standardized reference for the tissue type.\n\nFor organoid or tissue samples, the Uber-anatomy ontology (`UBERON:`) is used. The term ids must be a child term of `UBERON:0001062` (anatomical entity).\nFor cell cultures, the Cell Ontology (`CL:`) is used. The term ids cannot be `CL:0000255`, `CL:0000257` or `CL:0000548`.\n",
-                  "required" : false
+                  "required" : true
                 },
                 {
                   "type" : "string",
@@ -3562,7 +3562,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/loaders/scrnaseq/openproblems_op3",
     "viash_version" : "0.9.7",
-    "git_commit" : "5ab72c41ddb1fd6f9ea257999af3ac8de9e3542f",
+    "git_commit" : "ee5575cb14089f632c4acb54456152259e0f118f",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -3752,6 +3752,41 @@ def fix_splits(adata):
     return adata
     
 
+# CELLxGENE-style ontology term ids, from the cell type annotation and the
+# sample metadata of GEO series GSE279945
+CELL_TYPE_ONTOLOGY = {
+    "B cells": "CL:0000236",  # B cell
+    "T cells": "CL:0000084",  # T cell
+    "Myeloid cells": "CL:0000763",  # myeloid cell
+    "NK cells": "CL:0000623",  # natural killer cell
+}
+DONOR_ONTOLOGY = {
+    "Donor 1": {"sex_ontology_term_id": "PATO:0000383", "development_stage_ontology_term_id": "HsapDv:0000139"},  # female, 45
+    "Donor 2": {"sex_ontology_term_id": "PATO:0000384", "development_stage_ontology_term_id": "HsapDv:0000146"},  # male, 52
+    "Donor 3": {"sex_ontology_term_id": "PATO:0000384", "development_stage_ontology_term_id": "HsapDv:0000139"},  # male, 45
+}
+SAMPLE_ONTOLOGY = {
+    "assay_ontology_term_id": "EFO:0009922",  # 10x 3' v3
+    "tissue_ontology_term_id": "UBERON:0000178",  # blood
+    "disease_ontology_term_id": "PATO:0000461",  # normal
+    "self_reported_ethnicity_ontology_term_id": "HANCESTRO:0005",  # European ancestry, "caucasian" in GEO
+}
+
+
+def add_ontology_term_ids(adata):
+    obs = adata.obs
+    obs["cell_type_ontology_term_id"] = obs["cell_type"].map(CELL_TYPE_ONTOLOGY)
+    for column in ["sex_ontology_term_id", "development_stage_ontology_term_id"]:
+        obs[column] = obs["donor_id"].map({donor: terms[column] for donor, terms in DONOR_ONTOLOGY.items()})
+    for column, term in SAMPLE_ONTOLOGY.items():
+        obs[column] = term
+    columns = ["cell_type_ontology_term_id", *DONOR_ONTOLOGY["Donor 1"], *SAMPLE_ONTOLOGY]
+    for column in columns:
+        if obs[column].isna().any():
+            raise ValueError(f"Missing ontology term ids in obs['{column}']")
+        obs[column] = obs[column].astype("category")
+
+
 def move_x_to_layers(adata):
     """Move .X to .layers['counts'] and set X to None."""
     logger.info("Moving .X to .layers['counts']")
@@ -3822,6 +3857,9 @@ if par["perturbation"] is not None:
 
 # Fix splits after reannotation
 fix_splits(adata)
+
+# Add ontology term ids
+add_ontology_term_ids(adata)
 
 # Move X to layers and normalize
 move_x_to_layers(adata)

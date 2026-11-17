@@ -1,7 +1,7 @@
-name: process_cellxgene_census
+name: load_cellxgene_census
 namespace: workflows/scrnaseq
 description: |
-  Fetch and process datasets originating from the CELLxGENE census.
+  Fetch a dataset from the CELLxGENE Census and store it as a raw dataset.
 argument_groups:
   - name: Input database
     description: Open CellxGene Census by version or URI.
@@ -13,12 +13,13 @@ argument_groups:
         required: false
         example: s3://bucket/path
       - name: --census_version
-        description: Which release of CellxGene census to use. Possible values are
-          "latest", "stable", or the date of one of the releases (e.g. "2023-07-25").
-          For more information, check the documentation on [Census data 
+        description: |
+          The date of the CELLxGENE Census release to use (e.g. "2023-07-25"). `latest`
+          and `stable` are not allowed, so that the same parameters always give the same
+          dataset. For more information, check the documentation on [Census data
           releases](https://chanzuckerberg.github.io/cellxgene-census/cellxgene_census_docsite_data_release_info.html).
         type: string
-        example: stable
+        example: "2023-07-25"
         required: false
   - name: Cell query
     description: Arguments related to the query.
@@ -108,94 +109,20 @@ argument_groups:
         type: string
         description: The organism of the dataset.
         required: true
-  - name: Sampling options
-    arguments:
-      - name: --do_subsample
-        type: boolean
-        default: false
-        description: Whether or not to subsample the dataset
-      - name: --n_obs
-        type: integer
-        description: Maximum number of observations to be kept. It might end up being
-          less because empty cells / genes are removed.
-        default: 500
-      - name: --n_vars
-        type: integer
-        description: Maximum number of variables to be kept. It might end up being
-          less because empty cells / genes are removed.
-        default: 500
-      - name: --keep_features
-        type: string
-        multiple: true
-        description: A list of genes to keep.
-      - name: --keep_cell_type_categories
-        type: string
-        multiple: true
-        description: Categories indexes to be selected
-        required: false
-      - name: --keep_batch_categories
-        type: string
-        multiple: true
-        description: Categories indexes to be selected
-        required: false
-      - name: --even
-        type: boolean_true
-        description: Subsample evenly from different batches
-      - name: --seed
-        type: integer
-        description: A seed for the subsampling.
-        example: 123
-  - name: Normalization
-    arguments:
-      - name: --normalization_methods
-        type: string
-        multiple: true
-        choices: [log_cp10k, log_cpm, sqrt_cp10k, sqrt_cpm, l1_sqrt, log_scran_pooling]
-        default: [log_cp10k, log_cpm, sqrt_cp10k, sqrt_cpm, l1_sqrt]
-        description: Which normalization methods to run.
+  - __merge__: /src/workflows/scrnaseq/arguments_subsample.yaml
   - name: Outputs
     arguments:
-      - name: --output_dataset
-        __merge__: /src/api/file_common_dataset.yaml
-        direction: output
-        required: true
       - name: --output_raw
         __merge__: /src/api/file_raw.yaml
         direction: output
-        required: false
-      - name: --output_normalized
-        __merge__: /src/api/file_normalized.yaml
-        direction: output
-        required: false
-      - name: --output_pca
-        __merge__: /src/api/file_pca.yaml
-        direction: output
-        required: false
-      - name: --output_hvg
-        __merge__: /src/api/file_hvg.yaml
-        direction: output
-        required: false
-      - name: --output_knn
-        __merge__: /src/api/file_knn.yaml
-        direction: output
-        required: false
+        required: true
 resources:
   - type: nextflow_script
     path: main.nf
     entrypoint: run_wf
 dependencies:
   - name: loaders/scrnaseq/cellxgene_census
-  - name: normalization/log_cp
-  - name: normalization/log_scran_pooling
-  - name: normalization/sqrt_cp
-  - name: normalization/l1_sqrt
   - name: processors/subsample
-  - name: processors/pca
-  - name: processors/hvg
-  - name: processors/knn
-  # test_resources:
-  #   - type: nextflow_script
-  #     path: main.nf
-  #     entrypoint: test_wf
+  - name: validation/validate_dataset
 runners:
   - type: nextflow

@@ -1,0 +1,43 @@
+name: process_scrnaseq
+namespace: workflows/scrnaseq
+description: |
+  Process a raw scRNA-seq dataset into a common dataset: normalise the counts to
+  log CP10k, select highly variable genes, compute a PCA on those genes and build
+  a kNN graph on the PCA embedding.
+argument_groups:
+  - name: Inputs
+    arguments:
+      - name: --input
+        __merge__: /src/api/file_raw.yaml
+        direction: input
+        required: true
+  - name: Outputs
+    arguments:
+      - name: --output_dataset
+        __merge__: /src/api/file_common_dataset.yaml
+        direction: output
+        required: true
+      - name: --output_normalized
+        __merge__: /src/api/file_normalized.yaml
+        direction: output
+        required: false
+      - name: --output_hvg
+        __merge__: /src/api/file_hvg.yaml
+        direction: output
+        required: false
+      - name: --output_pca
+        __merge__: /src/api/file_pca.yaml
+        direction: output
+        required: false
+resources:
+  - type: nextflow_script
+    path: main.nf
+    entrypoint: run_wf
+dependencies:
+  - name: normalization/log_cp
+  - name: processors/hvg
+  - name: processors/pca
+  - name: processors/knn
+  - name: validation/validate_dataset
+runners:
+  - type: nextflow

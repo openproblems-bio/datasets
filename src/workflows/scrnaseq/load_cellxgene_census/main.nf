@@ -10,43 +10,17 @@ workflow run_wf {
   input_ch
 
   main:
-
-  // create different normalization methods by overriding the defaults
-  normalization_methods = [
-    log_cp.run(
-      key: "log_cp10k",
-      args: [normalization_id: "log_cp10k", n_cp: 10000],
-    ),
-    log_cp.run(
-      key: "log_cpm",
-      args: [normalization_id: "log_cpm", n_cp: 1000000],
-    ),
-    sqrt_cp.run(
-      key: "sqrt_cp10k",
-      args: [normalization_id: "sqrt_cp10k", n_cp: 10000],
-    ),
-    sqrt_cp.run(
-      key: "sqrt_cpm",
-      args: [normalization_id: "sqrt_cpm", n_cp: 1000000],
-    ),
-    l1_sqrt.run(
-      key: "l1_sqrt",
-      args: [normalization_id: "l1_sqrt"],
-    ),
-    log_scran_pooling.run(
-      key: "log_scran_pooling",
-      args: [normalization_id: "log_scran_pooling"],
-    )
-  ]
-
   output_ch = input_ch
 
-    // store original id for later use
+    // a moving release would give a different dataset for the same parameters
     | map{ id, state ->
-      [id, state + [_meta: [join_id: id]]]
+      if (!state.input_uri && !(state.census_version ==~ /\d{4}-\d{2}-\d{2}/)) {
+        error "Dataset '${id}': --census_version must be the date of a Census release, got '${state.census_version}'"
+      }
+      [id, state]
     }
 
-    // fetch data from legacy openproblems
+    // fetch data from the CELLxGENE Census
     | cellxgene_census.run(
       fromState: [
         "input_uri": "input_uri",
@@ -67,7 +41,8 @@ workflow run_wf {
       ],
       toState: ["output_raw": "output"]
     )
-    
+
+
     // subsample if so desired
     | subsample.run(
       runIf: { id, state -> state.do_subsample },
@@ -85,57 +60,13 @@ workflow run_wf {
       toState: ["output_raw": "output"]
     )
 
-    | runEach(
-      components: normalization_methods,
-      id: { id, state, comp ->
-        if (state.normalization_methods.size() > 1) {
-          id + "/" + comp.name
-        } else {
-          id
-        }
-      },
-      filter: { id, state, comp ->
-        comp.name in state.normalization_methods
-      },
-      fromState: ["input": "output_raw"],
-      toState: { id, output, state, comp ->
-        state + [
-          output_normalized: output.output,
-          normalization_id: comp.name
-        ]
-      }
+    // fail before publishing anything that does not match the raw format
+    | validate_dataset.run(
+      fromState: ["input_raw": "output_raw"],
+      toState: { id, output, state -> state }
     )
 
-    | hvg.run(
-      fromState: ["input": "output_normalized"],
-      toState: ["output_hvg": "output"]
-    )
-
-    | pca.run(
-      fromState: ["input": "output_hvg"],
-      toState: ["output_pca": "output" ]
-    )
-
-    | knn.run(
-      fromState: ["input": "output_pca"],
-      toState: ["output_knn": "output"]
-    )
-
-    // add synonym
-    | map{ id, state ->
-      [id, state + [output_dataset: state.output_knn]]
-    }
-
-    // only output the files for which an output file was specified
-    | setState([
-      "output_dataset",
-      "output_raw",
-      "output_normalized",
-      "output_pca",
-      "output_hvg",
-      "output_knn",
-      "_meta"
-    ])
+    | setState(["output_raw"])
 
   emit:
   output_ch

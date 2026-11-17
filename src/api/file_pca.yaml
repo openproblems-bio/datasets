@@ -17,7 +17,7 @@ info:
         description: The PCA loadings matrix.
         required: true
     uns:
-      - type: double
+      - type: object
         name: pca_variance
         description: The PCA variance objects.
         required: true

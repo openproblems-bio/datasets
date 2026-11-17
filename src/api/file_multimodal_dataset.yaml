@@ -220,7 +220,6 @@ info:
         type: string
         description: Bibtex reference of the paper in which the dataset was published.
         required: false
-        multiple: true
 
       - name: dataset_summary
         type: string
@@ -236,7 +235,6 @@ info:
         type: string
         description: The organism of the sample in the dataset.
         required: false
-        multiple: true
 
       - type: string
         name: normalization_id

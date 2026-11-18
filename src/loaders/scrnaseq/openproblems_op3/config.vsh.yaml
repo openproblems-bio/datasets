@@ -53,11 +53,18 @@ argument_groups:
         type: string
         description: "Detailed description of the dataset"
         default: "The OP3 dataset is to-date the largest single-cell small molecule perturbation dataset in primary tissue with multiple donor replicates."
-      - name: "dataset_reference"
+      - name: "--dataset_reference"
         type: string
+        multiple: true
         description: "Bibtex reference of the paper in which the dataset was published."
         required: false
-        default: GSE279945
+        default: [GSE279945]
+      - name: "--dataset_organism"
+        type: string
+        multiple: true
+        description: "The organism of the dataset."
+        required: false
+        default: [homo_sapiens]
       - name: "--dataset_url"
         type: string
         description: "Link to the original source of the dataset."

@@ -1,4 +1,5 @@
 import cellxgene_census
+import pandas as pd
 import scanpy as sc
 import logging
 
@@ -20,10 +21,15 @@ par = {
     "dataset_reference": "ref",
     "dataset_summary": "summ",
     "dataset_description": "desc",
-    "dataset_organism": "mus_musculus",
     "output": "output.zarr",
 }
 ## VIASH END
+
+# organisms in the Census, with their NCBI Taxonomy term
+CENSUS_ORGANISMS = {
+    "homo_sapiens": ("Homo sapiens", "NCBITaxon:9606"),
+    "mus_musculus": ("Mus musculus", "NCBITaxon:10090"),
+}
 
 def connect_census(uri, census_version):
     """
@@ -119,9 +125,18 @@ def add_batch_to_obs(adata, par):
         # store in adata
         adata.obs["batch"] = obs_batch
 
+def add_organism_to_obs(adata, par):
+    logger.info("Add organism to obs.")
+    species = par["species"].lower().replace(" ", "_")
+    if species not in CENSUS_ORGANISMS:
+        raise ValueError(f"Unknown species '{par['species']}', expected one of {list(CENSUS_ORGANISMS)}")
+    label, term_id = CENSUS_ORGANISMS[species]
+    adata.obs["organism"] = pd.Categorical([label] * adata.n_obs)
+    adata.obs["organism_ontology_term_id"] = pd.Categorical([term_id] * adata.n_obs)
+
 def add_metadata_to_uns(adata, par):
     logger.info("Add metadata to the AnnData object.")
-    for key in ["dataset_id", "dataset_name", "dataset_url", "dataset_reference", "dataset_summary", "dataset_description", "dataset_organism"]:
+    for key in ["dataset_id", "dataset_name", "dataset_url", "dataset_reference", "dataset_summary", "dataset_description"]:
         adata.uns[key] = par[key]
 
 def print_unique(adata, column):
@@ -132,7 +147,7 @@ def print_summary(adata):
     logger.info(f"Resulting dataset: {adata}")
 
     logger.info("Summary of dataset:")
-    obs_fields = ["assay", "assay_ontology_term_id", "cell_type", "cell_type_ontology_term_id", "dataset_id", "development_stage", "development_stage_ontology_term_id", "disease", "disease_ontology_term_id", "tissue", "tissue_ontology_term_id", "tissue_general", "tissue_general_ontology_term_id"]
+    obs_fields = ["assay", "assay_ontology_term_id", "cell_type", "cell_type_ontology_term_id", "dataset_id", "development_stage", "development_stage_ontology_term_id", "disease", "disease_ontology_term_id", "organism", "organism_ontology_term_id", "tissue", "tissue_ontology_term_id", "tissue_general", "tissue_general_ontology_term_id"]
     for field in obs_fields:
         print_unique(adata, field)
 def write_anndata(adata, par):
@@ -170,6 +185,9 @@ def main(par, meta):
 
     # add batch to obs
     add_batch_to_obs(adata, par)
+
+    # add organism to obs
+    add_organism_to_obs(adata, par)
 
     # add metadata to uns
     add_metadata_to_uns(adata, par)

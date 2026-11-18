@@ -1,4 +1,5 @@
 import cellxgene_census
+import pandas as pd
 import scanpy as sc
 import tempfile
 import logging
@@ -16,7 +17,6 @@ par = {
     "dataset_reference": "ref",
     "dataset_summary": "summ",
     "dataset_description": "desc",
-    "dataset_organism": "mus_musculus",
     "output": "output.zarr",
 }
 ## VIASH END
@@ -60,9 +60,19 @@ def add_batch_to_obs(adata, par):
         # store in adata
         adata.obs["batch"] = obs_batch
 
+def add_organism_to_obs(adata):
+    # CELLxGENE schema >= 6.0.0 stores the organism in uns instead of obs
+    for key in ["organism", "organism_ontology_term_id"]:
+        if key in adata.obs.columns:
+            continue
+        if key not in adata.uns:
+            raise ValueError(f"Source h5ad has no '{key}' in .obs or .uns")
+        logger.info("Copy .uns['%s'] to .obs", key)
+        adata.obs[key] = pd.Categorical([adata.uns.pop(key)] * adata.n_obs)
+
 def add_metadata_to_uns(adata, par):
     logger.info("Add metadata to the AnnData object.")
-    for key in ["dataset_id", "dataset_name", "dataset_url", "dataset_reference", "dataset_summary", "dataset_description", "dataset_organism"]:
+    for key in ["dataset_id", "dataset_name", "dataset_url", "dataset_reference", "dataset_summary", "dataset_description"]:
         adata.uns[key] = par[key]
 
 def print_unique(adata, column):
@@ -85,6 +95,8 @@ def print_summary(adata):
     print_unique(adata, "development_stage_ontology_term_id")
     print_unique(adata, "disease")
     print_unique(adata, "disease_ontology_term_id")
+    print_unique(adata, "organism")
+    print_unique(adata, "organism_ontology_term_id")
     print_unique(adata, "tissue")
     print_unique(adata, "tissue_ontology_term_id")
     print_unique(adata, "tissue_general")
@@ -112,6 +124,9 @@ def main(par, meta):
 
     # add batch to obs
     add_batch_to_obs(adata, par)
+
+    # add organism to obs
+    add_organism_to_obs(adata)
 
     # add metadata to uns
     add_metadata_to_uns(adata, par)

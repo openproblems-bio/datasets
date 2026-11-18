@@ -83,7 +83,7 @@ assert "cell_type" in output_mod1.obs.columns, "cell_type column not found in mo
 assert "batch" in output_mod1.obs.columns, "batch column not found in mod 1 output obs"
 assert output_mod1.uns["dataset_name"] == "Kaggle22 PBMC (CITE-seq)", "Expected: Kaggle22 PBMC (CITE-seq) as value for dataset_name in mod 1 output uns"
 assert output_mod1.uns["dataset_url"] == "https://www.kaggle.com/competitions/open-problems-multimodal/data", "Expected: https://www.kaggle.com/competitions/open-problems-multimodal/data as value for dataset_url in mod 1 output uns"
-assert output_mod1.uns["dataset_reference"] == "Neurips22", "Expected: Neurips22 as value for dataset_reference in mod 1 output uns"
+assert list(output_mod1.uns["dataset_reference"]) == ["Neurips22"], "Expected: Neurips22 as value for dataset_reference in mod 1 output uns"
 assert output_mod1.uns["dataset_summary"] == "Neurips22 competition dataset", "Expected: Neurips22 competition dataset as value for dataset_summary in mod 1 output uns"
 assert output_mod1.uns["dataset_description"] == "The dataset for this competition comprises single-cell multiomics data collected from mobilized peripheral CD34+ hematopoietic stem and progenitor cells (HSPCs) isolated from four healthy human donors.", "Expected: The dataset for this competition comprises single-cell multiomics data collected from mobilized peripheral CD34+ hematopoietic stem and progenitor cells (HSPCs) isolated from four healthy human donors. as value for dataset_description in mod 1 output uns"
 
@@ -95,6 +95,6 @@ assert "cell_type" in output_mod2.obs.columns, "cell_type column not found in mo
 assert "batch" in output_mod2.obs.columns, "batch column not found in mod 2 output obs"
 assert output_mod2.uns["dataset_name"] == "Kaggle22 PBMC (CITE-seq)", "Expected: Kaggle22 PBMC (CITE-seq) as value for dataset_name in mod 2 output uns"
 assert output_mod2.uns["dataset_url"] == "https://www.kaggle.com/competitions/open-problems-multimodal/data", "Expected: https://www.kaggle.com/competitions/open-problems-multimodal/data as value for dataset_url in mod 2 output uns"
-assert output_mod2.uns["dataset_reference"] == "Neurips22", "Expected: Neurips22 as value for dataset_reference in mod 2 output uns"
+assert list(output_mod2.uns["dataset_reference"]) == ["Neurips22"], "Expected: Neurips22 as value for dataset_reference in mod 2 output uns"
 assert output_mod2.uns["dataset_summary"] == "Neurips22 competition dataset", "Expected: Neurips22 competition dataset as value for dataset_summary in mod 2 output uns"
 assert output_mod2.uns["dataset_description"] == "The dataset for this competition comprises single-cell multiomics data collected from mobilized peripheral CD34+ hematopoietic stem and progenitor cells (HSPCs) isolated from four healthy human donors.", "Expected: The dataset for this competition comprises single-cell multiomics data collected from mobilized peripheral CD34+ hematopoietic stem and progenitor cells (HSPCs) isolated from four healthy human donors. as value for dataset_description in mod 2 output uns"

@@ -17,7 +17,7 @@ par = {
     "dataset_reference": "reference",
     "dataset_summary": "summary",
     "dataset_description": "description",
-    "dataset_organism": "[homo_sapiens, mus_musculus]",
+    "dataset_organism": ["homo_sapiens", "mus_musculus"],
 }
 meta = {
     "resources_dir": "src/loaders/openproblems_v1/"

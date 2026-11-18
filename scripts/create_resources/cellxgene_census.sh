@@ -117,14 +117,8 @@ param_list:
     dataset_reference: steuernagel2022hypomap
     dataset_organism: mus_musculus
 
-normalization_methods: [log_cp10k, sqrt_cp10k, l1_sqrt]
-output_dataset: '$id/dataset.anndata.zarr'
+output_raw: '$id/raw.anndata.zarr'
 output_state: '$id/state.yaml'
-output_raw: force_null
-output_normalized: force_null
-output_pca: force_null
-output_hvg: force_null
-output_knn: force_null
 publish_dir: s3://openproblems-data/resources/datasets/scrnaseq
 HERE
 
@@ -144,7 +138,7 @@ HERE
 tw launch https://github.com/openproblems-bio/datasets.git \
   --revision build/main \
   --pull-latest \
-  --main-script target/nextflow/workflows/scrnaseq/process_cellxgene_census/main.nf \
+  --main-script target/nextflow/workflows/scrnaseq/load_cellxgene_census/main.nf \
   --workspace 53907369739130 \
   --compute-env 6TeIFgV5OY4pJCk8I0bfOh \
   --params-file "/tmp/params.yaml" \

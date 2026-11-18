@@ -4,6 +4,14 @@
 
 * MINOR CHANGE: Bump Viash to 0.9.7.
 
+* MAJOR CHANGE: Split the scRNA-seq workflows into loading and processing. `load_cellxgene_census` and `load_openproblems_op3` (optionally subsample and) write a raw dataset, and `process_scrnaseq` turns any raw dataset into a common dataset with a single normalisation (log CP10k). They replace `process_cellxgene_census` and `process_openproblems_op3`.
+
+* NEW FUNCTIONALITY: `validation/validate_dataset` checks a raw or common dataset against its format in `src/api`. The load and process workflows run it before publishing, so an invalid dataset fails the run.
+
+* MINOR CHANGE: `load_cellxgene_census` requires a dated Census release, since `latest` and `stable` give different datasets over time.
+
+* MINOR CHANGE: Pin BLAS, OpenMP and numba to 4 threads in every Docker image. The PCA (and with it the kNN graph) depended on the number of cores of the machine.
+
 * MAJOR CHANGE: Raw scRNA-seq datasets must have CELLxGENE-style ontology term ids for the assay, cell type, developmental stage, disease, self-reported ethnicity, sex and tissue. The multimodal loaders use a new `file_multimodal_raw` spec, in which these stay optional.
 
 * BUG FIX: The loaders store `uns['dataset_reference']` and `uns['dataset_organism']` as lists, as declared in `src/api`, since a dataset can have several references and organisms. The OP3 loader takes both as arguments instead of hardcoding them.

@@ -1,0 +1,38 @@
+name: Sampling options
+description: Subsample the dataset, e.g. to create test resources.
+arguments:
+  - name: --do_subsample
+    type: boolean
+    default: false
+    description: Whether or not to subsample the dataset.
+  - name: --n_obs
+    type: integer
+    description: Maximum number of observations to be kept. It might end up being
+      less because empty cells / genes are removed.
+    default: 500
+  - name: --n_vars
+    type: integer
+    description: Maximum number of variables to be kept. It might end up being
+      less because empty cells / genes are removed.
+    default: 500
+  - name: --keep_features
+    type: string
+    multiple: true
+    description: A list of genes to keep.
+  - name: --keep_cell_type_categories
+    type: string
+    multiple: true
+    description: Cell types to keep.
+    required: false
+  - name: --keep_batch_categories
+    type: string
+    multiple: true
+    description: Batches to keep.
+    required: false
+  - name: --even
+    type: boolean_true
+    description: Subsample evenly from different batches.
+  - name: --seed
+    type: integer
+    description: A seed for the subsampling.
+    default: 0

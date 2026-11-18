@@ -3656,7 +3656,11 @@ meta = [
         {
           "type" : "docker",
           "env" : [
-            "ANNDATA_ZARR_WRITE_FORMAT=3"
+            "ANNDATA_ZARR_WRITE_FORMAT=3",
+            "OMP_NUM_THREADS=4",
+            "OPENBLAS_NUM_THREADS=4",
+            "MKL_NUM_THREADS=4",
+            "NUMBA_NUM_THREADS=4"
           ]
         }
       ],
@@ -3678,7 +3682,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/loaders/scrnaseq/cellxgene_census",
     "viash_version" : "0.9.7",
-    "git_commit" : "e4181f562fc8f2844d7f798beccaf92cb61ca696",
+    "git_commit" : "6b01edf411dcb737bd9658535b5281018b237267",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -3688,7 +3692,7 @@ meta = [
     "info" : {
       "test_resources" : [
         {
-          "path" : "lamin://openproblems/data-dev/collection/Ajn1Lo8zZomVzKtQ0001",
+          "path" : "lamin://openproblems/data-dev/collection/Ajn1Lo8zZomVzKtQ0003",
           "dest" : "resources_test/common/cxg_mouse_pancreas_atlas",
           "strip_prefix" : "resources_test/datasets/cxg_mouse_pancreas_atlas/"
         }
@@ -3706,7 +3710,7 @@ meta = [
     "source" : "src",
     "target" : "target",
     "config_mods" : [
-      ".runners[.type == \\"nextflow\\"].config.labels := { lowmem : \\"memory = 20.Gb\\", midmem : \\"memory = 50.Gb\\", highmem : \\"memory = 100.Gb\\", lowcpu : \\"cpus = 5\\", midcpu : \\"cpus = 15\\", highcpu : \\"cpus = 30\\", lowtime : \\"time = 1.h\\", midtime : \\"time = 4.h\\", hightime : \\"time = 8.h\\", veryhightime : \\"time = 24.h\\" }\n.engines[.type == \\"docker\\"].setup += { type: \\"docker\\", env: [\\"ANNDATA_ZARR_WRITE_FORMAT=3\\"] }\n"
+      ".runners[.type == \\"nextflow\\"].config.labels := { lowmem : \\"memory = 20.Gb\\", midmem : \\"memory = 50.Gb\\", highmem : \\"memory = 100.Gb\\", lowcpu : \\"cpus = 5\\", midcpu : \\"cpus = 15\\", highcpu : \\"cpus = 30\\", lowtime : \\"time = 1.h\\", midtime : \\"time = 4.h\\", hightime : \\"time = 8.h\\", veryhightime : \\"time = 24.h\\" }\n.engines[.type == \\"docker\\"].setup += { type: \\"docker\\", env: [\\"ANNDATA_ZARR_WRITE_FORMAT=3\\", \\"OMP_NUM_THREADS=4\\", \\"OPENBLAS_NUM_THREADS=4\\", \\"MKL_NUM_THREADS=4\\", \\"NUMBA_NUM_THREADS=4\\"] }\n"
     ],
     "keywords" : [
       "openproblems",

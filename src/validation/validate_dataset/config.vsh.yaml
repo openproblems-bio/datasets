@@ -1,0 +1,32 @@
+name: validate_dataset
+namespace: validation
+description: |
+  Check that a dataset matches its file format in `src/api`. Fails when a required
+  slot is missing, so that an invalid dataset is never published.
+argument_groups:
+  - name: Inputs
+    description: Pass one or more of these files.
+    arguments:
+      - name: --input_raw
+        __merge__: /src/api/file_raw.yaml
+        direction: input
+        required: false
+      - name: --input_dataset
+        __merge__: /src/api/file_common_dataset.yaml
+        direction: input
+        required: false
+resources:
+  - type: python_script
+    path: script.py
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /resources_test/common/cxg_mouse_pancreas_atlas
+engines:
+  - type: docker
+    image: openproblems/base_python:1
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [lowtime, midmem, lowcpu]

@@ -17,7 +17,7 @@ links:
   docker_registry: ghcr.io
 config_mods: |
   .runners[.type == "nextflow"].config.labels := { lowmem : "memory = 20.Gb", midmem : "memory = 50.Gb", highmem : "memory = 100.Gb", lowcpu : "cpus = 5", midcpu : "cpus = 15", highcpu : "cpus = 30", lowtime : "time = 1.h", midtime : "time = 4.h", hightime : "time = 8.h", veryhightime : "time = 24.h" }
-  .engines[.type == "docker"].setup += { type: "docker", env: ["ANNDATA_ZARR_WRITE_FORMAT=3"] }
+  .engines[.type == "docker"].setup += { type: "docker", env: ["ANNDATA_ZARR_WRITE_FORMAT=3", "OMP_NUM_THREADS=4", "OPENBLAS_NUM_THREADS=4", "MKL_NUM_THREADS=4", "NUMBA_NUM_THREADS=4"] }
 repositories:
   - name: openproblems
     type: github
@@ -26,7 +26,7 @@ repositories:
 info:
   test_resources:
     # created by scripts/create_test_resources/cxg_mouse_pancreas_atlas.ipynb
-    - path: lamin://openproblems/data-dev/collection/Ajn1Lo8zZomVzKtQ0001
+    - path: lamin://openproblems/data-dev/collection/Ajn1Lo8zZomVzKtQ0003
       dest: resources_test/common/cxg_mouse_pancreas_atlas
       strip_prefix: resources_test/datasets/cxg_mouse_pancreas_atlas/
 version: build_main

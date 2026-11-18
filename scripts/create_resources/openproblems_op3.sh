@@ -1,5 +1,5 @@
 #!/bin/bash
-#It is an example how to set parameters and execute processing for the op3 dataset.
+# Load the OP3 dataset as a raw dataset.
 set -e
 
 params_file="/tmp/datasets_op3.yaml"
@@ -13,16 +13,9 @@ param_list:
     dataset_description: "The OP3 dataset is to-date the largest single-cell small molecule perturbation dataset in primary tissue with multiple donor replicates."
     dataset_url: "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE279nnn/GSE279945/suppl/GSE279945_sc_counts_processed.h5ad"
     dataset_reference: GSE279945
-normalization_methods: 
-  - log_cp10k
-output_dataset: '$id/dataset.anndata.zarr'
 do_subsample: False
+output_raw: '$id/raw.anndata.zarr'
 output_state: '$id/state.yaml'
-output_raw: force_null
-output_normalized: force_null
-output_pca: force_null
-output_hvg: force_null
-output_knn: force_null
 publish_dir: s3://openproblems-data/resources/datasets
 HERE
 
@@ -38,7 +31,7 @@ HERE
 tw launch https://github.com/openproblems-bio/datasets.git \
  --revision build/main \
  --pull-latest \
- --main-script target/nextflow/workflows/scrnaseq/process_openproblems_op3/main.nf \
+ --main-script target/nextflow/workflows/scrnaseq/load_openproblems_op3/main.nf \
  --workspace 53907369739130 \
  --params-file "$params_file" \
  --labels op3,dataset_loader \

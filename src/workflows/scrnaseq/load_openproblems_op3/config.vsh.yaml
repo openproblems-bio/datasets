@@ -49,6 +49,7 @@ argument_groups:
         default: https://ftp.ncbi.nlm.nih.gov/geo/series/GSE279nnn/GSE279945/suppl/GSE279945_sc_counts_processed.h5ad
       - name: --dataset_reference
         type: string
+        multiple: true
         description: "Bibtex reference of the paper in which the dataset was published."
         required: false
         default: GSE279945

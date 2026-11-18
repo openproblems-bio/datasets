@@ -49,7 +49,7 @@ assert adata.uns["dataset_id"] == dataset_id, f"Expected {dataset_id} as value"
 assert adata.uns["dataset_name"] == dataset_name, f"Expected {dataset_name} as value"
 assert adata.uns["dataset_url"] == dataset_url, f"Expected {dataset_url} as value"
 assert adata.uns["dataset_summary"] == dataset_summary, f"Expected {dataset_summary} as value"
-assert adata.uns["dataset_organism"] == dataset_organism, f"Expected {dataset_organism} as value"
+assert list(adata.uns["dataset_organism"]) == [dataset_organism], f"Expected {dataset_organism} as value"
 assert 'spatial' in adata.obsm, "Spatial spot coordinates not found in .obsm"
 
 print(">> All tests passed successfully", flush=True)

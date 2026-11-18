@@ -76,7 +76,7 @@ assert "cell_type" in output_mod1.obs.columns, "cell_type column not found in mo
 assert "batch" in output_mod1.obs.columns, "batch column not found in mod 1 output obs"
 assert output_mod1.uns["dataset_name"] == "BMMC (Multiome)", "Expected: Pancreas as value for dataset_name in mod 1 output uns"
 assert output_mod1.uns["dataset_url"] == "http://foo.org", "Expected: http://foo.org as value for dataset_url in mod 1 output uns"
-assert output_mod1.uns["dataset_reference"] == "foo2000bar", "Expected: foo2000bar as value for dataset_reference in mod 1 output uns"
+assert list(output_mod1.uns["dataset_reference"]) == ["foo2000bar"], "Expected: foo2000bar as value for dataset_reference in mod 1 output uns"
 assert output_mod1.uns["dataset_summary"] == "A short summary.", "Expected: A short summary. as value for dataset_summary in mod 1 output uns"
 assert output_mod1.uns["dataset_description"] == "A couple of paragraphs worth of text.", "Expected: A couple of paragraphs worth of text. as value for dataset_description in mod 1 output uns"
 
@@ -88,6 +88,6 @@ assert "cell_type" in output_mod2.obs.columns, "cell_type column not found in mo
 assert "batch" in output_mod2.obs.columns, "batch column not found in mod 2 output obs"
 assert output_mod2.uns["dataset_name"] == "BMMC (Multiome)", "Expected: Pancreas as value for dataset_name in mod 2 output uns"
 assert output_mod2.uns["dataset_url"] == "http://foo.org", "Expected: http://foo.org as value for dataset_url in mod 2 output uns"
-assert output_mod2.uns["dataset_reference"] == "foo2000bar", "Expected: foo2000bar as value for dataset_reference in mod 2 output uns"
+assert list(output_mod2.uns["dataset_reference"]) == ["foo2000bar"], "Expected: foo2000bar as value for dataset_reference in mod 2 output uns"
 assert output_mod2.uns["dataset_summary"] == "A short summary.", "Expected: A short summary. as value for dataset_summary in mod 2 output uns"
 assert output_mod2.uns["dataset_description"] == "A couple of paragraphs worth of text.", "Expected: A couple of paragraphs worth of text. as value for dataset_description in mod 2 output uns"

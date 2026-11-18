@@ -17,6 +17,8 @@ par = {
     "dataset_name": "OP3: single-cell multimodal dataset in PBMCs for perturbation prediction benchmarking",
     "dataset_summary": "The Open Problems Perurbation Prediction (OP3) dataset with small molecule perturbations in PBMCs",
     "dataset_description": "The OP3 dataset is to-date the largest single-cell small molecule perturbation dataset in primary tissue with multiple donor replicates.",
+    "dataset_reference": ["GSE279945"],
+    "dataset_organism": ["homo_sapiens"],
     "output": "output.zarr",
 }
 meta = {}
@@ -151,9 +153,9 @@ def add_metadata_to_uns(adata, par):
     adata.uns['dataset_name'] = par["dataset_name"]
     adata.uns['dataset_summary'] = par["dataset_summary"]
     adata.uns['dataset_description'] = par["dataset_description"]
-    adata.uns['dataset_organism'] = 'Homo sapiens'
+    adata.uns['dataset_organism'] = par["dataset_organism"]
     adata.uns['dataset_url'] = par["dataset_url"]
-    adata.uns['dataset_reference'] = 'GSE279945'
+    adata.uns['dataset_reference'] = par["dataset_reference"]
     adata.uns['dataset_version'] = '1.0.0'
     adata.uns['processing_status'] = 'processed'
 

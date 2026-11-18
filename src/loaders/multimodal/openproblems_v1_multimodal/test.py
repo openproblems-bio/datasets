@@ -62,7 +62,7 @@ if obs_tissue:
 assert output_mod1.uns["dataset_id"] == dataset_id, f"Expected: {dataset_id} as value for dataset_id in mod 1 output uns"
 assert output_mod1.uns["dataset_name"] == "Pancreas", "Expected: Pancreas as value for dataset_name in mod 1 output uns"
 assert output_mod1.uns["dataset_url"] == "http://foo.org", "Expected: http://foo.org as value for dataset_url in mod 1 output uns"
-assert output_mod1.uns["dataset_reference"] == "foo2000bar", "Expected: foo2000bar as value for dataset_reference in mod 1 output uns"
+assert list(output_mod1.uns["dataset_reference"]) == ["foo2000bar"], "Expected: foo2000bar as value for dataset_reference in mod 1 output uns"
 assert output_mod1.uns["dataset_summary"] == "A short summary.", "Expected: A short summary. as value for dataset_summary in mod 1 output uns"
 assert output_mod1.uns["dataset_description"] == "A couple of paragraphs worth of text.", "Expected: A couple of paragraphs worth of text. as value for dataset_description in mod 1 output uns"
 
@@ -78,7 +78,7 @@ if obs_tissue:
 assert output_mod2.uns["dataset_id"] == dataset_id, f"Expected: {dataset_id} as value for dataset_id in mod 2 output uns"
 assert output_mod2.uns["dataset_name"] == "Pancreas", "Expected: Pancreas as value for dataset_name in mod 2 output uns"
 assert output_mod2.uns["dataset_url"] == "http://foo.org", "Expected: http://foo.org as value for dataset_url in mod 2 output uns"
-assert output_mod2.uns["dataset_reference"] == "foo2000bar", "Expected: foo2000bar as value for dataset_reference in mod 2 output uns"
+assert list(output_mod2.uns["dataset_reference"]) == ["foo2000bar"], "Expected: foo2000bar as value for dataset_reference in mod 2 output uns"
 assert output_mod2.uns["dataset_summary"] == "A short summary.", "Expected: A short summary. as value for dataset_summary in mod 2 output uns"
 assert output_mod2.uns["dataset_description"] == "A couple of paragraphs worth of text.", "Expected: A couple of paragraphs worth of text. as value for dataset_description in mod 2 output uns"
 

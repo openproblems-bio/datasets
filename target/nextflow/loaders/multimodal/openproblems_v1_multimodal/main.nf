@@ -3169,7 +3169,7 @@ meta = [
           "description" : "Bibtex reference of the paper in which the dataset was published.",
           "required" : false,
           "direction" : "input",
-          "multiple" : false,
+          "multiple" : true,
           "multiple_sep" : ";"
         },
         {
@@ -3196,7 +3196,7 @@ meta = [
           "description" : "The organism of the dataset.",
           "required" : false,
           "direction" : "input",
-          "multiple" : false,
+          "multiple" : true,
           "multiple_sep" : ";"
         }
       ]
@@ -3838,7 +3838,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/loaders/multimodal/openproblems_v1_multimodal",
     "viash_version" : "0.9.7",
-    "git_commit" : "ee5575cb14089f632c4acb54456152259e0f118f",
+    "git_commit" : "e4181f562fc8f2844d7f798beccaf92cb61ca696",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -3919,10 +3919,10 @@ par = {
   'dataset_id': $( if [ ! -z ${VIASH_PAR_DATASET_ID+x} ]; then echo "r'${VIASH_PAR_DATASET_ID//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'dataset_name': $( if [ ! -z ${VIASH_PAR_DATASET_NAME+x} ]; then echo "r'${VIASH_PAR_DATASET_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'dataset_url': $( if [ ! -z ${VIASH_PAR_DATASET_URL+x} ]; then echo "r'${VIASH_PAR_DATASET_URL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'dataset_reference': $( if [ ! -z ${VIASH_PAR_DATASET_REFERENCE+x} ]; then echo "r'${VIASH_PAR_DATASET_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'dataset_reference': $( if [ ! -z ${VIASH_PAR_DATASET_REFERENCE+x} ]; then echo "r'${VIASH_PAR_DATASET_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'dataset_summary': $( if [ ! -z ${VIASH_PAR_DATASET_SUMMARY+x} ]; then echo "r'${VIASH_PAR_DATASET_SUMMARY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'dataset_description': $( if [ ! -z ${VIASH_PAR_DATASET_DESCRIPTION+x} ]; then echo "r'${VIASH_PAR_DATASET_DESCRIPTION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'dataset_organism': $( if [ ! -z ${VIASH_PAR_DATASET_ORGANISM+x} ]; then echo "r'${VIASH_PAR_DATASET_ORGANISM//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'dataset_organism': $( if [ ! -z ${VIASH_PAR_DATASET_ORGANISM+x} ]; then echo "r'${VIASH_PAR_DATASET_ORGANISM//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'output_mod1': $( if [ ! -z ${VIASH_PAR_OUTPUT_MOD1+x} ]; then echo "r'${VIASH_PAR_OUTPUT_MOD1//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_mod2': $( if [ ! -z ${VIASH_PAR_OUTPUT_MOD2+x} ]; then echo "r'${VIASH_PAR_OUTPUT_MOD2//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }

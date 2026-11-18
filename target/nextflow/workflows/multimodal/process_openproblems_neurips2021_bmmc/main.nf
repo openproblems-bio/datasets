@@ -3120,7 +3120,7 @@ meta = [
           "description" : "Bibtex reference of the paper in which the dataset was published.",
           "required" : false,
           "direction" : "input",
-          "multiple" : false,
+          "multiple" : true,
           "multiple_sep" : ";"
         },
         {
@@ -3147,7 +3147,7 @@ meta = [
           "description" : "The organism of the dataset.",
           "required" : false,
           "direction" : "input",
-          "multiple" : false,
+          "multiple" : true,
           "multiple_sep" : ";"
         }
       ]
@@ -3971,7 +3971,7 @@ meta = [
     "engine" : "native",
     "output" : "target/nextflow/workflows/multimodal/process_openproblems_neurips2021_bmmc",
     "viash_version" : "0.9.7",
-    "git_commit" : "ee5575cb14089f632c4acb54456152259e0f118f",
+    "git_commit" : "e4181f562fc8f2844d7f798beccaf92cb61ca696",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {

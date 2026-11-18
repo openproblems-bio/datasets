@@ -48,10 +48,10 @@ def test_cellxgene_extract_metadata_expression(run_component, tmp_path):
     assert adata.uns["dataset_id"] == "test_dataset_id", "Incorrect .uns['dataset_id']"
     assert adata.uns["dataset_name"] == "test_dataset_name", "Incorrect .uns['dataset_name']"
     assert adata.uns["dataset_url"] == "https://test_dataset_url.com", "Incorrect .uns['dataset_url']"
-    assert adata.uns["dataset_reference"] == "test_dataset_reference", "Incorrect .uns['dataset_reference']"
+    assert list(adata.uns["dataset_reference"]) == ["test_dataset_reference"], "Incorrect .uns['dataset_reference']"
     assert adata.uns["dataset_summary"] == "test_dataset_summary", "Incorrect .uns['dataset_summary']"
     assert adata.uns["dataset_description"] == "test_dataset_description", "Incorrect .uns['dataset_description']"
-    assert adata.uns["dataset_organism"] == "test_homo_sapiens", "Incorrect .uns['dataset_organism']"
+    assert list(adata.uns["dataset_organism"]) == ["test_homo_sapiens"], "Incorrect .uns['dataset_organism']"
 
 
 if __name__ == '__main__':

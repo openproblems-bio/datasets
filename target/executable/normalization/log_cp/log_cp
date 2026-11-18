@@ -447,9 +447,9 @@ FROM openproblems/base_python:1
 ENTRYPOINT []
 ENV ANNDATA_ZARR_WRITE_FORMAT=3
 LABEL org.opencontainers.image.description="Companion container for running component normalization log_cp"
-LABEL org.opencontainers.image.created="2026-11-17T11:07:39Z"
+LABEL org.opencontainers.image.created="2026-11-18T10:13:22Z"
 LABEL org.opencontainers.image.source="https://github.com/openproblems-bio/datasets"
-LABEL org.opencontainers.image.revision="ee5575cb14089f632c4acb54456152259e0f118f"
+LABEL org.opencontainers.image.revision="e4181f562fc8f2844d7f798beccaf92cb61ca696"
 LABEL org.opencontainers.image.version="build_main"
 
 VIASHDOCKER

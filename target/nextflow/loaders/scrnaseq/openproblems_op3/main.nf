@@ -3430,14 +3430,26 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "dataset_reference",
+          "name" : "--dataset_reference",
           "description" : "Bibtex reference of the paper in which the dataset was published.",
           "default" : [
             "GSE279945"
           ],
           "required" : false,
           "direction" : "input",
-          "multiple" : false,
+          "multiple" : true,
+          "multiple_sep" : ";"
+        },
+        {
+          "type" : "string",
+          "name" : "--dataset_organism",
+          "description" : "The organism of the dataset.",
+          "default" : [
+            "homo_sapiens"
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : true,
           "multiple_sep" : ";"
         },
         {
@@ -3562,7 +3574,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/loaders/scrnaseq/openproblems_op3",
     "viash_version" : "0.9.7",
-    "git_commit" : "ee5575cb14089f632c4acb54456152259e0f118f",
+    "git_commit" : "e4181f562fc8f2844d7f798beccaf92cb61ca696",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -3642,7 +3654,8 @@ par = {
   'dataset_name': $( if [ ! -z ${VIASH_PAR_DATASET_NAME+x} ]; then echo "r'${VIASH_PAR_DATASET_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'dataset_summary': $( if [ ! -z ${VIASH_PAR_DATASET_SUMMARY+x} ]; then echo "r'${VIASH_PAR_DATASET_SUMMARY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'dataset_description': $( if [ ! -z ${VIASH_PAR_DATASET_DESCRIPTION+x} ]; then echo "r'${VIASH_PAR_DATASET_DESCRIPTION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'dataset_reference': $( if [ ! -z ${VIASH_PAR_DATASET_REFERENCE+x} ]; then echo "r'${VIASH_PAR_DATASET_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
+  'dataset_reference': $( if [ ! -z ${VIASH_PAR_DATASET_REFERENCE+x} ]; then echo "r'${VIASH_PAR_DATASET_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
+  'dataset_organism': $( if [ ! -z ${VIASH_PAR_DATASET_ORGANISM+x} ]; then echo "r'${VIASH_PAR_DATASET_ORGANISM//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'dataset_url': $( if [ ! -z ${VIASH_PAR_DATASET_URL+x} ]; then echo "r'${VIASH_PAR_DATASET_URL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
 meta = {
@@ -3800,9 +3813,9 @@ def add_metadata_to_uns(adata, par):
     adata.uns['dataset_name'] = par["dataset_name"]
     adata.uns['dataset_summary'] = par["dataset_summary"]
     adata.uns['dataset_description'] = par["dataset_description"]
-    adata.uns['dataset_organism'] = 'Homo sapiens'
+    adata.uns['dataset_organism'] = par["dataset_organism"]
     adata.uns['dataset_url'] = par["dataset_url"]
-    adata.uns['dataset_reference'] = 'GSE279945'
+    adata.uns['dataset_reference'] = par["dataset_reference"]
     adata.uns['dataset_version'] = '1.0.0'
     adata.uns['processing_status'] = 'processed'
 

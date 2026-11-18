@@ -3158,7 +3158,7 @@ meta = [
           ],
           "required" : false,
           "direction" : "input",
-          "multiple" : false,
+          "multiple" : true,
           "multiple_sep" : ";"
         },
         {
@@ -3398,7 +3398,7 @@ meta = [
                   "required" : true
                 },
                 {
-                  "type" : "double",
+                  "type" : "object",
                   "name" : "pca_variance",
                   "description" : "The PCA variance objects.",
                   "required" : true
@@ -4267,7 +4267,7 @@ meta = [
                   "required" : true
                 },
                 {
-                  "type" : "double",
+                  "type" : "object",
                   "name" : "pca_variance",
                   "description" : "The PCA variance objects.",
                   "required" : true
@@ -4449,7 +4449,7 @@ meta = [
                 {
                   "type" : "string",
                   "name" : "tissue_general_ontology_term_id",
-                  "description" : "Ontology term identifier for the general tissue category, aiding in standardizing and grouping tissue types.\n\nFor organoid or tissue samples, the Uber-anato''' + '''my ontology (`UBERON:`) is used. The term ids must be a child term of `UBERON:0001062` (anatomical entity).\nFor cell cultures, the Cell Ontology (`CL:`) is used. The term ids cannot be `CL:0000255`, `CL:0000257` or `CL:0000548`.\n",
+                  "description" : "Ontology term identifier for the general tissue category, aiding in standardizing and grouping tissue types.\n\nFor organoid or tissue samples, the Uber-anatom''' + '''y ontology (`UBERON:`) is used. The term ids must be a child term of `UBERON:0001062` (anatomical entity).\nFor cell cultures, the Cell Ontology (`CL:`) is used. The term ids cannot be `CL:0000255`, `CL:0000257` or `CL:0000548`.\n",
                   "required" : false
                 },
                 {
@@ -4865,7 +4865,7 @@ meta = [
                   "required" : true
                 },
                 {
-                  "type" : "double",
+                  "type" : "object",
                   "name" : "pca_variance",
                   "description" : "The PCA variance objects.",
                   "required" : true
@@ -5232,7 +5232,7 @@ meta = [
     "engine" : "native",
     "output" : "target/nextflow/workflows/scrnaseq/process_openproblems_op3",
     "viash_version" : "0.9.7",
-    "git_commit" : "ee5575cb14089f632c4acb54456152259e0f118f",
+    "git_commit" : "e4181f562fc8f2844d7f798beccaf92cb61ca696",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {

@@ -94,6 +94,7 @@ argument_groups:
         required: false
       - name: --dataset_reference
         type: string
+        multiple: true
         description: Bibtex reference of the paper in which the dataset was published.
         required: false
       - name: --dataset_summary
@@ -106,6 +107,7 @@ argument_groups:
         required: true
       - name: --dataset_organism
         type: string
+        multiple: true
         description: The organism of the dataset.
         required: true
   - name: Sampling options

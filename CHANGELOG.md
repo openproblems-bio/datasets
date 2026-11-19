@@ -28,6 +28,8 @@
 
 * MINOR CHANGE: Component tests use the `cxg_mouse_pancreas_atlas` test resources instead of the deprecated `pancreas` ones. Its notebook now keeps every processing step.
 
+* BUG FIX: `processors/pca` stored the explained variance and the variance ratio under each other's name in `uns['pca_variance']`.
+
 * BUG FIX: `processors/subsample` no longer fails when the `--keep_*` filters leave fewer cells than `--n_obs`.
 
 * MINOR CHANGE: Failed Nextflow processes are no longer ignored, so a failing dataset fails the run.

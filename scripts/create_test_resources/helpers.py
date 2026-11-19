@@ -12,6 +12,8 @@ from pathlib import Path
 
 import lamindb as ln
 
+import lamin_annotate
+
 INSTANCE = "openproblems/data-dev"
 PROJECT = "openproblems-bio/datasets"
 REPO_URL = "https://github.com/openproblems-bio/datasets"
@@ -22,6 +24,15 @@ def git(*args):
 
 
 REPO_ROOT = Path(git("rev-parse", "--show-toplevel"))
+
+# file format of each processing step of a scRNA-seq dataset
+SCRNASEQ_SPECS = {
+  "raw.anndata.zarr": "src/api/file_raw.yaml",
+  "normalized.anndata.zarr": "src/api/file_normalized.yaml",
+  "hvg.anndata.zarr": "src/api/file_hvg.yaml",
+  "pca.anndata.zarr": "src/api/file_pca.yaml",
+  "dataset.anndata.zarr": "src/api/file_common_dataset.yaml",
+}
 
 
 def check_instance():
@@ -54,6 +65,13 @@ def run_workflow(workflow, params, highmem=None, output_dir=None):
   run to publish into the same directory.
   """
   output_dir = Path(output_dir or tempfile.mkdtemp())
+
+  # record the parameters on the run, e.g. which source release and query a dataset came from
+  run = ln.context.run
+  if run is not None:
+    run.params = {**(run.params or {}), workflow: params}
+    run.save()
+
   params_file = output_dir / f"params_{workflow.replace('/', '_')}.json"
   params_file.write_text(json.dumps({**params, "publish_dir": str(output_dir)}))
   configs = ["-c", "common/nextflow_helpers/labels_ci.config"]
@@ -76,20 +94,30 @@ def run_workflow(workflow, params, highmem=None, output_dir=None):
   return output_dir
 
 
-def save_collection(output_dir, files, key, description):
+def save_collection(output_dir, files, key, description, specs=None, modality=None):
   """Store each file as an artifact under `key` and group them in a collection with that key.
 
   Earlier versions keep their files, so a pinned version of the collection stays downloadable.
+  Files with a file format in `specs` are annotated with everything the website shows about
+  a dataset (see `lamin_annotate`).
   """
-  artifacts = [
-    ln.Artifact(
+  specs = specs or {}
+  artifacts = []
+  for file in files:
+    artifact = ln.Artifact(
       output_dir / file,
       key=f"{key}/{file}",
       description=f"{description}: {file}",
       overwrite_versions=False,
     ).save()
-    for file in files
-  ]
+    if file in specs:
+      lamin_annotate.annotate_artifact(
+        artifact,
+        REPO_ROOT / specs[file],
+        modality=modality,
+        bib_path=REPO_ROOT / "common/library.bib",
+      )
+    artifacts.append(artifact)
   collection = ln.Collection(artifacts, key=key, description=description).save()
   print(f"lamin://{INSTANCE}/collection/{collection.uid}")
   return collection

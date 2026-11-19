@@ -451,15 +451,15 @@ RUN Rscript -e 'options(warn = 2); if (!requireNamespace("remotes", quietly = TR
 RUN pip install --upgrade pip && \
   pip install --upgrade --no-cache-dir "scanpy"
 
-ENV ANNDATA_ZARR_WRITE_FORMAT=3
+ENV ANNDATA_AUTO_SHARD_ZARR_V3=1
 ENV OMP_NUM_THREADS=4
 ENV OPENBLAS_NUM_THREADS=4
 ENV MKL_NUM_THREADS=4
 ENV NUMBA_NUM_THREADS=4
 LABEL org.opencontainers.image.description="Companion container for running component normalization log_scran_pooling"
-LABEL org.opencontainers.image.created="2026-11-19T07:57:53Z"
+LABEL org.opencontainers.image.created="2026-11-19T11:27:54Z"
 LABEL org.opencontainers.image.source="https://github.com/openproblems-bio/datasets"
-LABEL org.opencontainers.image.revision="0ca9c8c755cbd503a0d6fc99090b2de4d2b02644"
+LABEL org.opencontainers.image.revision="d07870320ba0e85889358ac8c8ac2270313e9353"
 LABEL org.opencontainers.image.version="build_main"
 
 VIASHDOCKER
@@ -1107,7 +1107,7 @@ trap clean_up EXIT
 trap interrupt INT SIGINT
 cat > "\$tempscript" << 'VIASHMAIN'
 cat(">> Loading dependencies\\n")
-library(anndata, warn.conflicts = FALSE)
+requireNamespace("reticulate", quietly = TRUE)
 requireNamespace("scran", quietly = TRUE)
 requireNamespace("BiocParallel", quietly = TRUE)
 library(Matrix, warn.conflicts = FALSE)
@@ -1156,9 +1156,10 @@ rm(.viash_orig_warn)
 ## VIASH END
 
 cat(">> Load data\\n")
-# anndata::read_zarr() calls itself in R anndata 0.8.0, read through python instead
-adata <- reticulate::import("anndata")\$read_zarr(par\$input)
-counts <- as(t(adata\$layers[["counts"]]), "CsparseMatrix")
+# read through python anndata, since anndataR can't read sharded zarr yet
+ad <- reticulate::import("anndata", convert = FALSE)
+adata <- ad\$read_zarr(par\$input)
+counts <- as(t(reticulate::py_to_r(adata\$layers[["counts"]])), "CsparseMatrix")
 
 cat(">> Normalizing data\\n")
 size_factors <- scran::calculateSumFactors(
@@ -1166,19 +1167,19 @@ size_factors <- scran::calculateSumFactors(
   min.mean = 0.1,
   BPPARAM = BiocParallel::MulticoreParam()
 )
-lognorm <- log1p(sweep(adata\$layers[["counts"]], 1, size_factors, "*"))
+lognorm <- log1p(Matrix::Diagonal(x = size_factors) %*% Matrix::t(counts))
 
 cat(">> Storing in anndata\\n")
-adata\$obs[[par\$obs_size_factors]] <- size_factors
-adata\$layers[[par\$layer_output]] <- lognorm
 norm_id <- par[["normalization_id"]]
 if (is.null(norm_id)) {
   norm_id <- meta[["name"]]
 }
-adata\$uns[["normalization_id"]] <- norm_id
+reticulate::py_set_item(adata\$obs, par\$obs_size_factors, reticulate::r_to_py(size_factors))
+reticulate::py_set_item(adata\$layers, par\$layer_output, reticulate::r_to_py(as(lognorm, "CsparseMatrix")))
+reticulate::py_set_item(adata\$uns, "normalization_id", norm_id)
 
 cat(">> Writing to file\\n")
-zzz <- adata\$write_zarr(par\$output)
+adata\$write_zarr(par\$output)
 VIASHMAIN
 Rscript "\$tempscript" &
 wait "\$!"

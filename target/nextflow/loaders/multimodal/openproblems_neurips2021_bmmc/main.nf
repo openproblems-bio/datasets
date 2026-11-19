@@ -3763,7 +3763,7 @@ meta = [
         {
           "type" : "docker",
           "env" : [
-            "ANNDATA_ZARR_WRITE_FORMAT=3",
+            "ANNDATA_AUTO_SHARD_ZARR_V3=1",
             "OMP_NUM_THREADS=4",
             "OPENBLAS_NUM_THREADS=4",
             "MKL_NUM_THREADS=4",
@@ -3779,7 +3779,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/loaders/multimodal/openproblems_neurips2021_bmmc",
     "viash_version" : "0.9.7",
-    "git_commit" : "0ca9c8c755cbd503a0d6fc99090b2de4d2b02644",
+    "git_commit" : "d07870320ba0e85889358ac8c8ac2270313e9353",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -3789,7 +3789,7 @@ meta = [
     "info" : {
       "test_resources" : [
         {
-          "path" : "lamin://openproblems/data-dev/collection/Ajn1Lo8zZomVzKtQ0004",
+          "path" : "lamin://openproblems/data-dev/collection/Ajn1Lo8zZomVzKtQ0005",
           "dest" : "resources_test/common/cxg_mouse_pancreas_atlas",
           "strip_prefix" : "resources_test/datasets/cxg_mouse_pancreas_atlas/"
         }
@@ -3807,7 +3807,7 @@ meta = [
     "source" : "src",
     "target" : "target",
     "config_mods" : [
-      ".runners[.type == \\"nextflow\\"].config.labels := { lowmem : \\"memory = 20.Gb\\", midmem : \\"memory = 50.Gb\\", highmem : \\"memory = 100.Gb\\", lowcpu : \\"cpus = 5\\", midcpu : \\"cpus = 15\\", highcpu : \\"cpus = 30\\", lowtime : \\"time = 1.h\\", midtime : \\"time = 4.h\\", hightime : \\"time = 8.h\\", veryhightime : \\"time = 24.h\\" }\n.engines[.type == \\"docker\\"].setup += { type: \\"docker\\", env: [\\"ANNDATA_ZARR_WRITE_FORMAT=3\\", \\"OMP_NUM_THREADS=4\\", \\"OPENBLAS_NUM_THREADS=4\\", \\"MKL_NUM_THREADS=4\\", \\"NUMBA_NUM_THREADS=4\\"] }\n"
+      ".runners[.type == \\"nextflow\\"].config.labels := { lowmem : \\"memory = 20.Gb\\", midmem : \\"memory = 50.Gb\\", highmem : \\"memory = 100.Gb\\", lowcpu : \\"cpus = 5\\", midcpu : \\"cpus = 15\\", highcpu : \\"cpus = 30\\", lowtime : \\"time = 1.h\\", midtime : \\"time = 4.h\\", hightime : \\"time = 8.h\\", veryhightime : \\"time = 24.h\\" }\n.engines[.type == \\"docker\\"].setup += { type: \\"docker\\", env: [\\"ANNDATA_AUTO_SHARD_ZARR_V3=1\\", \\"OMP_NUM_THREADS=4\\", \\"OPENBLAS_NUM_THREADS=4\\", \\"MKL_NUM_THREADS=4\\", \\"NUMBA_NUM_THREADS=4\\"] }\n"
     ],
     "keywords" : [
       "openproblems",
@@ -3931,6 +3931,7 @@ mod1_var.reset_index("feature_name", inplace=True)
 mod1_var["feature_id"] = np.where(mod1_var.gene_id.isna(), mod1_var.feature_name, mod1_var.gene_id.astype(str))
 mod1_var.drop("gene_id", axis=1, inplace=True)
 mod1_var.set_index("feature_id", drop=False, inplace=True)
+mod1_var.index.name = None
 
 mod1_obs = pd.DataFrame(adata_mod1.obs)
 remove_mod_col(mod1_obs, par["mod2"])
@@ -3951,6 +3952,7 @@ mod2_var.reset_index("feature_name", inplace=True)
 mod2_var["feature_id"] = np.where(mod2_var.gene_id.isna(), mod2_var.feature_name, mod2_var.gene_id.astype(str))
 mod2_var.drop("gene_id", axis=1, inplace=True)
 mod2_var.set_index("feature_id", drop=False, inplace=True)
+mod2_var.index.name = None
 
 mod2_obs = pd.DataFrame(adata_mod2.obs)
 remove_mod_col(mod2_obs, par["mod1"])

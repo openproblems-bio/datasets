@@ -445,15 +445,15 @@ function ViashDockerfile {
     cat << 'VIASHDOCKER'
 FROM openproblems/base_python:1
 ENTRYPOINT []
-ENV ANNDATA_ZARR_WRITE_FORMAT=3
+ENV ANNDATA_AUTO_SHARD_ZARR_V3=1
 ENV OMP_NUM_THREADS=4
 ENV OPENBLAS_NUM_THREADS=4
 ENV MKL_NUM_THREADS=4
 ENV NUMBA_NUM_THREADS=4
 LABEL org.opencontainers.image.description="Companion container for running component loaders/multimodal openproblems_neurips2021_bmmc"
-LABEL org.opencontainers.image.created="2026-11-19T07:57:53Z"
+LABEL org.opencontainers.image.created="2026-11-19T11:27:56Z"
 LABEL org.opencontainers.image.source="https://github.com/openproblems-bio/datasets"
-LABEL org.opencontainers.image.revision="0ca9c8c755cbd503a0d6fc99090b2de4d2b02644"
+LABEL org.opencontainers.image.revision="d07870320ba0e85889358ac8c8ac2270313e9353"
 LABEL org.opencontainers.image.version="build_main"
 
 VIASHDOCKER
@@ -1321,6 +1321,7 @@ mod1_var.reset_index("feature_name", inplace=True)
 mod1_var["feature_id"] = np.where(mod1_var.gene_id.isna(), mod1_var.feature_name, mod1_var.gene_id.astype(str))
 mod1_var.drop("gene_id", axis=1, inplace=True)
 mod1_var.set_index("feature_id", drop=False, inplace=True)
+mod1_var.index.name = None
 
 mod1_obs = pd.DataFrame(adata_mod1.obs)
 remove_mod_col(mod1_obs, par["mod2"])
@@ -1341,6 +1342,7 @@ mod2_var.reset_index("feature_name", inplace=True)
 mod2_var["feature_id"] = np.where(mod2_var.gene_id.isna(), mod2_var.feature_name, mod2_var.gene_id.astype(str))
 mod2_var.drop("gene_id", axis=1, inplace=True)
 mod2_var.set_index("feature_id", drop=False, inplace=True)
+mod2_var.index.name = None
 
 mod2_obs = pd.DataFrame(adata_mod2.obs)
 remove_mod_col(mod2_obs, par["mod1"])

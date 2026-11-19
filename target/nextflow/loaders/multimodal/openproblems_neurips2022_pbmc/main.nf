@@ -3770,7 +3770,7 @@ meta = [
         {
           "type" : "docker",
           "env" : [
-            "ANNDATA_ZARR_WRITE_FORMAT=3",
+            "ANNDATA_AUTO_SHARD_ZARR_V3=1",
             "OMP_NUM_THREADS=4",
             "OPENBLAS_NUM_THREADS=4",
             "MKL_NUM_THREADS=4",
@@ -3786,7 +3786,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/loaders/multimodal/openproblems_neurips2022_pbmc",
     "viash_version" : "0.9.7",
-    "git_commit" : "0ca9c8c755cbd503a0d6fc99090b2de4d2b02644",
+    "git_commit" : "d07870320ba0e85889358ac8c8ac2270313e9353",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -3796,7 +3796,7 @@ meta = [
     "info" : {
       "test_resources" : [
         {
-          "path" : "lamin://openproblems/data-dev/collection/Ajn1Lo8zZomVzKtQ0004",
+          "path" : "lamin://openproblems/data-dev/collection/Ajn1Lo8zZomVzKtQ0005",
           "dest" : "resources_test/common/cxg_mouse_pancreas_atlas",
           "strip_prefix" : "resources_test/datasets/cxg_mouse_pancreas_atlas/"
         }
@@ -3814,7 +3814,7 @@ meta = [
     "source" : "src",
     "target" : "target",
     "config_mods" : [
-      ".runners[.type == \\"nextflow\\"].config.labels := { lowmem : \\"memory = 20.Gb\\", midmem : \\"memory = 50.Gb\\", highmem : \\"memory = 100.Gb\\", lowcpu : \\"cpus = 5\\", midcpu : \\"cpus = 15\\", highcpu : \\"cpus = 30\\", lowtime : \\"time = 1.h\\", midtime : \\"time = 4.h\\", hightime : \\"time = 8.h\\", veryhightime : \\"time = 24.h\\" }\n.engines[.type == \\"docker\\"].setup += { type: \\"docker\\", env: [\\"ANNDATA_ZARR_WRITE_FORMAT=3\\", \\"OMP_NUM_THREADS=4\\", \\"OPENBLAS_NUM_THREADS=4\\", \\"MKL_NUM_THREADS=4\\", \\"NUMBA_NUM_THREADS=4\\"] }\n"
+      ".runners[.type == \\"nextflow\\"].config.labels := { lowmem : \\"memory = 20.Gb\\", midmem : \\"memory = 50.Gb\\", highmem : \\"memory = 100.Gb\\", lowcpu : \\"cpus = 5\\", midcpu : \\"cpus = 15\\", highcpu : \\"cpus = 30\\", lowtime : \\"time = 1.h\\", midtime : \\"time = 4.h\\", hightime : \\"time = 8.h\\", veryhightime : \\"time = 24.h\\" }\n.engines[.type == \\"docker\\"].setup += { type: \\"docker\\", env: [\\"ANNDATA_AUTO_SHARD_ZARR_V3=1\\", \\"OMP_NUM_THREADS=4\\", \\"OPENBLAS_NUM_THREADS=4\\", \\"MKL_NUM_THREADS=4\\", \\"NUMBA_NUM_THREADS=4\\"] }\n"
     ],
     "keywords" : [
       "openproblems",
@@ -3931,11 +3931,13 @@ adata_mod1.var['feature_id'] = [str(s).split('_')[0] for s in adata_mod1.var.ind
 if "_" in adata_mod1.var.index[0]:
   adata_mod1.var['feature_name'] = [str(s).split('_')[1] for s in adata_mod1.var.index.tolist()]
 adata_mod1.var.set_index('feature_id',drop=False, inplace=True)
+adata_mod1.var.index.name = None
 
 # set feature_name (proteins have only partial ensemble IDs))
 adata_mod2.var['feature_id'] = adata_mod2.var.index.tolist() # feature id needs to be filled in
 adata_mod2.var['feature_name'] = adata_mod2.var.index.tolist()
 adata_mod2.var.set_index('feature_name',drop=False, inplace=True)
+adata_mod2.var.index.name = None
 
 
 # remove adata.X

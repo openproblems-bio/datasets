@@ -445,15 +445,15 @@ function ViashDockerfile {
     cat << 'VIASHDOCKER'
 FROM openproblems/base_python:1
 ENTRYPOINT []
-ENV ANNDATA_ZARR_WRITE_FORMAT=3
+ENV ANNDATA_AUTO_SHARD_ZARR_V3=1
 ENV OMP_NUM_THREADS=4
 ENV OPENBLAS_NUM_THREADS=4
 ENV MKL_NUM_THREADS=4
 ENV NUMBA_NUM_THREADS=4
 LABEL org.opencontainers.image.description="Companion container for running component validation validate_dataset"
-LABEL org.opencontainers.image.created="2026-11-19T07:57:53Z"
+LABEL org.opencontainers.image.created="2026-11-19T11:27:55Z"
 LABEL org.opencontainers.image.source="https://github.com/openproblems-bio/datasets"
-LABEL org.opencontainers.image.revision="0ca9c8c755cbd503a0d6fc99090b2de4d2b02644"
+LABEL org.opencontainers.image.revision="d07870320ba0e85889358ac8c8ac2270313e9353"
 LABEL org.opencontainers.image.version="build_main"
 
 VIASHDOCKER

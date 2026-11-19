@@ -26,7 +26,6 @@ def test_cellxgene_extract_metadata_expression(run_component, tmp_path):
         "--dataset_reference", "test_dataset_reference",
         "--dataset_summary", "test_dataset_summary",
         "--dataset_description", "test_dataset_description",
-        "--dataset_organism", "test_homo_sapiens",
     ])
 
     # check whether file exists
@@ -40,6 +39,8 @@ def test_cellxgene_extract_metadata_expression(run_component, tmp_path):
     assert np.all(adata.obs["is_primary_data"] == True)
     assert "cell_type_ontology_term_id" in adata.obs.columns
     assert "disease" in adata.obs.columns
+    assert list(adata.obs["organism"].unique()) == ["Homo sapiens"]
+    assert list(adata.obs["organism_ontology_term_id"].unique()) == ["NCBITaxon:9606"]
     assert adata.n_obs > 10
     assert np.all([x in ["male+male", "female+female"] for x in adata.obs["batch"]])
 
@@ -54,7 +55,6 @@ def test_cellxgene_extract_metadata_expression(run_component, tmp_path):
     assert list(adata.uns["dataset_reference"]) == ["test_dataset_reference"], "Incorrect .uns['dataset_reference']"
     assert adata.uns["dataset_summary"] == "test_dataset_summary", "Incorrect .uns['dataset_summary']"
     assert adata.uns["dataset_description"] == "test_dataset_description", "Incorrect .uns['dataset_description']"
-    assert list(adata.uns["dataset_organism"]) == ["test_homo_sapiens"], "Incorrect .uns['dataset_organism']"
 
 
 if __name__ == '__main__':

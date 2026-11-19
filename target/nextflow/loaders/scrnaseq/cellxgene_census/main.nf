@@ -3053,7 +3053,7 @@ meta = [
           "name" : "--output",
           "label" : "Raw dataset",
           "summary" : "An unprocessed dataset as output by a dataset loader.",
-          "description" : "This dataset contains raw counts and metadata as output by a dataset loader.\n\nCell metadata is annotated with ontology term ids, as in CELLxGENE: these are required for the assay, cell type, developmental stage, disease, self-reported ethnicity, sex and tissue.\n\nThe format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n",
+          "description" : "This dataset contains raw counts and metadata as output by a dataset loader.\n\nCell metadata is annotated with ontology term ids, as in CELLxGENE: these are required for the assay, cell type, developmental stage, disease, organism, self-reported ethnicity, sex and tissue. The organism is annotated per cell, so a dataset can contain cells from several organisms.\n\nThe format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n",
           "info" : {
             "format" : {
               "type" : "anndata_zarr",
@@ -3142,7 +3142,7 @@ meta = [
                   "type" : "string",
                   "name" : "organism_ontology_term_id",
                   "description" : "Ontology term identifier for the organism, providing a standardized reference for the organism.\n\nMust be a term from the NCBI Taxonomy Ontology (`NCBITaxon:`) which is a child of `NCBITaxon:33208`.\n",
-                  "required" : false
+                  "required" : true
                 },
                 {
                   "type" : "string",
@@ -3270,13 +3270,6 @@ meta = [
                   "required" : true
                 },
                 {
-                  "name" : "dataset_organism",
-                  "type" : "string",
-                  "description" : "The organism of the sample in the dataset.",
-                  "required" : false,
-                  "multiple" : true
-                },
-                {
                   "name" : "dataset_technology",
                   "type" : "string",
                   "description" : "The technology used to generate the dataset.",
@@ -3346,7 +3339,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--species",
-          "description" : "The organism to query, usually one of `Homo sapiens` or `Mus musculus`.",
+          "description" : "The organism to query, one of `homo_sapiens` or `mus_musculus`. Also stored in `.obs[\\"organism\\"]` and `.obs[\\"organism_ontology_term_id\\"]`.",
           "example" : [
             "homo_sapiens"
           ],
@@ -3543,15 +3536,6 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
-          "name" : "--dataset_organism",
-          "description" : "The organism of the dataset.",
-          "required" : true,
-          "direction" : "input",
-          "multiple" : true,
-          "multiple_sep" : ";"
         }
       ]
     }
@@ -3682,7 +3666,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/loaders/scrnaseq/cellxgene_census",
     "viash_version" : "0.9.7",
-    "git_commit" : "6b01edf411dcb737bd9658535b5281018b237267",
+    "git_commit" : "0ca9c8c755cbd503a0d6fc99090b2de4d2b02644",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -3692,7 +3676,7 @@ meta = [
     "info" : {
       "test_resources" : [
         {
-          "path" : "lamin://openproblems/data-dev/collection/Ajn1Lo8zZomVzKtQ0003",
+          "path" : "lamin://openproblems/data-dev/collection/Ajn1Lo8zZomVzKtQ0004",
           "dest" : "resources_test/common/cxg_mouse_pancreas_atlas",
           "strip_prefix" : "resources_test/datasets/cxg_mouse_pancreas_atlas/"
         }
@@ -3743,6 +3727,7 @@ def innerWorkflowFactory(args) {
 tempscript=".viash_script.py"
 cat > "$tempscript" << VIASHMAIN
 import cellxgene_census
+import pandas as pd
 import scanpy as sc
 import logging
 
@@ -3770,8 +3755,7 @@ par = {
   'dataset_url': $( if [ ! -z ${VIASH_PAR_DATASET_URL+x} ]; then echo "r'${VIASH_PAR_DATASET_URL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'dataset_reference': $( if [ ! -z ${VIASH_PAR_DATASET_REFERENCE+x} ]; then echo "r'${VIASH_PAR_DATASET_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'dataset_summary': $( if [ ! -z ${VIASH_PAR_DATASET_SUMMARY+x} ]; then echo "r'${VIASH_PAR_DATASET_SUMMARY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'dataset_description': $( if [ ! -z ${VIASH_PAR_DATASET_DESCRIPTION+x} ]; then echo "r'${VIASH_PAR_DATASET_DESCRIPTION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'dataset_organism': $( if [ ! -z ${VIASH_PAR_DATASET_ORGANISM+x} ]; then echo "r'${VIASH_PAR_DATASET_ORGANISM//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi )
+  'dataset_description': $( if [ ! -z ${VIASH_PAR_DATASET_DESCRIPTION+x} ]; then echo "r'${VIASH_PAR_DATASET_DESCRIPTION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -3798,6 +3782,12 @@ dep = {
 }
 
 ## VIASH END
+
+# organisms in the Census, with their NCBI Taxonomy term
+CENSUS_ORGANISMS = {
+    "homo_sapiens": ("Homo sapiens", "NCBITaxon:9606"),
+    "mus_musculus": ("Mus musculus", "NCBITaxon:10090"),
+}
 
 def connect_census(uri, census_version):
     """
@@ -3893,9 +3883,18 @@ def add_batch_to_obs(adata, par):
         # store in adata
         adata.obs["batch"] = obs_batch
 
+def add_organism_to_obs(adata, par):
+    logger.info("Add organism to obs.")
+    species = par["species"].lower().replace(" ", "_")
+    if species not in CENSUS_ORGANISMS:
+        raise ValueError(f"Unknown species '{par['species']}', expected one of {list(CENSUS_ORGANISMS)}")
+    label, term_id = CENSUS_ORGANISMS[species]
+    adata.obs["organism"] = pd.Categorical([label] * adata.n_obs)
+    adata.obs["organism_ontology_term_id"] = pd.Categorical([term_id] * adata.n_obs)
+
 def add_metadata_to_uns(adata, par):
     logger.info("Add metadata to the AnnData object.")
-    for key in ["dataset_id", "dataset_name", "dataset_url", "dataset_reference", "dataset_summary", "dataset_description", "dataset_organism"]:
+    for key in ["dataset_id", "dataset_name", "dataset_url", "dataset_reference", "dataset_summary", "dataset_description"]:
         adata.uns[key] = par[key]
 
 def print_unique(adata, column):
@@ -3906,7 +3905,7 @@ def print_summary(adata):
     logger.info(f"Resulting dataset: {adata}")
 
     logger.info("Summary of dataset:")
-    obs_fields = ["assay", "assay_ontology_term_id", "cell_type", "cell_type_ontology_term_id", "dataset_id", "development_stage", "development_stage_ontology_term_id", "disease", "disease_ontology_term_id", "tissue", "tissue_ontology_term_id", "tissue_general", "tissue_general_ontology_term_id"]
+    obs_fields = ["assay", "assay_ontology_term_id", "cell_type", "cell_type_ontology_term_id", "dataset_id", "development_stage", "development_stage_ontology_term_id", "disease", "disease_ontology_term_id", "organism", "organism_ontology_term_id", "tissue", "tissue_ontology_term_id", "tissue_general", "tissue_general_ontology_term_id"]
     for field in obs_fields:
         print_unique(adata, field)
 def write_anndata(adata, par):
@@ -3944,6 +3943,9 @@ def main(par, meta):
 
     # add batch to obs
     add_batch_to_obs(adata, par)
+
+    # add organism to obs
+    add_organism_to_obs(adata, par)
 
     # add metadata to uns
     add_metadata_to_uns(adata, par)

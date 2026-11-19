@@ -454,9 +454,9 @@ ENV OPENBLAS_NUM_THREADS=4
 ENV MKL_NUM_THREADS=4
 ENV NUMBA_NUM_THREADS=4
 LABEL org.opencontainers.image.description="Companion container for running component loaders/scrnaseq cellxgene_census"
-LABEL org.opencontainers.image.created="2026-11-18T15:38:01Z"
+LABEL org.opencontainers.image.created="2026-11-19T07:57:53Z"
 LABEL org.opencontainers.image.source="https://github.com/openproblems-bio/datasets"
-LABEL org.opencontainers.image.revision="6b01edf411dcb737bd9658535b5281018b237267"
+LABEL org.opencontainers.image.revision="0ca9c8c755cbd503a0d6fc99090b2de4d2b02644"
 LABEL org.opencontainers.image.version="build_main"
 
 VIASHDOCKER
@@ -591,7 +591,9 @@ function ViashHelp {
   echo "        loader."
   echo "        Cell metadata is annotated with ontology term ids, as in CELLxGENE:"
   echo "        these are required for the assay, cell type, developmental stage,"
-  echo "        disease, self-reported ethnicity, sex and tissue."
+  echo "        disease, organism, self-reported ethnicity, sex and tissue. The organism"
+  echo "        is annotated per cell, so a dataset can contain cells from several"
+  echo "        organisms."
   echo "        The format of this file is derived from the [CELLxGENE schema"
   echo "       "
   echo "v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md)."
@@ -620,7 +622,8 @@ function ViashHelp {
   echo "    --species"
   echo "        type: string, required parameter"
   echo "        example: homo_sapiens"
-  echo "        The organism to query, usually one of \`Homo sapiens\` or \`Mus musculus\`."
+  echo "        The organism to query, one of \`homo_sapiens\` or \`mus_musculus\`. Also"
+  echo "        stored in \`.obs[\"organism\"]\` and \`.obs[\"organism_ontology_term_id\"]\`."
   echo ""
   echo "    --obs_value_filter"
   echo "        type: string, required parameter"
@@ -712,10 +715,6 @@ function ViashHelp {
   echo "    --dataset_description"
   echo "        type: string, required parameter"
   echo "        Long description of the dataset."
-  echo ""
-  echo "    --dataset_organism"
-  echo "        type: string, required parameter, multiple values allowed"
-  echo "        The organism of the dataset."
   echo ""
   echo "Viash built in Computational Requirements:"
   echo "    ---cpus=INT"
@@ -994,23 +993,6 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_DATASET_DESCRIPTION=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --dataset_organism)
-            if [ -z "$VIASH_PAR_DATASET_ORGANISM" ]; then
-              VIASH_PAR_DATASET_ORGANISM="$2"
-            else
-              VIASH_PAR_DATASET_ORGANISM="$VIASH_PAR_DATASET_ORGANISM;""$2"
-            fi
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --dataset_organism. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --dataset_organism=*)
-            if [ -z "$VIASH_PAR_DATASET_ORGANISM" ]; then
-              VIASH_PAR_DATASET_ORGANISM=$(ViashRemoveFlags "$1")
-            else
-              VIASH_PAR_DATASET_ORGANISM="$VIASH_PAR_DATASET_ORGANISM;"$(ViashRemoveFlags "$1")
-            fi
-            shift 1
-            ;;
         ---engine)
             VIASH_ENGINE_ID="$2"
             shift 2
@@ -1207,10 +1189,6 @@ if [ -z ${VIASH_PAR_DATASET_SUMMARY+x} ]; then
 fi
 if [ -z ${VIASH_PAR_DATASET_DESCRIPTION+x} ]; then
   ViashError '--dataset_description' is a required argument. Use "--help" to get more information on the parameters.
-  exit 1
-fi
-if [ -z ${VIASH_PAR_DATASET_ORGANISM+x} ]; then
-  ViashError '--dataset_organism' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
 fi
 if [ -z ${VIASH_META_NAME+x} ]; then
@@ -1440,6 +1418,7 @@ trap clean_up EXIT
 trap interrupt INT SIGINT
 cat > "\$tempscript" << 'VIASHMAIN'
 import cellxgene_census
+import pandas as pd
 import scanpy as sc
 import logging
 
@@ -1467,8 +1446,7 @@ par = {
   'dataset_url': $( if [ ! -z ${VIASH_PAR_DATASET_URL+x} ]; then echo "r'${VIASH_PAR_DATASET_URL//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'dataset_reference': $( if [ ! -z ${VIASH_PAR_DATASET_REFERENCE+x} ]; then echo "r'${VIASH_PAR_DATASET_REFERENCE//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
   'dataset_summary': $( if [ ! -z ${VIASH_PAR_DATASET_SUMMARY+x} ]; then echo "r'${VIASH_PAR_DATASET_SUMMARY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'dataset_description': $( if [ ! -z ${VIASH_PAR_DATASET_DESCRIPTION+x} ]; then echo "r'${VIASH_PAR_DATASET_DESCRIPTION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'dataset_organism': $( if [ ! -z ${VIASH_PAR_DATASET_ORGANISM+x} ]; then echo "r'${VIASH_PAR_DATASET_ORGANISM//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi )
+  'dataset_description': $( if [ ! -z ${VIASH_PAR_DATASET_DESCRIPTION+x} ]; then echo "r'${VIASH_PAR_DATASET_DESCRIPTION//\'/\'\"\'\"r\'}'"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1495,6 +1473,12 @@ dep = {
 }
 
 ## VIASH END
+
+# organisms in the Census, with their NCBI Taxonomy term
+CENSUS_ORGANISMS = {
+    "homo_sapiens": ("Homo sapiens", "NCBITaxon:9606"),
+    "mus_musculus": ("Mus musculus", "NCBITaxon:10090"),
+}
 
 def connect_census(uri, census_version):
     """
@@ -1590,9 +1574,18 @@ def add_batch_to_obs(adata, par):
         # store in adata
         adata.obs["batch"] = obs_batch
 
+def add_organism_to_obs(adata, par):
+    logger.info("Add organism to obs.")
+    species = par["species"].lower().replace(" ", "_")
+    if species not in CENSUS_ORGANISMS:
+        raise ValueError(f"Unknown species '{par['species']}', expected one of {list(CENSUS_ORGANISMS)}")
+    label, term_id = CENSUS_ORGANISMS[species]
+    adata.obs["organism"] = pd.Categorical([label] * adata.n_obs)
+    adata.obs["organism_ontology_term_id"] = pd.Categorical([term_id] * adata.n_obs)
+
 def add_metadata_to_uns(adata, par):
     logger.info("Add metadata to the AnnData object.")
-    for key in ["dataset_id", "dataset_name", "dataset_url", "dataset_reference", "dataset_summary", "dataset_description", "dataset_organism"]:
+    for key in ["dataset_id", "dataset_name", "dataset_url", "dataset_reference", "dataset_summary", "dataset_description"]:
         adata.uns[key] = par[key]
 
 def print_unique(adata, column):
@@ -1603,7 +1596,7 @@ def print_summary(adata):
     logger.info(f"Resulting dataset: {adata}")
 
     logger.info("Summary of dataset:")
-    obs_fields = ["assay", "assay_ontology_term_id", "cell_type", "cell_type_ontology_term_id", "dataset_id", "development_stage", "development_stage_ontology_term_id", "disease", "disease_ontology_term_id", "tissue", "tissue_ontology_term_id", "tissue_general", "tissue_general_ontology_term_id"]
+    obs_fields = ["assay", "assay_ontology_term_id", "cell_type", "cell_type_ontology_term_id", "dataset_id", "development_stage", "development_stage_ontology_term_id", "disease", "disease_ontology_term_id", "organism", "organism_ontology_term_id", "tissue", "tissue_ontology_term_id", "tissue_general", "tissue_general_ontology_term_id"]
     for field in obs_fields:
         print_unique(adata, field)
 def write_anndata(adata, par):
@@ -1641,6 +1634,9 @@ def main(par, meta):
 
     # add batch to obs
     add_batch_to_obs(adata, par)
+
+    # add organism to obs
+    add_organism_to_obs(adata, par)
 
     # add metadata to uns
     add_metadata_to_uns(adata, par)

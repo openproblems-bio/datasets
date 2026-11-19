@@ -451,9 +451,9 @@ ENV OPENBLAS_NUM_THREADS=4
 ENV MKL_NUM_THREADS=4
 ENV NUMBA_NUM_THREADS=4
 LABEL org.opencontainers.image.description="Companion container for running component processors hvg"
-LABEL org.opencontainers.image.created="2026-11-18T15:38:01Z"
+LABEL org.opencontainers.image.created="2026-11-19T07:57:54Z"
 LABEL org.opencontainers.image.source="https://github.com/openproblems-bio/datasets"
-LABEL org.opencontainers.image.revision="6b01edf411dcb737bd9658535b5281018b237267"
+LABEL org.opencontainers.image.revision="0ca9c8c755cbd503a0d6fc99090b2de4d2b02644"
 LABEL org.opencontainers.image.version="build_main"
 
 VIASHDOCKER
@@ -584,7 +584,9 @@ function ViashHelp {
   echo "        loader."
   echo "        Cell metadata is annotated with ontology term ids, as in CELLxGENE:"
   echo "        these are required for the assay, cell type, developmental stage,"
-  echo "        disease, self-reported ethnicity, sex and tissue."
+  echo "        disease, organism, self-reported ethnicity, sex and tissue. The organism"
+  echo "        is annotated per cell, so a dataset can contain cells from several"
+  echo "        organisms."
   echo "        The format of this file is derived from the [CELLxGENE schema"
   echo "       "
   echo "v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md)."
@@ -601,7 +603,9 @@ function ViashHelp {
   echo "        loader."
   echo "        Cell metadata is annotated with ontology term ids, as in CELLxGENE:"
   echo "        these are required for the assay, cell type, developmental stage,"
-  echo "        disease, self-reported ethnicity, sex and tissue."
+  echo "        disease, organism, self-reported ethnicity, sex and tissue. The organism"
+  echo "        is annotated per cell, so a dataset can contain cells from several"
+  echo "        organisms."
   echo "        The format of this file is derived from the [CELLxGENE schema"
   echo "       "
   echo "v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md)."

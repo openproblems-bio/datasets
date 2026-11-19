@@ -18,7 +18,6 @@ par = {
     "dataset_summary": "The Open Problems Perurbation Prediction (OP3) dataset with small molecule perturbations in PBMCs",
     "dataset_description": "The OP3 dataset is to-date the largest single-cell small molecule perturbation dataset in primary tissue with multiple donor replicates.",
     "dataset_reference": ["GSE279945"],
-    "dataset_organism": ["homo_sapiens"],
     "output": "output.zarr",
 }
 meta = {}
@@ -122,6 +121,7 @@ SAMPLE_ONTOLOGY = {
     "assay_ontology_term_id": "EFO:0009922",  # 10x 3' v3
     "tissue_ontology_term_id": "UBERON:0000178",  # blood
     "disease_ontology_term_id": "PATO:0000461",  # normal
+    "organism_ontology_term_id": "NCBITaxon:9606",  # Homo sapiens
     "self_reported_ethnicity_ontology_term_id": "HANCESTRO:0005",  # European ancestry, "caucasian" in GEO
 }
 
@@ -133,7 +133,8 @@ def add_ontology_term_ids(adata):
         obs[column] = obs["donor_id"].map({donor: terms[column] for donor, terms in DONOR_ONTOLOGY.items()})
     for column, term in SAMPLE_ONTOLOGY.items():
         obs[column] = term
-    columns = ["cell_type_ontology_term_id", *DONOR_ONTOLOGY["Donor 1"], *SAMPLE_ONTOLOGY]
+    obs["organism"] = "Homo sapiens"
+    columns = ["cell_type_ontology_term_id", *DONOR_ONTOLOGY["Donor 1"], *SAMPLE_ONTOLOGY, "organism"]
     for column in columns:
         if obs[column].isna().any():
             raise ValueError(f"Missing ontology term ids in obs['{column}']")
@@ -153,7 +154,6 @@ def add_metadata_to_uns(adata, par):
     adata.uns['dataset_name'] = par["dataset_name"]
     adata.uns['dataset_summary'] = par["dataset_summary"]
     adata.uns['dataset_description'] = par["dataset_description"]
-    adata.uns['dataset_organism'] = par["dataset_organism"]
     adata.uns['dataset_url'] = par["dataset_url"]
     adata.uns['dataset_reference'] = par["dataset_reference"]
     adata.uns['dataset_version'] = '1.0.0'

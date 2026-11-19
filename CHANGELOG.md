@@ -14,6 +14,8 @@
 
 * MAJOR CHANGE: Raw scRNA-seq datasets must have CELLxGENE-style ontology term ids for the assay, cell type, developmental stage, disease, self-reported ethnicity, sex and tissue. The multimodal loaders use a new `file_multimodal_raw` spec, in which these stay optional.
 
+* MAJOR CHANGE: Raw scRNA-seq datasets store the organism per cell in `obs['organism_ontology_term_id']` (required, NCBI Taxonomy) and `obs['organism']`, instead of `uns['dataset_organism']`. The CELLxGENE Census loaders fill it in from `--species` or the source h5ad, and the OP3 loader sets `NCBITaxon:9606`. Multimodal and spatial datasets still use `uns['dataset_organism']`.
+
 * BUG FIX: The loaders store `uns['dataset_reference']` and `uns['dataset_organism']` as lists, as declared in `src/api`, since a dataset can have several references and organisms. The OP3 loader takes both as arguments instead of hardcoding them.
 
 * BUG FIX: `uns['pca_variance']` is declared as an `object` in `file_pca`, since `processors/pca` writes a dict.

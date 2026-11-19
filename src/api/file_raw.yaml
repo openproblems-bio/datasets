@@ -5,7 +5,7 @@ summary: An unprocessed dataset as output by a dataset loader.
 description: |
   This dataset contains raw counts and metadata as output by a dataset loader.
 
-  Cell metadata is annotated with ontology term ids, as in CELLxGENE: these are required for the assay, cell type, developmental stage, disease, self-reported ethnicity, sex and tissue.
+  Cell metadata is annotated with ontology term ids, as in CELLxGENE: these are required for the assay, cell type, developmental stage, disease, organism, self-reported ethnicity, sex and tissue. The organism is annotated per cell, so a dataset can contain cells from several organisms.
 
   The format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).
 info:
@@ -91,7 +91,7 @@ info:
           Ontology term identifier for the organism, providing a standardized reference for the organism.
 
           Must be a term from the NCBI Taxonomy Ontology (`NCBITaxon:`) which is a child of `NCBITaxon:33208`.
-        required: false
+        required: true
 
       - type: string
         name: self_reported_ethnicity
@@ -201,11 +201,6 @@ info:
         type: string
         description: Long description of the dataset.
         required: true
-      - name: dataset_organism
-        type: string
-        description: The organism of the sample in the dataset.
-        required: false
-        multiple: true
       - name: dataset_technology 
         type: string
         description: The technology used to generate the dataset.

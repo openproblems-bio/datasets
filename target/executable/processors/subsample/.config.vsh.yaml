@@ -50,11 +50,6 @@ argument_groups:
           type: "string"
           description: "Long description of the dataset."
           required: true
-        - name: "dataset_organism"
-          type: "string"
-          description: "The organism of the sample in the dataset."
-          required: false
-          multiple: true
         - name: "dataset_technology"
           type: "string"
           description: "The technology used to generate the dataset."
@@ -195,7 +190,7 @@ argument_groups:
           description: "Ontology term identifier for the organism, providing a standardized\
             \ reference for the organism.\n\nMust be a term from the NCBI Taxonomy\
             \ Ontology (`NCBITaxon:`) which is a child of `NCBITaxon:33208`.\n"
-          required: false
+          required: true
         - type: "string"
           name: "self_reported_ethnicity"
           description: "Ethnicity of the donor as self-reported, relevant for studies\
@@ -320,11 +315,6 @@ argument_groups:
           type: "string"
           description: "Long description of the dataset."
           required: true
-        - name: "dataset_organism"
-          type: "string"
-          description: "The organism of the sample in the dataset."
-          required: false
-          multiple: true
         - name: "dataset_technology"
           type: "string"
           description: "The technology used to generate the dataset."
@@ -465,7 +455,7 @@ argument_groups:
           description: "Ontology term identifier for the organism, providing a standardized\
             \ reference for the organism.\n\nMust be a term from the NCBI Taxonomy\
             \ Ontology (`NCBITaxon:`) which is a child of `NCBITaxon:33208`.\n"
-          required: false
+          required: true
         - type: "string"
           name: "self_reported_ethnicity"
           description: "Ethnicity of the donor as self-reported, relevant for studies\
@@ -590,11 +580,6 @@ argument_groups:
           type: "string"
           description: "Long description of the dataset."
           required: true
-        - name: "dataset_organism"
-          type: "string"
-          description: "The organism of the sample in the dataset."
-          required: false
-          multiple: true
         - name: "dataset_technology"
           type: "string"
           description: "The technology used to generate the dataset."
@@ -735,7 +720,7 @@ argument_groups:
           description: "Ontology term identifier for the organism, providing a standardized\
             \ reference for the organism.\n\nMust be a term from the NCBI Taxonomy\
             \ Ontology (`NCBITaxon:`) which is a child of `NCBITaxon:33208`.\n"
-          required: false
+          required: true
         - type: "string"
           name: "self_reported_ethnicity"
           description: "Ethnicity of the donor as self-reported, relevant for studies\
@@ -860,11 +845,6 @@ argument_groups:
           type: "string"
           description: "Long description of the dataset."
           required: true
-        - name: "dataset_organism"
-          type: "string"
-          description: "The organism of the sample in the dataset."
-          required: false
-          multiple: true
         - name: "dataset_technology"
           type: "string"
           description: "The technology used to generate the dataset."
@@ -1005,7 +985,7 @@ argument_groups:
           description: "Ontology term identifier for the organism, providing a standardized\
             \ reference for the organism.\n\nMust be a term from the NCBI Taxonomy\
             \ Ontology (`NCBITaxon:`) which is a child of `NCBITaxon:33208`.\n"
-          required: false
+          required: true
         - type: "string"
           name: "self_reported_ethnicity"
           description: "Ethnicity of the donor as self-reported, relevant for studies\
@@ -1241,7 +1221,7 @@ build_info:
   output: "target/executable/processors/subsample"
   executable: "target/executable/processors/subsample/subsample"
   viash_version: "0.9.7"
-  git_commit: "6b01edf411dcb737bd9658535b5281018b237267"
+  git_commit: "0ca9c8c755cbd503a0d6fc99090b2de4d2b02644"
   git_remote: "https://github.com/openproblems-bio/datasets"
 package_config:
   name: "datasets"
@@ -1249,7 +1229,7 @@ package_config:
   description: "Datasets for benchmarking open problems in single-cell analysis.\n"
   info:
     test_resources:
-    - path: "lamin://openproblems/data-dev/collection/Ajn1Lo8zZomVzKtQ0003"
+    - path: "lamin://openproblems/data-dev/collection/Ajn1Lo8zZomVzKtQ0004"
       dest: "resources_test/common/cxg_mouse_pancreas_atlas"
       strip_prefix: "resources_test/datasets/cxg_mouse_pancreas_atlas/"
   repositories:

@@ -29,8 +29,8 @@ argument_groups:
     arguments:
       - name: --species
         type: string
-        description: The organism to query, usually one of `Homo sapiens` or `Mus
-          musculus`.
+        description: The organism to query, one of `homo_sapiens` or `mus_musculus`.
+          Also stored in `.obs["organism"]` and `.obs["organism_ontology_term_id"]`.
         required: true
         example: homo_sapiens
       - name: --obs_value_filter
@@ -130,11 +130,6 @@ argument_groups:
       - name: --dataset_description
         type: string
         description: Long description of the dataset.
-        required: true
-      - name: --dataset_organism
-        type: string
-        multiple: true
-        description: The organism of the dataset.
         required: true
 resources:
   - type: python_script

@@ -3053,7 +3053,7 @@ meta = [
           "name" : "--output",
           "label" : "Raw dataset",
           "summary" : "An unprocessed dataset as output by a dataset loader.",
-          "description" : "This dataset contains raw counts and metadata as output by a dataset loader.\n\nCell metadata is annotated with ontology term ids, as in CELLxGENE: these are required for the assay, cell type, developmental stage, disease, self-reported ethnicity, sex and tissue.\n\nThe format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n",
+          "description" : "This dataset contains raw counts and metadata as output by a dataset loader.\n\nCell metadata is annotated with ontology term ids, as in CELLxGENE: these are required for the assay, cell type, developmental stage, disease, organism, self-reported ethnicity, sex and tissue. The organism is annotated per cell, so a dataset can contain cells from several organisms.\n\nThe format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n",
           "info" : {
             "format" : {
               "type" : "anndata_zarr",
@@ -3142,7 +3142,7 @@ meta = [
                   "type" : "string",
                   "name" : "organism_ontology_term_id",
                   "description" : "Ontology term identifier for the organism, providing a standardized reference for the organism.\n\nMust be a term from the NCBI Taxonomy Ontology (`NCBITaxon:`) which is a child of `NCBITaxon:33208`.\n",
-                  "required" : false
+                  "required" : true
                 },
                 {
                   "type" : "string",
@@ -3268,13 +3268,6 @@ meta = [
                   "type" : "string",
                   "description" : "Long description of the dataset.",
                   "required" : true
-                },
-                {
-                  "name" : "dataset_organism",
-                  "type" : "string",
-                  "description" : "The organism of the sample in the dataset.",
-                  "required" : false,
-                  "multiple" : true
                 },
                 {
                   "name" : "dataset_technology",
@@ -3442,18 +3435,6 @@ meta = [
         },
         {
           "type" : "string",
-          "name" : "--dataset_organism",
-          "description" : "The organism of the dataset.",
-          "default" : [
-            "homo_sapiens"
-          ],
-          "required" : false,
-          "direction" : "input",
-          "multiple" : true,
-          "multiple_sep" : ";"
-        },
-        {
-          "type" : "string",
           "name" : "--dataset_url",
           "description" : "Link to the original source of the dataset.",
           "default" : [
@@ -3578,7 +3559,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/loaders/scrnaseq/openproblems_op3",
     "viash_version" : "0.9.7",
-    "git_commit" : "6b01edf411dcb737bd9658535b5281018b237267",
+    "git_commit" : "0ca9c8c755cbd503a0d6fc99090b2de4d2b02644",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -3588,7 +3569,7 @@ meta = [
     "info" : {
       "test_resources" : [
         {
-          "path" : "lamin://openproblems/data-dev/collection/Ajn1Lo8zZomVzKtQ0003",
+          "path" : "lamin://openproblems/data-dev/collection/Ajn1Lo8zZomVzKtQ0004",
           "dest" : "resources_test/common/cxg_mouse_pancreas_atlas",
           "strip_prefix" : "resources_test/datasets/cxg_mouse_pancreas_atlas/"
         }
@@ -3659,7 +3640,6 @@ par = {
   'dataset_summary': $( if [ ! -z ${VIASH_PAR_DATASET_SUMMARY+x} ]; then echo "r'${VIASH_PAR_DATASET_SUMMARY//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'dataset_description': $( if [ ! -z ${VIASH_PAR_DATASET_DESCRIPTION+x} ]; then echo "r'${VIASH_PAR_DATASET_DESCRIPTION//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'dataset_reference': $( if [ ! -z ${VIASH_PAR_DATASET_REFERENCE+x} ]; then echo "r'${VIASH_PAR_DATASET_REFERENCE//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
-  'dataset_organism': $( if [ ! -z ${VIASH_PAR_DATASET_ORGANISM+x} ]; then echo "r'${VIASH_PAR_DATASET_ORGANISM//\\'/\\'\\"\\'\\"r\\'}'.split(';')"; else echo None; fi ),
   'dataset_url': $( if [ ! -z ${VIASH_PAR_DATASET_URL+x} ]; then echo "r'${VIASH_PAR_DATASET_URL//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi )
 }
 meta = {
@@ -3786,6 +3766,7 @@ SAMPLE_ONTOLOGY = {
     "assay_ontology_term_id": "EFO:0009922",  # 10x 3' v3
     "tissue_ontology_term_id": "UBERON:0000178",  # blood
     "disease_ontology_term_id": "PATO:0000461",  # normal
+    "organism_ontology_term_id": "NCBITaxon:9606",  # Homo sapiens
     "self_reported_ethnicity_ontology_term_id": "HANCESTRO:0005",  # European ancestry, "caucasian" in GEO
 }
 
@@ -3797,7 +3778,8 @@ def add_ontology_term_ids(adata):
         obs[column] = obs["donor_id"].map({donor: terms[column] for donor, terms in DONOR_ONTOLOGY.items()})
     for column, term in SAMPLE_ONTOLOGY.items():
         obs[column] = term
-    columns = ["cell_type_ontology_term_id", *DONOR_ONTOLOGY["Donor 1"], *SAMPLE_ONTOLOGY]
+    obs["organism"] = "Homo sapiens"
+    columns = ["cell_type_ontology_term_id", *DONOR_ONTOLOGY["Donor 1"], *SAMPLE_ONTOLOGY, "organism"]
     for column in columns:
         if obs[column].isna().any():
             raise ValueError(f"Missing ontology term ids in obs['{column}']")
@@ -3817,7 +3799,6 @@ def add_metadata_to_uns(adata, par):
     adata.uns['dataset_name'] = par["dataset_name"]
     adata.uns['dataset_summary'] = par["dataset_summary"]
     adata.uns['dataset_description'] = par["dataset_description"]
-    adata.uns['dataset_organism'] = par["dataset_organism"]
     adata.uns['dataset_url'] = par["dataset_url"]
     adata.uns['dataset_reference'] = par["dataset_reference"]
     adata.uns['dataset_version'] = '1.0.0'

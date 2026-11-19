@@ -3052,7 +3052,7 @@ meta = [
           "name" : "--input",
           "label" : "Dataset+HVG",
           "summary" : "A normalised dataset with a PCA embedding and HVG selection.",
-          "description" : "This dataset contains raw counts and metadata as output by a dataset loader.\n\nCell metadata is annotated with ontology term ids, as in CELLxGENE: these are required for the assay, cell type, developmental stage, disease, self-reported ethnicity, sex and tissue.\n\nThe format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n",
+          "description" : "This dataset contains raw counts and metadata as output by a dataset loader.\n\nCell metadata is annotated with ontology term ids, as in CELLxGENE: these are required for the assay, cell type, developmental stage, disease, organism, self-reported ethnicity, sex and tissue. The organism is annotated per cell, so a dataset can contain cells from several organisms.\n\nThe format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n",
           "info" : {
             "format" : {
               "type" : "anndata_zarr",
@@ -3179,7 +3179,7 @@ meta = [
                   "type" : "string",
                   "name" : "organism_ontology_term_id",
                   "description" : "Ontology term identifier for the organism, providing a standardized reference for the organism.\n\nMust be a term from the NCBI Taxonomy Ontology (`NCBITaxon:`) which is a child of `NCBITaxon:33208`.\n",
-                  "required" : false
+                  "required" : true
                 },
                 {
                   "type" : "string",
@@ -3293,13 +3293,6 @@ meta = [
                   "required" : true
                 },
                 {
-                  "name" : "dataset_organism",
-                  "type" : "string",
-                  "description" : "The organism of the sample in the dataset.",
-                  "required" : false,
-                  "multiple" : true
-                },
-                {
                   "name" : "dataset_technology",
                   "type" : "string",
                   "description" : "The technology used to generate the dataset.",
@@ -3365,7 +3358,7 @@ meta = [
           "name" : "--output",
           "label" : "Dataset+HVG+PCA",
           "summary" : "A normalised dataset with a PCA embedding",
-          "description" : "This dataset contains raw counts and metadata as output by a dataset loader.\n\nCell metadata is annotated with ontology term ids, as in CELLxGENE: these are required for the assay, cell type, developmental stage, disease, self-reported ethnicity, sex and tissue.\n\nThe format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n",
+          "description" : "This dataset contains raw counts and metadata as output by a dataset loader.\n\nCell metadata is annotated with ontology term ids, as in CELLxGENE: these are required for the assay, cell type, developmental stage, disease, organism, self-reported ethnicity, sex and tissue. The organism is annotated per cell, so a dataset can contain cells from several organisms.\n\nThe format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n",
           "info" : {
             "format" : {
               "type" : "anndata_zarr",
@@ -3422,13 +3415,6 @@ meta = [
                   "type" : "string",
                   "description" : "Long description of the dataset.",
                   "required" : true
-                },
-                {
-                  "name" : "dataset_organism",
-                  "type" : "string",
-                  "description" : "The organism of the sample in the dataset.",
-                  "required" : false,
-                  "multiple" : true
                 },
                 {
                   "name" : "dataset_technology",
@@ -3584,7 +3570,7 @@ meta = [
                   "type" : "string",
                   "name" : "organism_ontology_term_id",
                   "description" : "Ontology term identifier for the organism, providing a standardized reference for the organism.\n\nMust be a term from the NCBI Taxonomy Ontology (`NCBITaxon:`) which is a child of `NCBITaxon:33208`.\n",
-                  "required" : false
+                  "required" : true
                 },
                 {
                   "type" : "string",
@@ -3847,7 +3833,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/processors/pca",
     "viash_version" : "0.9.7",
-    "git_commit" : "6b01edf411dcb737bd9658535b5281018b237267",
+    "git_commit" : "0ca9c8c755cbd503a0d6fc99090b2de4d2b02644",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -3857,7 +3843,7 @@ meta = [
     "info" : {
       "test_resources" : [
         {
-          "path" : "lamin://openproblems/data-dev/collection/Ajn1Lo8zZomVzKtQ0003",
+          "path" : "lamin://openproblems/data-dev/collection/Ajn1Lo8zZomVzKtQ0004",
           "dest" : "resources_test/common/cxg_mouse_pancreas_atlas",
           "strip_prefix" : "resources_test/datasets/cxg_mouse_pancreas_atlas/"
         }

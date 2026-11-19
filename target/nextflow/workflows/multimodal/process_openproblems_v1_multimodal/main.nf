@@ -4036,7 +4036,7 @@ meta = [
     "engine" : "native",
     "output" : "target/nextflow/workflows/multimodal/process_openproblems_v1_multimodal",
     "viash_version" : "0.9.7",
-    "git_commit" : "6b01edf411dcb737bd9658535b5281018b237267",
+    "git_commit" : "0ca9c8c755cbd503a0d6fc99090b2de4d2b02644",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -4046,7 +4046,7 @@ meta = [
     "info" : {
       "test_resources" : [
         {
-          "path" : "lamin://openproblems/data-dev/collection/Ajn1Lo8zZomVzKtQ0003",
+          "path" : "lamin://openproblems/data-dev/collection/Ajn1Lo8zZomVzKtQ0004",
           "dest" : "resources_test/common/cxg_mouse_pancreas_atlas",
           "strip_prefix" : "resources_test/datasets/cxg_mouse_pancreas_atlas/"
         }

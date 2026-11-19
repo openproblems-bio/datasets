@@ -178,6 +178,7 @@ def main(par, meta):
 
     # use feature_id as var_names
     adata.var_names = adata.var["feature_id"]
+    adata.var.index.name = None
 
     # not needed as long as we have our own implementation of `get_anndata`
     # move .X to .layers["counts"]

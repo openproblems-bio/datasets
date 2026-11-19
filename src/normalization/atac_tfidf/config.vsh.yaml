@@ -16,7 +16,6 @@ engines:
       - type: python
         packages:
           - muon
-          - numpy<2
 runners:
   - type: executable
   - type: nextflow

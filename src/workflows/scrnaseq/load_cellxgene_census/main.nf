@@ -37,7 +37,6 @@ workflow run_wf {
         "dataset_reference": "dataset_reference",
         "dataset_summary": "dataset_summary",
         "dataset_description": "dataset_description",
-        "dataset_organism": "dataset_organism",
       ],
       toState: ["output_raw": "output"]
     )

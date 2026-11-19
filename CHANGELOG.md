@@ -12,6 +12,8 @@
 
 * MAJOR CHANGE: Move to anndata 0.13 (base images v1.3.0), which writes zarr v3 with sharded arrays, so a dataset has far fewer files. `ANNDATA_AUTO_SHARD_ZARR_V3=1` makes the sharding explicit, and the deprecated `ANNDATA_ZARR_WRITE_FORMAT` is dropped. Test resources regenerated.
 
+* BUG FIX: The Census and NeurIPS loaders no longer name the `var` index after the `feature_id` column, which anndata 0.13 refuses to write back after reading. `log_scran_pooling` no longer needs the `anndata` R package, and `atac_tfidf` no longer pins `numpy<2`, which held it on anndata 0.12.
+
 * MINOR CHANGE: Pin BLAS, OpenMP and numba to 4 threads in every Docker image. The PCA (and with it the kNN graph) depended on the number of cores of the machine.
 
 * MAJOR CHANGE: Raw scRNA-seq datasets must have CELLxGENE-style ontology term ids for the assay, cell type, developmental stage, disease, self-reported ethnicity, sex and tissue. The multimodal loaders use a new `file_multimodal_raw` spec, in which these stay optional.

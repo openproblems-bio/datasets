@@ -451,9 +451,9 @@ ENV OPENBLAS_NUM_THREADS=4
 ENV MKL_NUM_THREADS=4
 ENV NUMBA_NUM_THREADS=4
 LABEL org.opencontainers.image.description="Companion container for running component processors pca"
-LABEL org.opencontainers.image.created="2026-11-19T11:27:56Z"
+LABEL org.opencontainers.image.created="2026-11-19T13:05:50Z"
 LABEL org.opencontainers.image.source="https://github.com/openproblems-bio/datasets"
-LABEL org.opencontainers.image.revision="d07870320ba0e85889358ac8c8ac2270313e9353"
+LABEL org.opencontainers.image.revision="c38449b7d1b0fea322d39121e677bd30a1205542"
 LABEL org.opencontainers.image.version="build_main"
 
 VIASHDOCKER
@@ -1245,7 +1245,7 @@ else:
     feature_mask = np.ones(adata.n_vars, dtype=bool)
 
 print(">> Run PCA", flush=True)
-X_pca, loadings, variance, variance_ratio = sc.tl.pca(
+X_pca, loadings, variance_ratio, variance = sc.tl.pca(
     layer[:, feature_mask],
     n_comps=par["num_components"],
     random_state=par["seed"],

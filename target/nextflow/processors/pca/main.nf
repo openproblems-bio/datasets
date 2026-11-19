@@ -3833,7 +3833,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/processors/pca",
     "viash_version" : "0.9.7",
-    "git_commit" : "d07870320ba0e85889358ac8c8ac2270313e9353",
+    "git_commit" : "c38449b7d1b0fea322d39121e677bd30a1205542",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -3949,7 +3949,7 @@ else:
     feature_mask = np.ones(adata.n_vars, dtype=bool)
 
 print(">> Run PCA", flush=True)
-X_pca, loadings, variance, variance_ratio = sc.tl.pca(
+X_pca, loadings, variance_ratio, variance = sc.tl.pca(
     layer[:, feature_mask],
     n_comps=par["num_components"],
     random_state=par["seed"],

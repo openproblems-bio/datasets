@@ -29,7 +29,7 @@ else:
     feature_mask = np.ones(adata.n_vars, dtype=bool)
 
 print(">> Run PCA", flush=True)
-X_pca, loadings, variance, variance_ratio = sc.tl.pca(
+X_pca, loadings, variance_ratio, variance = sc.tl.pca(
     layer[:, feature_mask],
     n_comps=par["num_components"],
     random_state=par["seed"],

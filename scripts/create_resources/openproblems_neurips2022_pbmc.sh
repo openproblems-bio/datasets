@@ -12,9 +12,8 @@ param_list:
     mod1: GEX
     mod2: ADT
     dataset_name: OpenProblems NeurIPS2022 CITE-Seq
-    dataset_organism: homo_sapiens
-    dataset_summary: Single-cell CITE-Seq (GEX+ADT) data collected from bone marrow mononuclear cells of 12 healthy human donors.
-    dataset_description: "Single-cell CITE-Seq data collected from bone marrow mononuclear cells of 12 healthy human donors using the 10X 3 prime Single-Cell Gene Expression kit with Feature Barcoding in combination with the BioLegend TotalSeq B Universal Human Panel v1.0. The dataset was generated to support Multimodal Single-Cell Data Integration Challenge at NeurIPS 2022. Samples were prepared using a standard protocol at four sites. The resulting data was then annotated to identify cell types and remove doublets. The dataset was designed with a nested batch layout such that some donor samples were measured at multiple sites with some donors measured at a single site."
+    dataset_summary: Single-cell CITE-Seq (GEX+ADT) data of mobilised peripheral blood CD34+ hematopoietic stem and progenitor cells from 4 healthy human donors, over 4 days.
+    dataset_description: "Single-cell CITE-Seq data of mobilised peripheral blood CD34+ hematopoietic stem and progenitor cells (HSPCs) from 4 healthy human donors, measured on days 2, 3, 4 and 7 of a 10-day time course. Gene expression was measured together with the abundance of 140 cell surface proteins. The dataset was generated for the Multimodal Single-Cell Integration competition at NeurIPS 2022, in which the abundance of the proteins had to be predicted from gene expression on a later day. The cells were annotated with seven progenitor cell types."
 
   - id: openproblems_neurips2022/pbmc_multiome
     input_mod1: s3://openproblems-nextflow/datasets_private/neurips2022/multiome_rna_merged.h5ad
@@ -22,15 +21,12 @@ param_list:
     mod1: GEX
     mod2: ATAC
     dataset_name: OpenProblems NeurIPS2022 Multiome
-    dataset_organism: homo_sapiens
-    dataset_summary: Single-cell Multiome (GEX+ATAC) data collected from bone marrow mononuclear cells of 12 healthy human donors.
-    dataset_description: "Single-cell CITE-Seq data collected from bone marrow mononuclear cells of 12 healthy human donors using the 10X Multiome Gene Expression and Chromatin Accessibility kit. The dataset was generated to support Multimodal Single-Cell Data Integration Challenge at NeurIPS 2022. Samples were prepared using a standard protocol at four sites. The resulting data was then annotated to identify cell types and remove doublets. The dataset was designed with a nested batch layout such that some donor samples were measured at multiple sites with some donors measured at a single site."
+    dataset_summary: Single-cell Multiome (GEX+ATAC) data of mobilised peripheral blood CD34+ hematopoietic stem and progenitor cells from 4 healthy human donors, over 5 days.
+    dataset_description: "Single-cell Multiome data of mobilised peripheral blood CD34+ hematopoietic stem and progenitor cells (HSPCs) from 4 healthy human donors, measured on days 2, 3, 4, 7 and 10 of a 10-day time course with the 10X Multiome Gene Expression and Chromatin Accessibility kit. The dataset was generated for the Multimodal Single-Cell Integration competition at NeurIPS 2022, in which gene expression had to be predicted from chromatin accessibility on a later day. The cells were annotated with seven progenitor cell types; the cell types of the cells in the private test set were not released."
 
 dataset_url: "https://www.kaggle.com/competitions/open-problems-multimodal/data"
 dataset_reference: lance2024predicting
-normalization_methods: [log_cp10k, sqrt_cp10k, l1_sqrt]
-output_mod1: '$id/dataset_mod1.anndata.zarr'
-output_mod2: '$id/dataset_mod2.anndata.zarr'
+output_raw: '$id/raw.mudata.zarr'
 output_state: '$id/state.yaml'
 publish_dir: s3://openproblems-data/resources/datasets/multimodal
 HERE
@@ -47,7 +43,7 @@ HERE
 tw launch https://github.com/openproblems-bio/datasets.git \
   --revision build/main \
   --pull-latest \
-  --main-script target/nextflow/workflows/multimodal/process_openproblems_neurips2022_pbmc/main.nf \
+  --main-script target/nextflow/workflows/multimodal/load_openproblems_neurips2022_pbmc/main.nf \
   --workspace 53907369739130 \
   --compute-env 1pK56PjjzeraOOC2LDZvN2 \
   --params-file "$params_file" \

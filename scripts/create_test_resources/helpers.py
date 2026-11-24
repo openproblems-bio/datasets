@@ -50,6 +50,23 @@ def link_to_github(notebook):
   transform.save()
 
 
+def fetch_private(key, instance="openproblems/private"):
+  """Download an artifact from a private instance, return its local path.
+
+  Tracking it as a run input would copy its record into this public instance, so its
+  `lamin://` URI is recorded in the parameters of the run instead.
+  """
+  artifact = ln.Artifact.connect(instance).get(key=key)
+  path = artifact.cache(is_run_input=False)
+  run = ln.context.run
+  if run is not None:
+    params = run.params or {}
+    inputs = {**params.get("private_inputs", {}), key: f"lamin://{instance}/artifact/{artifact.uid}"}
+    run.params = {**params, "private_inputs": inputs}
+    run.save()
+  return path
+
+
 def run_workflow(workflow, params, highmem=None, output_dir=None):
   """Run a workflow of this repository, return the directory with its outputs.
 

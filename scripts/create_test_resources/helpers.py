@@ -7,12 +7,11 @@ running the workflows and storing the results in LaminDB live here.
 import json
 import os
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
 import lamindb as ln
-
-import lamin_annotate
 
 INSTANCE = "openproblems/data-dev"
 PROJECT = "openproblems-bio/datasets"
@@ -25,14 +24,8 @@ def git(*args):
 
 REPO_ROOT = Path(git("rev-parse", "--show-toplevel"))
 
-# file format of each processing step of a scRNA-seq dataset
-SCRNASEQ_SPECS = {
-  "raw.anndata.zarr": "src/api/file_raw.yaml",
-  "normalized.anndata.zarr": "src/api/file_normalized.yaml",
-  "hvg.anndata.zarr": "src/api/file_hvg.yaml",
-  "pca.anndata.zarr": "src/api/file_pca.yaml",
-  "dataset.anndata.zarr": "src/api/file_common_dataset.yaml",
-}
+sys.path.insert(0, str(REPO_ROOT / "scripts/lamin"))
+import annotate_artifacts  # noqa: E402
 
 
 def check_instance():
@@ -94,14 +87,13 @@ def run_workflow(workflow, params, highmem=None, output_dir=None):
   return output_dir
 
 
-def save_collection(output_dir, files, key, description, specs=None, modality=None):
+def save_collection(output_dir, files, key, description, modality=None):
   """Store each file as an artifact under `key` and group them in a collection with that key.
 
   Earlier versions keep their files, so a pinned version of the collection stays downloadable.
-  Files with a file format in `specs` are annotated with everything the website shows about
-  a dataset (see `lamin_annotate`).
+  Datasets are annotated with everything the website shows about them (see
+  `scripts/lamin/annotate_artifacts.py`).
   """
-  specs = specs or {}
   artifacts = []
   for file in files:
     artifact = ln.Artifact(
@@ -110,13 +102,9 @@ def save_collection(output_dir, files, key, description, specs=None, modality=No
       description=f"{description}: {file}",
       overwrite_versions=False,
     ).save()
-    if file in specs:
-      lamin_annotate.annotate_artifact(
-        artifact,
-        REPO_ROOT / specs[file],
-        modality=modality,
-        bib_path=REPO_ROOT / "common/library.bib",
-      )
+    spec = annotate_artifacts.spec_for(artifact)
+    if spec is not None:
+      annotate_artifacts.annotate_artifact(artifact, spec, modality=modality)
     artifacts.append(artifact)
   collection = ln.Collection(artifacts, key=key, description=description).save()
   print(f"lamin://{INSTANCE}/collection/{collection.uid}")

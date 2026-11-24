@@ -7,6 +7,7 @@ running the workflows and storing the results in LaminDB live here.
 import json
 import os
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
@@ -22,6 +23,9 @@ def git(*args):
 
 
 REPO_ROOT = Path(git("rev-parse", "--show-toplevel"))
+
+sys.path.insert(0, str(REPO_ROOT / "scripts/lamin"))
+import annotate_artifacts  # noqa: E402
 
 
 def check_instance():
@@ -54,6 +58,13 @@ def run_workflow(workflow, params, highmem=None, output_dir=None):
   run to publish into the same directory.
   """
   output_dir = Path(output_dir or tempfile.mkdtemp())
+
+  # record the parameters on the run, e.g. which source release and query a dataset came from
+  run = ln.context.run
+  if run is not None:
+    run.params = {**(run.params or {}), workflow: params}
+    run.save()
+
   params_file = output_dir / f"params_{workflow.replace('/', '_')}.json"
   params_file.write_text(json.dumps({**params, "publish_dir": str(output_dir)}))
   configs = ["-c", "common/nextflow_helpers/labels_ci.config"]
@@ -76,20 +87,25 @@ def run_workflow(workflow, params, highmem=None, output_dir=None):
   return output_dir
 
 
-def save_collection(output_dir, files, key, description):
+def save_collection(output_dir, files, key, description, modality=None):
   """Store each file as an artifact under `key` and group them in a collection with that key.
 
   Earlier versions keep their files, so a pinned version of the collection stays downloadable.
+  Datasets are annotated with everything the website shows about them (see
+  `scripts/lamin/annotate_artifacts.py`).
   """
-  artifacts = [
-    ln.Artifact(
+  artifacts = []
+  for file in files:
+    artifact = ln.Artifact(
       output_dir / file,
       key=f"{key}/{file}",
       description=f"{description}: {file}",
       overwrite_versions=False,
     ).save()
-    for file in files
-  ]
+    spec = annotate_artifacts.spec_for(artifact)
+    if spec is not None:
+      annotate_artifacts.annotate_artifact(artifact, spec, modality=modality)
+    artifacts.append(artifact)
   collection = ln.Collection(artifacts, key=key, description=description).save()
   print(f"lamin://{INSTANCE}/collection/{collection.uid}")
   return collection

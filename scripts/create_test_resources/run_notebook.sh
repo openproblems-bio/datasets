@@ -3,7 +3,7 @@
 # Run a test resource notebook and save it, including its report, to LaminDB.
 #
 # Usage:
-#   uv run --with 'lamindb[aws]' --with nbconvert --with ipykernel \
+#   uv run --with 'lamindb[aws,bionty]==2.12.2' --with 'anndata==0.13.2' --with nbconvert --with ipykernel \
 #     scripts/create_test_resources/run_notebook.sh scripts/create_test_resources/pancreas.ipynb
 
 set -eo pipefail

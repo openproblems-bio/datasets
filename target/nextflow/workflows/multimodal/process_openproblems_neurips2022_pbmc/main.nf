@@ -3988,7 +3988,7 @@ meta = [
     "engine" : "native",
     "output" : "target/nextflow/workflows/multimodal/process_openproblems_neurips2022_pbmc",
     "viash_version" : "0.9.7",
-    "git_commit" : "c38449b7d1b0fea322d39121e677bd30a1205542",
+    "git_commit" : "9dc4a2d025aba98c31ae033a2d79c9a75b4b329a",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {

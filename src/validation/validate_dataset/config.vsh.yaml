@@ -15,6 +15,14 @@ argument_groups:
         __merge__: /src/api/file_common_dataset.yaml
         direction: input
         required: false
+      - name: --input_multimodal_raw
+        __merge__: /src/api/file_multimodal_raw.yaml
+        direction: input
+        required: false
+      - name: --input_multimodal_dataset
+        __merge__: /src/api/file_multimodal_dataset.yaml
+        direction: input
+        required: false
 resources:
   - type: python_script
     path: script.py
@@ -25,6 +33,11 @@ test_resources:
 engines:
   - type: docker
     image: openproblems/base_python:1
+    setup:
+      - type: python
+        packages: ["mudata~=0.4"]
+        # TODO: remove once the base images have mudata support in check_format
+        github: ["openproblems-bio/core@mudata-check-format#subdirectory=packages/python/openproblems"]
 runners:
   - type: executable
   - type: nextflow

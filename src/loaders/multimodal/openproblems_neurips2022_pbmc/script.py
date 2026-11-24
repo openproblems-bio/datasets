@@ -60,9 +60,8 @@ if "is_train" not in adata_mod2.obs.columns:
 
 # split up index in modality 1 into feature ID and feature name
 adata_mod1.var['feature_id'] = [str(s).split('_')[0] for s in adata_mod1.var.index.tolist()]
-# TODO: index does not always contain an underscore.
-if "_" in adata_mod1.var.index[0]:
-  adata_mod1.var['feature_name'] = [str(s).split('_')[1] for s in adata_mod1.var.index.tolist()]
+# the Multiome gene expression has no gene symbols, only Ensembl ids
+adata_mod1.var['feature_name'] = [str(s).split('_', 1)[-1] for s in adata_mod1.var.index.tolist()]
 adata_mod1.var.set_index('feature_id',drop=False, inplace=True)
 adata_mod1.var.index.name = None
 

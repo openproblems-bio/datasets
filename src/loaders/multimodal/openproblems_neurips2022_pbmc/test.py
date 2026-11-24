@@ -21,9 +21,9 @@ obs = pd.DataFrame(
 )
 obs["batch"] = obs["day"].astype(str) + "_" + obs["donor"]
 
-def source(var_names):
+def source(var_names, **extra_obs):
   counts = sparse.csr_matrix(rng.poisson(1, (n_cells, len(var_names))).astype(np.float32))
-  return ad.AnnData(X=counts.copy(), layers={"counts": counts}, obs=obs.copy(), var=pd.DataFrame(index=var_names))
+  return ad.AnnData(X=counts.copy(), layers={"counts": counts}, obs=obs.assign(**extra_obs), var=pd.DataFrame(index=var_names))
 
 input_mod1 = "cite_rna_merged.h5ad"
 input_mod2 = "cite_prot_merged.h5ad"
@@ -81,5 +81,31 @@ assert all(":" not in col for col in mdata.obs.columns), "global obs contains pr
 assert mdata.uns["dataset_id"] == "openproblems_neurips2022/pbmc_cite"
 assert list(mdata.uns["dataset_reference"]) == ["lance2024predicting"]
 assert "dataset_organism" not in mdata.uns
+
+
+print(">> Running script on a Multiome-like input", flush=True)
+# the Multiome gene expression has bare Ensembl ids, without gene symbols
+source([f"ENSG0000000000{i}" for i in range(10)]).write_h5ad("multiome_rna_merged.h5ad")
+source(["chr1:100-200", "chr1:300-400"], total_fragment_counts=rng.random(n_cells)).write_h5ad("multiome_atac_merged.h5ad")
+subprocess.run(
+  [
+    meta["executable"],
+    "--input_mod1", "multiome_rna_merged.h5ad",
+    "--input_mod2", "multiome_atac_merged.h5ad",
+    "--mod1", "GEX",
+    "--mod2", "ATAC",
+    "--output", "multiome.mudata.zarr",
+    "--dataset_id", "openproblems_neurips2022/pbmc_multiome",
+    "--dataset_name", "OpenProblems NeurIPS2022 Multiome",
+    "--dataset_summary", "A short summary.",
+    "--dataset_description", "A couple of paragraphs worth of text.",
+  ],
+  check=True,
+)
+mdata = md.read_zarr("multiome.mudata.zarr")
+print(mdata, flush=True)
+assert set(mdata.mod) == {"rna", "atac"}
+assert list(mdata["rna"].var["feature_name"]) == list(mdata["rna"].var["feature_id"]), "without symbols, the feature name is the Ensembl id"
+assert list(mdata["atac"].obs.columns) == ["total_fragment_counts"], "ATAC-specific columns stay in the modality"
 
 print(">> All tests passed successfully", flush=True)

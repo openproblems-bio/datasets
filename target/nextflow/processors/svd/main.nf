@@ -4178,6 +4178,18 @@ meta = [
           "direction" : "input",
           "multiple" : false,
           "multiple_sep" : ";"
+        },
+        {
+          "type" : "integer",
+          "name" : "--seed",
+          "description" : "Random seed, set for reproducible results.",
+          "default" : [
+            0
+          ],
+          "required" : false,
+          "direction" : "input",
+          "multiple" : false,
+          "multiple_sep" : ";"
         }
       ]
     }
@@ -4303,7 +4315,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/processors/svd",
     "viash_version" : "0.9.7",
-    "git_commit" : "9dc4a2d025aba98c31ae033a2d79c9a75b4b329a",
+    "git_commit" : "bd768912999396dd71cc1071b5a1b64e24f4d235",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -4376,7 +4388,8 @@ par = {
   'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'output_mod2': $( if [ ! -z ${VIASH_PAR_OUTPUT_MOD2+x} ]; then echo "r'${VIASH_PAR_OUTPUT_MOD2//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
   'obsm_embedding': $( if [ ! -z ${VIASH_PAR_OBSM_EMBEDDING+x} ]; then echo "r'${VIASH_PAR_OBSM_EMBEDDING//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
-  'num_components': $( if [ ! -z ${VIASH_PAR_NUM_COMPONENTS+x} ]; then echo "int(r'${VIASH_PAR_NUM_COMPONENTS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi )
+  'num_components': $( if [ ! -z ${VIASH_PAR_NUM_COMPONENTS+x} ]; then echo "int(r'${VIASH_PAR_NUM_COMPONENTS//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi ),
+  'seed': $( if [ ! -z ${VIASH_PAR_SEED+x} ]; then echo "int(r'${VIASH_PAR_SEED//\\'/\\'\\"\\'\\"r\\'}')"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\\'/\\'\\"\\'\\"r\\'}'"; else echo None; fi ),
@@ -4419,9 +4432,9 @@ n_svd = min(min_list)
 
 
 print(">> Run SVD", flush=True)
-svd1 = sklearn.decomposition.TruncatedSVD(n_svd).fit_transform(adata.layers[par["input_layer"]])
+svd1 = sklearn.decomposition.TruncatedSVD(n_svd, random_state=par["seed"]).fit_transform(adata.layers[par["input_layer"]])
 if par["input_mod2"] is not None:
-    svd2 = sklearn.decomposition.TruncatedSVD(n_svd).fit_transform(adata2.layers[par["input_layer"]])
+    svd2 = sklearn.decomposition.TruncatedSVD(n_svd, random_state=par["seed"]).fit_transform(adata2.layers[par["input_layer"]])
 
 print(">> Storing output", flush=True)
 adata.obsm[par["obsm_embedding"]] = svd1

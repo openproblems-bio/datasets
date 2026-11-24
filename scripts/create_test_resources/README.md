@@ -9,9 +9,10 @@ Each notebook in this directory creates one set of test resources: it runs a wor
 | `cxg_mouse_pancreas_atlas.ipynb` | `resources_test/datasets/cxg_mouse_pancreas_atlas` |
 | `mouse_brain_coronal.ipynb` | `resources_test/datasets/mouse_brain_coronal` |
 | `neurips2021_bmmc.ipynb` | `resources_test/datasets/openproblems_neurips2021` |
+| `neurips2022_pbmc.ipynb` | `resources_test/datasets/openproblems_neurips2022` |
 | `scicar_cell_lines.ipynb` | `resources_test/datasets/scicar_cell_lines` |
 
-`neurips2022_pbmc.sh` has not been converted yet, as its input data is not public.
+The source files of `neurips2022_pbmc.ipynb` are not public. They are stored in the private instance [`openproblems/private`](https://lamin.ai/openproblems/private), and `helpers.fetch_private()` records them in the parameters of the run rather than as its inputs, so that their records are not copied into the public instance.
 
 `pancreas.ipynb` and `scicar_cell_lines.ipynb` use the deprecated openproblems v1 datasets. Their collections stay available, but new tests should use the CELLxGENE test resources instead.
 

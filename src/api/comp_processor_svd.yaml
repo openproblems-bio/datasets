@@ -36,6 +36,10 @@ arguments:
     type: integer
     default: 100
     description: Number of principal components to compute. Defaults to 100, or 1 - minimum dimension size of selected representation.
+  - name: "--seed"
+    type: integer
+    default: 0
+    description: Random seed, set for reproducible results.
 test_resources:
   - path: /resources_test/common/cxg_mouse_pancreas_atlas
     dest: resources_test/common/cxg_mouse_pancreas_atlas

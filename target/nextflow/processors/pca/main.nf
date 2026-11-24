@@ -3833,7 +3833,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/processors/pca",
     "viash_version" : "0.9.7",
-    "git_commit" : "9dc4a2d025aba98c31ae033a2d79c9a75b4b329a",
+    "git_commit" : "bd768912999396dd71cc1071b5a1b64e24f4d235",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {

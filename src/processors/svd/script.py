@@ -10,6 +10,7 @@ par = {
     "input_layer": "normalized",
     "obsm_embedding": "X_svd",
     "num_components": 100,
+    "seed": 0,
 }
 ## VIASH END
 
@@ -28,9 +29,9 @@ n_svd = min(min_list)
 
 
 print(">> Run SVD", flush=True)
-svd1 = sklearn.decomposition.TruncatedSVD(n_svd).fit_transform(adata.layers[par["input_layer"]])
+svd1 = sklearn.decomposition.TruncatedSVD(n_svd, random_state=par["seed"]).fit_transform(adata.layers[par["input_layer"]])
 if par["input_mod2"] is not None:
-    svd2 = sklearn.decomposition.TruncatedSVD(n_svd).fit_transform(adata2.layers[par["input_layer"]])
+    svd2 = sklearn.decomposition.TruncatedSVD(n_svd, random_state=par["seed"]).fit_transform(adata2.layers[par["input_layer"]])
 
 print(">> Storing output", flush=True)
 adata.obsm[par["obsm_embedding"]] = svd1

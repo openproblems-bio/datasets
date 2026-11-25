@@ -3,7 +3,7 @@
 # dependencies = [
 #   "lamindb[aws,bionty]==2.12.2",
 #   "anndata==0.13.2",
-#   "mudata~=0.4",
+#   "mudata==0.4.1",
 #   "pyyaml",
 # ]
 # ///

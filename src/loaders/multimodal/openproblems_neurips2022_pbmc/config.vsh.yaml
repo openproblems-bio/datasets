@@ -69,7 +69,7 @@ engines:
     image: openproblems/base_python:1
     setup:
       - type: python
-        packages: ["mudata~=0.4"]
+        packages: ["mudata==0.4.1"]
 runners:
   - type: executable
   - type: nextflow

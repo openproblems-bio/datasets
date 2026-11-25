@@ -21,7 +21,7 @@ The source files of `neurips2022_pbmc.ipynb` are not public. They are stored in 
 You need Docker, Nextflow, the components built with `viash ns build --setup cachedbuild`, and write access to `openproblems/data-dev`. The `.lamin` directory in the root of this repository connects it to that instance. Run a notebook with:
 
 ```bash
-uv run --with 'lamindb[aws,bionty]==2.12.2' --with 'anndata==0.13.2' --with nbconvert --with ipykernel \
+uv run --with 'lamindb[aws,bionty]==2.12.2' --with 'anndata==0.13.2' --with 'mudata==0.4.1' --with nbconvert --with ipykernel \
   scripts/create_test_resources/run_notebook.sh scripts/create_test_resources/pancreas.ipynb
 ```
 

@@ -48,7 +48,7 @@ argument_groups:
       - name: "--dataset_summary"
         type: string
         description: "Short summary of the dataset"
-        default: "The Open Problems Perurbation Prediction (OP3) dataset with small molecule perturbations in PBMCs"
+        default: "The Open Problems Perturbation Prediction (OP3) dataset with small molecule perturbations in PBMCs"
       - name: "--dataset_description"
         type: string
         description: "Detailed description of the dataset"
@@ -69,9 +69,9 @@ resources:
   - type: python_script
     path: script.py
 
-# test_resources:
-#   - type: python_script
-#     path: test.py
+test_resources:
+  - type: python_script
+    path: test.py
 
 engines:
   - type: docker

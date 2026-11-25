@@ -76,6 +76,18 @@
 
 * BUG FIX: The openproblems v1 loaders build on Python 3.10 and download without `scprep`'s spoofed user agent, which figshare and GEO refuse.
 
+* MAJOR CHANGE: The scRNA-seq and multimodal resource scripts in `scripts/create_resources` are Python scripts that build the datasets on the de.NBI cluster and publish them to LaminDB with nf-lamin, instead of to `s3://openproblems-data`. `process_datasets.py` processes the latest raw datasets in LaminDB. The v1 resource scripts are removed.
+
+* MINOR CHANGE: The CELLxGENE Census datasets come from the LTS release of 2025-11-08 instead of 2023-07-25, which adds the Human Retina Cell Atlas (missing in the old release) and grows Tabula Sapiens from 483k to 1.1M cells. The Diabetic Kidney Disease dataset only selects the snRNA-seq dataset, the only one of the two in the Census. Test resources regenerated.
+
+* MINOR CHANGE: The Census loader runs on Python 3.12 with pinned `cellxgene-census`, `tiledbsoma`, `anndata` and `scanpy`, with the same anndata as the other components.
+
+* NEW FUNCTIONALITY: OP3 test resources (`scripts/create_test_resources/openproblems_op3.py`).
+
+* BUG FIX: `scripts/lamin/annotate_artifacts.py` accepts `unknown` as cell type, as CELLxGENE does, and can describe dataframes whose index anndata wrote as a nullable string array.
+
+* MINOR CHANGE: The OP3 loader keeps the counts and the cell and gene metadata only, not the results of the analysis in the GEO h5ad (`.raw`, embeddings, the kNN graph, HTO and protein counts, highly variable genes, clusters, marker genes). Its test runs on a small synthetic h5ad instead of downloading the full dataset.
+
 # datasets v0.1.0
 
 * Port dataset loaders and processors from `openproblems-bio/openproblems`.

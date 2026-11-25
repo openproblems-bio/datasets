@@ -41,49 +41,17 @@ def connect_census(uri, census_version):
 
 def get_anndata(census_connection, par):
     logger.info("Getting gene expression data based on `%s` query.", par["obs_value_filter"])
-    # workaround for https://github.com/chanzuckerberg/cellxgene-census/issues/891
     return cellxgene_census.get_anndata(
         census=census_connection,
         obs_value_filter=par["obs_value_filter"],
         organism=par["species"]
     )
 
-    # exp = census_connection["census_data"][par["species"]]
-    # query = exp.axis_query(
-    #     "RNA",
-    #     obs_query=soma.AxisQuery(value_filter=par["obs_value_filter"]),
-    #     var_query=soma.AxisQuery(),
-    # )
-
-    # n_obs = query.n_obs
-    # n_vars = query.n_vars
-    # logger.info(f"Query yields {n_obs} cells and {n_vars} genes.")
-
-    # logger.info("Fetching obs.")
-    # obs = query.obs().concat().to_pandas()
-
-    # logger.info("Fetching var.")
-    # var = query.var().concat().to_pandas()
-
-    # logger.info("Fetching X.")
-    # X = query.X("raw")
-    # Xcoo = X.coos().concat()
-    # Xcoos = Xcoo.to_scipy().tocsr()
-    # Xcoos_subset = Xcoos[obs["soma_joinid"]]
-
-    # logger.info("Creating AnnData object.")
-    # return sc.AnnData(
-    #     layers={"counts": Xcoos_subset},
-    #     obs=obs,
-    #     var=var
-    # )
-
 def filter_min_cells_per_group(adata, par):
     n_cells_before, _ = adata.shape
     cell_count = adata.obs \
         .groupby(par["cell_filter_grouping"])["soma_joinid"] \
-        .transform("count") \
-        
+        .transform("count")
     adata = adata[cell_count >= par["cell_filter_minimum_count"]]
     n_cells_after, _ = adata.shape
     logger.info(

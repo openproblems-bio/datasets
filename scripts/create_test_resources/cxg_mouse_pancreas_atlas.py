@@ -28,7 +28,7 @@ ln.track("xLOCoaLOtD9h", project=helpers.PROJECT)
 helpers.link_to_github("scripts/create_test_resources/cxg_mouse_pancreas_atlas.py")
 
 # take the cells of three two-year-old mice from the CELLxGENE Census release of
-# 2023-07-25, use the donor as batch, and subsample to 600 cells and 1500 genes
+# 2025-11-08, use the donor as batch, and subsample to 600 cells and 1500 genes
 donors = [
   "mouse_pancreatic_islet_atlas_Hrovatin__Fltp_2y__MUC13974",
   "mouse_pancreatic_islet_atlas_Hrovatin__Fltp_2y__MUC13975",
@@ -37,7 +37,7 @@ donors = [
 output_dir = helpers.run_workflow("scrnaseq/load_cellxgene_census", {
   "id": "cxg_mouse_pancreas_atlas",
   "species": "mus_musculus",
-  "census_version": "2023-07-25",
+  "census_version": "2025-11-08",
   "obs_value_filter": f"dataset_id == '49e4ffcc-5444-406d-bdee-577127404ba8' and donor_id in {donors}",
   "obs_batch": ["donor_id"],
   "dataset_name": "Mouse Pancreatic Islet Atlas",

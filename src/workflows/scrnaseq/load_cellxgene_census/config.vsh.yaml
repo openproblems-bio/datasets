@@ -14,12 +14,12 @@ argument_groups:
         example: s3://bucket/path
       - name: --census_version
         description: |
-          The date of the CELLxGENE Census release to use (e.g. "2023-07-25"). `latest`
+          The date of the CELLxGENE Census release to use (e.g. "2025-11-08"). `latest`
           and `stable` are not allowed, so that the same parameters always give the same
           dataset. For more information, check the documentation on [Census data
           releases](https://chanzuckerberg.github.io/cellxgene-census/cellxgene_census_docsite_data_release_info.html).
         type: string
-        example: "2023-07-25"
+        example: "2025-11-08"
         required: false
   - name: Cell query
     description: Arguments related to the query.

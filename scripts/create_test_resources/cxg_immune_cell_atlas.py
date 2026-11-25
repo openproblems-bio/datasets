@@ -23,11 +23,11 @@ ln.track("RXx1ZGPcLsGt", project=helpers.PROJECT)
 helpers.link_to_github("scripts/create_test_resources/cxg_immune_cell_atlas.py")
 
 # take the cells of three donors (A29, A31 and A35) from the CELLxGENE Census release of
-# 2023-07-25, use the donor as batch, and subsample to 600 cells and 1500 genes
+# 2025-11-08, use the donor as batch, and subsample to 600 cells and 1500 genes
 output_dir = helpers.run_workflow("scrnaseq/load_cellxgene_census", {
   "id": "cxg_immune_cell_atlas",
   "species": "homo_sapiens",
-  "census_version": "2023-07-25",
+  "census_version": "2025-11-08",
   "obs_value_filter": "dataset_id == '1b9d8702-5af8-4142-85ed-020eb06ec4f6' and donor_id in ['A29', 'A31', 'A35']",
   "obs_batch": ["donor_id"],
   "dataset_name": "Immune Cell Atlas",

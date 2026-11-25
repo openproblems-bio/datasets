@@ -3839,7 +3839,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/processors/knn",
     "viash_version" : "0.9.7",
-    "git_commit" : "9cd9a2363647732069fb49eaa6f3724503ac2d10",
+    "git_commit" : "5eb563217f2084e9166477faecb9702e308217b3",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -3854,7 +3854,7 @@ meta = [
           "strip_prefix" : "resources_test/datasets/cxg_mouse_pancreas_atlas/"
         },
         {
-          "path" : "lamin://openproblems/data-dev/collection/PnooFh88ZnOarg4G0001",
+          "path" : "lamin://openproblems/data-dev/collection/PnooFh88ZnOarg4G0002",
           "dest" : "resources_test/common/openproblems_neurips2021",
           "strip_prefix" : "resources_test/datasets/openproblems_neurips2021/"
         }

@@ -451,9 +451,9 @@ ENV OPENBLAS_NUM_THREADS=4
 ENV MKL_NUM_THREADS=4
 ENV NUMBA_NUM_THREADS=4
 LABEL org.opencontainers.image.description="Companion container for running component normalization sqrt_cp"
-LABEL org.opencontainers.image.created="2026-11-25T09:36:58Z"
+LABEL org.opencontainers.image.created="2026-11-25T10:06:28Z"
 LABEL org.opencontainers.image.source="https://github.com/openproblems-bio/datasets"
-LABEL org.opencontainers.image.revision="9cd9a2363647732069fb49eaa6f3724503ac2d10"
+LABEL org.opencontainers.image.revision="5eb563217f2084e9166477faecb9702e308217b3"
 LABEL org.opencontainers.image.version="build_main"
 
 VIASHDOCKER

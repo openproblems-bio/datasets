@@ -9,7 +9,7 @@
 # ///
 """Annotate LaminDB artifacts with everything the OpenProblems website shows about a dataset.
 
-Run it after anything that published datasets to LaminDB, be it a Nextflow run or a notebook:
+Run it after anything that published datasets to LaminDB, be it a Nextflow run or a script:
 
     uv run scripts/lamin/annotate_artifacts.py --instance openproblems/data-dev --run <run uid>
     uv run scripts/lamin/annotate_artifacts.py --instance openproblems/data-dev --key-prefix scrnaseq/
@@ -25,12 +25,13 @@ the hub page and the website can be rendered from the instance alone:
 * the actual structure of the store (slot, name, dtype, shape) and cell counts per category
 * references from the bibliography, with their DOI, and the modality
 
-Only metadata, `obs`, `var` and `uns` are read, straight from where the artifact is stored,
-so this works for datasets of any size. Annotating is idempotent: artifacts that already have
-the schema of their file format are skipped.
+For an AnnData store, only metadata, `obs`, `var` and `uns` are read, straight from where the
+artifact is stored, so this works for datasets of any size. lamindb loads a MuData store into
+memory to validate it. Annotating is idempotent: artifacts that already have the schema of
+their file format are skipped.
 
-Each file format has its own reader for the structure and summary of a store; for now only
-`anndata_zarr` exists, MuData, SpatialData, data frames and JSON/YAML get one later.
+Each file format has its own reader for the structure and summary of a store: `anndata_zarr`
+and `mudata_zarr` exist, SpatialData, data frames and JSON/YAML get one later.
 """
 
 import argparse

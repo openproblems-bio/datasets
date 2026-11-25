@@ -45,8 +45,11 @@ def raw_key_to_param(key, uid, instance):
     "id": match["id"],
     "input": f"lamin://{instance}/artifact/{uid}",
     "output_dataset": f"$id/dataset.{match['format']}.zarr",
-    "output_state": "$id/process_state.yaml",
   }
+
+
+# Viash reads the state file name from the top-level parameters only
+SHARED = {"output_state": "$id/process_state.yaml"}
 
 
 def latest_raw_datasets(instance, modality):
@@ -73,7 +76,7 @@ def main():
   ]
   if not datasets:
     raise SystemExit(f"No raw {args.modality} datasets in {instance}")
-  helpers.launch_datasets(f"{args.modality}/process_{args.modality}", datasets, {}, args.modality, args)
+  helpers.launch_datasets(f"{args.modality}/process_{args.modality}", datasets, SHARED, args.modality, args)
   print(f"\nOnce the runs have finished:\n  uv run scripts/lamin/annotate_artifacts.py --instance {instance} --key-prefix {args.modality}/")
 
 

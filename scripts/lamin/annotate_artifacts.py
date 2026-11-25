@@ -227,8 +227,9 @@ def _describe_element(node):
   if encoding and encoding.startswith("nullable-"):
     return {"type": encoding, "dtype": str(node["values"].dtype), "shape": list(node["values"].shape)}
   if encoding == "dataframe":
-    index = node[node.attrs["_index"]]
-    return {"type": "dataframe", "shape": [index.shape[0], len(node.attrs["column-order"])]}
+    # the index is an array, or a group for nullable strings and categoricals
+    n_rows = _describe_element(node[node.attrs["_index"]])["shape"][0]
+    return {"type": "dataframe", "shape": [n_rows, len(node.attrs["column-order"])]}
   return {"type": encoding or "dict", "keys": sorted(node.keys())}
 
 

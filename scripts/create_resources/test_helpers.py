@@ -33,6 +33,17 @@ def test_config_order(tmp_path):
   assert "450.GB" not in config
 
 
+def test_error_strategy(tmp_path):
+  # retry when a task ran out of memory or its node went away (no or an odd exit code), and
+  # let the other datasets finish when one fails, without ever ignoring a failure
+  config = (helpers.REPO_ROOT / "src/config/lamin_denbi.config").read_text()
+  strategy = next(line for line in config.splitlines() if line.strip().startswith("errorStrategy"))
+  for condition in ["task.exitStatus in [137, 139]", "task.exitStatus == null", "task.exitStatus < 0", "task.exitStatus > 2100000000"]:
+    assert condition in strategy
+  assert "'finish'" in strategy
+  assert "'ignore'" not in strategy and "'terminate'" not in strategy
+
+
 def test_large_config(tmp_path):
   config = launch(tmp_path, large=True).config.read_text()
   assert config.index("instance = 'openproblems/data-dev'") < config.index("450.GB")

@@ -16,9 +16,15 @@
 
 * MINOR CHANGE: Pin BLAS, OpenMP and numba to 4 threads in every Docker image. The PCA (and with it the kNN graph) depended on the number of cores of the machine.
 
+* MAJOR CHANGE: The NeurIPS 2021 and 2022 multimodal datasets are MuData stores (`raw.mudata.zarr`, `dataset.mudata.zarr`) with modalities `rna`, `prot` and `atac`, and the cell metadata once, in the global `obs`. `load_openproblems_neurips2021_bmmc` and `load_openproblems_neurips2022_pbmc` (optionally subsample and) write a raw dataset, and `process_multimodal` normalises each modality, computes an SVD embedding and selects highly variable features. They replace `process_openproblems_neurips2021_bmmc` and `process_openproblems_neurips2022_pbmc`. The file formats `file_multimodal_raw` and `file_multimodal_dataset` are now `mudata_zarr`; the deprecated v1 multimodal workflow keeps its two AnnData stores (`file_multimodal_v1_*`).
+
+* NEW FUNCTIONALITY: `utils/split_mudata` and `utils/combine_mudata` split a MuData store into one AnnData per modality and back, so the single-modality components can process multimodal datasets. `validate_dataset` gains `--input_multimodal_raw` and `--input_multimodal_dataset`.
+
+* BUG FIX: `processors/subsample` picks `--n_vars` features in each modality separately, so the gene expression of a CITE-seq dataset is no longer cut down to the number of proteins. The NeurIPS 2022 loader uses the Ensembl id as feature name when the source has no gene symbol, as in the Multiome data.
+
 * MAJOR CHANGE: Raw scRNA-seq datasets must have CELLxGENE-style ontology term ids for the assay, cell type, developmental stage, disease, self-reported ethnicity, sex and tissue. The multimodal loaders use a new `file_multimodal_raw` spec, in which these stay optional.
 
-* MAJOR CHANGE: Raw scRNA-seq datasets store the organism per cell in `obs['organism_ontology_term_id']` (required, NCBI Taxonomy) and `obs['organism']`, instead of `uns['dataset_organism']`. The CELLxGENE Census loaders fill it in from `--species` or the source h5ad, and the OP3 loader sets `NCBITaxon:9606`. Multimodal and spatial datasets still use `uns['dataset_organism']`.
+* MAJOR CHANGE: Raw scRNA-seq datasets store the organism per cell in `obs['organism_ontology_term_id']` (required, NCBI Taxonomy) and `obs['organism']`, instead of `uns['dataset_organism']`. The CELLxGENE Census loaders fill it in from `--species` or the source h5ad, and the OP3 loader sets `NCBITaxon:9606`. The NeurIPS multimodal datasets do the same in their global `obs`; spatial datasets still use `uns['dataset_organism']`.
 
 * BUG FIX: The loaders store `uns['dataset_reference']` and `uns['dataset_organism']` as lists, as declared in `src/api`, since a dataset can have several references and organisms. The OP3 loader takes both as arguments instead of hardcoding them.
 
@@ -36,7 +42,7 @@
 
 * MINOR CHANGE: Failed Nextflow processes are no longer ignored, so a failing dataset fails the run.
 
-* MAJOR CHANGE: All loaders, components and workflows write AnnData zarr stores instead of h5ad files, and the file formats in `src/api` are now `anndata_zarr`. Every Docker image sets `ANNDATA_ZARR_WRITE_FORMAT=3`. Multimodal datasets are still two AnnData stores, spatial datasets one.
+* MAJOR CHANGE: All loaders, components and workflows write AnnData zarr stores instead of h5ad files, and the file formats in `src/api` are now `anndata_zarr`. Every Docker image sets `ANNDATA_ZARR_WRITE_FORMAT=3`. Spatial datasets are one AnnData store.
 
 * NEW FUNCTIONALITY: `scripts/lamin/annotate_artifacts.py` annotates dataset artifacts in LaminDB with what the OpenProblems website shows about a dataset: a schema with every slot of the `src/api` file format, the ontology terms in `obs`, the `dataset_*` metadata, the structure of the store, cell counts per category, processing parameters, the modality and references with their DOI. Run it after a workflow published datasets; the test resource notebooks call it for their artifacts and record the workflow parameters on their run.
 

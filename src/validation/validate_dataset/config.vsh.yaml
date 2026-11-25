@@ -30,14 +30,13 @@ test_resources:
   - type: python_script
     path: test.py
   - path: /resources_test/common/cxg_mouse_pancreas_atlas
+  - path: /resources_test/common/openproblems_neurips2021
 engines:
   - type: docker
     image: openproblems/base_python:1
     setup:
       - type: python
         packages: ["mudata~=0.4"]
-        # TODO: remove once the base images have mudata support in check_format
-        github: ["openproblems-bio/core@mudata-check-format#subdirectory=packages/python/openproblems"]
 runners:
   - type: executable
   - type: nextflow

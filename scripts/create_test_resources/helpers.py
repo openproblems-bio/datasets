@@ -1,6 +1,6 @@
-"""Shared steps of the test resource notebooks in this directory.
+"""Shared steps of the test resource scripts in this directory.
 
-The notebooks describe the datasets and how they are processed; the mechanics of
+The scripts describe the datasets and how they are processed; the mechanics of
 running the workflows and storing the results in LaminDB live here.
 """
 
@@ -35,17 +35,17 @@ def check_instance():
     raise RuntimeError(f"Connected to '{instance}' instead of '{INSTANCE}'")
 
 
-def link_to_github(notebook):
-  """Point the transform of the current run to the notebook on GitHub.
+def link_to_github(script):
+  """Point the transform of the current run to the script on GitHub.
 
-  Only done when the notebook is committed and pushed, so the link shows the code that ran.
+  Only done when the script is committed and pushed, so the link shows the code that ran.
   """
   commit = git("rev-parse", "HEAD")
-  if git("status", "--porcelain", "--", str(REPO_ROOT / notebook)) or not git("branch", "-r", "--contains", commit):
-    print(f"Not linking to GitHub: {notebook} has uncommitted or unpushed changes")
+  if git("status", "--porcelain", "--", str(REPO_ROOT / script)) or not git("branch", "-r", "--contains", commit):
+    print(f"Not linking to GitHub: {script} has uncommitted or unpushed changes")
     return
   transform = ln.context.transform
-  transform.reference = f"{REPO_URL}/blob/{commit}/{notebook}"
+  transform.reference = f"{REPO_URL}/blob/{commit}/{script}"
   transform.reference_type = "url"
   transform.save()
 

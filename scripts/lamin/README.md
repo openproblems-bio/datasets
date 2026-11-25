@@ -2,7 +2,7 @@
 
 `annotate_artifacts.py` annotates dataset artifacts in LaminDB with everything the OpenProblems website shows about a dataset: a schema with every slot of its file format in `src/api`, the ontology terms in `obs`, the `dataset_*` metadata, the structure of the store, cell counts per category, processing parameters, the modality and references with their DOI.
 
-Run it after anything that published datasets, be it a Nextflow run or a notebook. Its dependencies are listed in the script, so `uv` installs them:
+Run it after anything that published datasets, be it a Nextflow run or a script. Its dependencies are listed in the script, so `uv` installs them:
 
 ```bash
 # everything a run created

@@ -57,7 +57,7 @@ argument_groups:
         type: string
         description: "Short description of the dataset."
         required: true
-        default: "The Open Problems Perurbation Prediction (OP3) dataset with small molecule perturbations in PBMCs"
+        default: "The Open Problems Perturbation Prediction (OP3) dataset with small molecule perturbations in PBMCs"
       - name: --dataset_description
         type: string
         description: "Long description of the dataset."

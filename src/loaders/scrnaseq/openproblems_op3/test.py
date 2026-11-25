@@ -1,71 +1,94 @@
+import sys
 
-import os
-import pytest
 import anndata as ad
 import numpy as np
-import requests
-import sys
+import pandas as pd
+import pytest
+import scipy.sparse as sp
 
 ## VIASH START
 meta = {
-    'resources_dir': './resources_test/',
-    'executable': './target/docker/datasets/loaders/scrnaseq/op3',
-    'config': os.path.abspath('./src/datasets/loaders/scrnaseq/op3/config.vsh.yaml')
+  "executable": "target/executable/loaders/scrnaseq/openproblems_op3/openproblems_op3",
 }
 ## VIASH END
 
-def test_op3(run_component, tmp_path):
-    """Test the OP3 loader."""
-    input_file = tmp_path / "input.zarr"  # Convert to string to be safe
-    output_file = tmp_path / "output.zarr"  # Convert to string to be safe
+DONORS = ["Donor 1", "Donor 2", "Donor 3"]
+CELL_TYPES = ["B cells", "T cells", "Myeloid cells", "NK cells"]
+COMPOUNDS = ["Dimethyl Sulfoxide", "Dabrafenib"]
 
-    # download file
-    url = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE279nnn/GSE279945/suppl/GSE279945_sc_counts_processed.h5ad"
-    response = requests.get(url)
-    if response.status_code != 200:
-        raise RuntimeError(f"Failed to download file from {url}, status code: {response.status_code}")
 
-    # run loader
-    run_component([
-        "--input", str(input_file),
-        "--var_feature_name", "index",
-        "--donor_id", "1",
-        "--cell_type", "T cells",
-        "--dataset_id", "test_op3",
-        "--dataset_name", "OP3 Test Dataset",
-        "--dataset_summary", "Test summary for OP3 dataset",
-        "--dataset_description", "Test description for OP3 dataset",
-        "--dataset_url", "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE279nnn/GSE279945/suppl/GSE279945_sc_counts_processed.h5ad",
-        "--output", str(output_file)
-    ])
+@pytest.fixture
+def source_h5ad(tmp_path):
+  """A small h5ad shaped like GSE279945_sc_counts_processed.h5ad, analysis results included."""
+  rng = np.random.default_rng(1)
+  n_obs, n_vars = 60, 20
+  obs = pd.DataFrame(
+    {
+      "sm_name": rng.choice(COMPOUNDS, n_obs),
+      "donor_id": rng.choice(DONORS, n_obs),
+      "cell_type": rng.choice(CELL_TYPES, n_obs),
+      "plate_name": "plate_1",
+      "leiden_res1": rng.choice(["0", "1"], n_obs),
+    },
+    index=[f"cell_{i}" for i in range(n_obs)],
+  )
+  obs["cell_type_orig"] = obs["cell_type"]
+  obs["split"] = np.where(obs["sm_name"] == "Dimethyl Sulfoxide", "control", "train")
+  var = pd.DataFrame(
+    {"highly_variable": rng.random(n_vars) > 0.5, "means": rng.random(n_vars), "n_cells": rng.integers(1, 60, n_vars)},
+    index=[f"GENE{i}" for i in range(n_vars)],
+  )
+  counts = sp.csr_matrix(rng.poisson(1, (n_obs, n_vars)).astype(np.float32))
+  adata = ad.AnnData(X=counts, obs=obs, var=var)
+  adata.raw = adata
+  adata.obsm["X_pca"] = rng.random((n_obs, 5))
+  adata.obsm["HTO_clr"] = pd.DataFrame(rng.random((n_obs, 2)), index=obs.index, columns=["HTO1", "HTO2"])
+  adata.obsp["connectivities"] = sp.random(n_obs, n_obs, density=0.1, format="csr")
+  adata.uns["log1p"] = {"base": None}
+  adata.uns["leiden_res1_colors"] = ["#000000", "#ffffff"]
+  adata.uns["neighbors"] = {"params": {"n_neighbors": 15}}
+  path = tmp_path / "source.h5ad"
+  adata.write_h5ad(path)
+  return path
 
-    # check whether file exists
-    assert output_file.exists(), f"Output file {output_file} does not exist"
 
-    adata = ad.read_zarr(output_file)
+def test_loader(run_component, source_h5ad, tmp_path):
+  output = tmp_path / "output.zarr"
+  run_component([
+    "--input", str(source_h5ad),
+    "--donor_id", "Donor 1",
+    "--dataset_id", "test_op3",
+    "--dataset_name", "OP3 test",
+    "--dataset_summary", "Test summary",
+    "--dataset_description", "Test description",
+    "--dataset_url", "https://example.org",
+    "--dataset_reference", "GSE279945",
+    "--output", str(output),
+  ])
 
-    # check obs
-    assert not adata.obs.empty, ".obs should not be empty"
-    assert "donor_id" in adata.obs.columns
-    assert np.all(adata.obs["donor_id"] == "1"), "Not all cells are from donor 1"
-    assert "cell_type" in adata.obs.columns
-    assert np.all(adata.obs["cell_type"] == "T cells"), "Not all cells are T cells"
-    assert "perturbation" in adata.obs.columns
-    assert adata.n_obs > 0
+  adata = ad.read_zarr(output)
 
-    # check var
-    assert not adata.var.empty, ".var should not be empty"
-    assert adata.n_vars > 0
+  assert adata.n_obs > 0
+  assert set(adata.obs["donor_id"]) == {"Donor 1"}
+  for column in ["cell_type_ontology_term_id", "sex_ontology_term_id", "sm_name", "split", "control"]:
+    assert column in adata.obs
 
-    # check layers
-    assert "counts" in adata.layers
-    assert adata.X is not None, "X matrix should not be None"
-    
-    # check uns
-    assert adata.uns["dataset_id"] == "test_op3", "Incorrect .uns['dataset_id']"
-    assert adata.uns["dataset_name"] == "OP3 Test Dataset", "Incorrect .uns['dataset_name']"
-    assert adata.uns["dataset_summary"] == "Test summary for OP3 dataset", "Incorrect .uns['dataset_summary']"
-    assert adata.uns["dataset_description"] == "Test description for OP3 dataset", "Incorrect .uns['dataset_description']"
+  # the counts and the cell and gene metadata, but not the analysis results of the source
+  assert adata.X is None
+  assert list(adata.layers) == ["counts"]
+  assert adata.layers["counts"].sum() > 0
+  assert list(adata.var.columns) == ["feature_name"]
+  assert list(adata.var["feature_name"]) == list(adata.var_names)
+  assert "leiden_res1" not in adata.obs
+  assert adata.raw is None
+  assert list(adata.obsm) == []
+  assert list(adata.obsp) == []
+  assert sorted(adata.uns) == sorted([
+    "dataset_id", "dataset_name", "dataset_summary", "dataset_description",
+    "dataset_url", "dataset_reference", "dataset_version",
+  ])
+  assert adata.uns["dataset_id"] == "test_op3"
+
 
 if __name__ == "__main__":
-    sys.exit(pytest.main([__file__]))
+  sys.exit(pytest.main([__file__]))

@@ -15,7 +15,7 @@ par = {
     "perturbation": None,
     "dataset_id": "op3",
     "dataset_name": "OP3: single-cell multimodal dataset in PBMCs for perturbation prediction benchmarking",
-    "dataset_summary": "The Open Problems Perurbation Prediction (OP3) dataset with small molecule perturbations in PBMCs",
+    "dataset_summary": "The Open Problems Perturbation Prediction (OP3) dataset with small molecule perturbations in PBMCs",
     "dataset_description": "The OP3 dataset is to-date the largest single-cell small molecule perturbation dataset in primary tissue with multiple donor replicates.",
     "dataset_reference": ["GSE279945"],
     "output": "output.zarr",
@@ -141,11 +141,19 @@ def add_ontology_term_ids(adata):
         obs[column] = obs[column].astype("category")
 
 
-def move_x_to_layers(adata):
-    """Move .X to .layers['counts'] and set X to None."""
-    logger.info("Moving .X to .layers['counts']")
-    adata.layers["counts"] = adata.X.copy()
-    adata.X = None
+def keep_counts_and_metadata(adata):
+    """Keep the counts in .layers['counts'] and the cell and gene metadata.
+
+    The source h5ad also holds the results of its own analysis (.raw, the PCA, UMAP and
+    kNN graph, the HTO and protein counts in .obsm, the highly variable genes, the leiden
+    clusters, the marker genes, ...), which the processing workflow recomputes.
+    """
+    logger.info("Keeping the counts and the cell and gene metadata")
+    return ad.AnnData(
+        obs=adata.obs.drop(columns=["leiden_res1"], errors="ignore"),
+        var=adata.var[["feature_name"]],
+        layers={"counts": adata.X},
+    )
 
 def add_metadata_to_uns(adata, par):
     """Add standardized metadata to .uns."""
@@ -157,7 +165,6 @@ def add_metadata_to_uns(adata, par):
     adata.uns['dataset_url'] = par["dataset_url"]
     adata.uns['dataset_reference'] = par["dataset_reference"]
     adata.uns['dataset_version'] = '1.0.0'
-    adata.uns['processing_status'] = 'processed'
 
 def print_unique(adata, column):
     """Print unique values in a column."""
@@ -214,23 +221,21 @@ fix_splits(adata)
 # Add ontology term ids
 add_ontology_term_ids(adata)
 
-# Move X to layers and normalize
-move_x_to_layers(adata)
-
-# Add dataset metadata
-add_metadata_to_uns(adata, par)
-
 # Add a feature name
 logger.info("Setting .var['feature_name']")
 
 if par["var_feature_name"] == "index":
     adata.var["feature_name"] = adata.var.index
+elif par["var_feature_name"] in adata.var:
+    adata.var["feature_name"] = adata.var[par["var_feature_name"]]
 else:
-    if par["var_feature_name"] in adata.var:
-        adata.var["feature_name"] = adata.var[par["feature_name"]]
-        del adata.var[par["feature_name"]]
-    else:
-        logger.info(f"Warning: key '{par['var_feature_name']}' could not be found in adata.var.")
+    raise ValueError(f"Key '{par['var_feature_name']}' could not be found in adata.var")
+
+# Move X to layers and drop the analysis results of the source
+adata = keep_counts_and_metadata(adata)
+
+# Add dataset metadata
+add_metadata_to_uns(adata, par)
 
 # Print summary and save
 print_summary(adata)

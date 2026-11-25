@@ -8,6 +8,7 @@ import sys
 from pathlib import Path
 
 import bionty as bt
+import pytest
 
 sys.path.insert(0, str(Path(__file__).parent))
 import annotate_artifacts  # noqa: E402
@@ -28,6 +29,23 @@ def test_describe_dataframe_with_nullable_string_index(tmp_path):
   assert isinstance(root["obs"][root["obs"].attrs["_index"]], zarr.Group)
 
   assert annotate_artifacts._describe_element(root["obs"]) == {"type": "dataframe", "shape": [3, 2]}
+
+
+@pytest.mark.parametrize("current", [
+  None,
+  # set by the output rules in src/config/lamin_denbi.config
+  "Raw scRNA-seq dataset",
+  "Common multimodal dataset",
+  # nf-lamin's default
+  "Output artifact for run 12",
+])
+def test_generic_description_becomes_summary(current):
+  assert annotate_artifacts._description(current, "A summary") == "A summary"
+
+
+def test_specific_description_is_kept():
+  assert annotate_artifacts._description("Immune Cell Atlas, three donors", "A summary") == "Immune Cell Atlas, three donors"
+  assert annotate_artifacts._description(None, None) is None
 
 
 def test_placeholder_registries_cover_cellxgene_unknowns():

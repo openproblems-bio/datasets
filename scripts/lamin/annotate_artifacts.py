@@ -485,10 +485,24 @@ def annotate_artifact(artifact, spec_path, modality=None, bib_path=BIB_PATH, for
   # an artifact with the schema of its file format counts as annotated
   artifact.schema = full_schema
   artifact.n_observations = int(obs.shape[0])
-  if artifact.description is None and uns.get("dataset_summary"):
-    artifact.description = uns["dataset_summary"]
+  artifact.description = _description(artifact.description, uns.get("dataset_summary"))
   artifact.save()
   return True
+
+
+# descriptions that nf-lamin gives a published dataset (src/config/lamin_denbi.config)
+GENERIC_DESCRIPTIONS = {
+  "Raw scRNA-seq dataset",
+  "Common scRNA-seq dataset",
+  "Raw multimodal dataset",
+  "Common multimodal dataset",
+}
+
+
+def _description(current, summary):
+  """The summary of the dataset as description, unless the artifact has a specific one."""
+  generic = current is None or current in GENERIC_DESCRIPTIONS or current.startswith("Output artifact")
+  return summary if generic and summary else current
 
 
 def _remove_values(artifact, values):

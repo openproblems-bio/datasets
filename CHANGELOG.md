@@ -84,7 +84,9 @@
 
 * NEW FUNCTIONALITY: OP3 test resources (`scripts/create_test_resources/openproblems_op3.py`).
 
-* BUG FIX: `scripts/lamin/annotate_artifacts.py` accepts `unknown` as cell type, as CELLxGENE does.
+* BUG FIX: `scripts/lamin/annotate_artifacts.py` accepts `unknown` as cell type, as CELLxGENE does, and can describe dataframes whose index anndata wrote as a nullable string array.
+
+* MINOR CHANGE: The OP3 loader keeps the counts and the cell and gene metadata only, not the results of the analysis in the GEO h5ad (`.raw`, embeddings, the kNN graph, HTO and protein counts, highly variable genes, clusters, marker genes). Its test runs on a small synthetic h5ad instead of downloading the full dataset.
 
 # datasets v0.1.0
 

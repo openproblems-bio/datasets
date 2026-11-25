@@ -99,12 +99,16 @@ def split_by_size(datasets):
   return regular, large
 
 
-def parse_args(description):
-  parser = argparse.ArgumentParser(description=description)
+def make_parser(description):
+  parser = argparse.ArgumentParser(description=description, formatter_class=argparse.RawDescriptionHelpFormatter)
   parser.add_argument("--ids", type=lambda value: value.split(","), help="comma-separated dataset ids to launch (default: all)")
   parser.add_argument("--instance", help=f"Lamin instance to publish to (default: $LAMIN_INSTANCE or {DEFAULT_INSTANCE})")
   parser.add_argument("--dry-run", action="store_true", help="write the config and params, but don't launch")
-  return parser.parse_args()
+  return parser
+
+
+def parse_args(description):
+  return make_parser(description).parse_args()
 
 
 def launch_datasets(workflow, datasets, shared, prefix, args):

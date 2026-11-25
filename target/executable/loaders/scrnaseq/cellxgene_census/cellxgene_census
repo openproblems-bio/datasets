@@ -443,10 +443,10 @@ function ViashDockerfile {
 
   if [[ "$engine_id" == "docker" ]]; then
     cat << 'VIASHDOCKER'
-FROM python:3.11
+FROM python:3.12
 ENTRYPOINT []
 RUN pip install --upgrade pip && \
-  pip install --upgrade --no-cache-dir "cellxgene-census" "scanpy"
+  pip install --upgrade --no-cache-dir "cellxgene-census==1.18.0" "tiledbsoma==2.3.0" "anndata==0.13.4" "scanpy==1.12.6"
 
 ENV ANNDATA_AUTO_SHARD_ZARR_V3=1
 ENV OMP_NUM_THREADS=4
@@ -454,9 +454,9 @@ ENV OPENBLAS_NUM_THREADS=4
 ENV MKL_NUM_THREADS=4
 ENV NUMBA_NUM_THREADS=4
 LABEL org.opencontainers.image.description="Companion container for running component loaders/scrnaseq cellxgene_census"
-LABEL org.opencontainers.image.created="2026-11-25T10:06:27Z"
+LABEL org.opencontainers.image.created="2026-11-25T23:22:59Z"
 LABEL org.opencontainers.image.source="https://github.com/openproblems-bio/datasets"
-LABEL org.opencontainers.image.revision="5eb563217f2084e9166477faecb9702e308217b3"
+LABEL org.opencontainers.image.revision="11842fab8e01ff50c6a4491a0625b31fccae4bcf"
 LABEL org.opencontainers.image.version="build_main"
 
 VIASHDOCKER
@@ -611,7 +611,7 @@ function ViashHelp {
   echo "        type: string"
   echo "        example: stable"
   echo "        Which release of CellxGene census to use. Possible values are \"latest\","
-  echo "        \"stable\", or the date of one of the releases (e.g. \"2023-07-25\"). For"
+  echo "        \"stable\", or the date of one of the releases (e.g. \"2025-11-08\"). For"
   echo "        more information, check the documentation on [Census data"
   echo "       "
   echo "releases](https://chanzuckerberg.github.io/cellxgene-census/cellxgene_census_docsite_data_release_info.html)."
@@ -1490,49 +1490,17 @@ def connect_census(uri, census_version):
 
 def get_anndata(census_connection, par):
     logger.info("Getting gene expression data based on \`%s\` query.", par["obs_value_filter"])
-    # workaround for https://github.com/chanzuckerberg/cellxgene-census/issues/891
     return cellxgene_census.get_anndata(
         census=census_connection,
         obs_value_filter=par["obs_value_filter"],
         organism=par["species"]
     )
 
-    # exp = census_connection["census_data"][par["species"]]
-    # query = exp.axis_query(
-    #     "RNA",
-    #     obs_query=soma.AxisQuery(value_filter=par["obs_value_filter"]),
-    #     var_query=soma.AxisQuery(),
-    # )
-
-    # n_obs = query.n_obs
-    # n_vars = query.n_vars
-    # logger.info(f"Query yields {n_obs} cells and {n_vars} genes.")
-
-    # logger.info("Fetching obs.")
-    # obs = query.obs().concat().to_pandas()
-
-    # logger.info("Fetching var.")
-    # var = query.var().concat().to_pandas()
-
-    # logger.info("Fetching X.")
-    # X = query.X("raw")
-    # Xcoo = X.coos().concat()
-    # Xcoos = Xcoo.to_scipy().tocsr()
-    # Xcoos_subset = Xcoos[obs["soma_joinid"]]
-
-    # logger.info("Creating AnnData object.")
-    # return sc.AnnData(
-    #     layers={"counts": Xcoos_subset},
-    #     obs=obs,
-    #     var=var
-    # )
-
 def filter_min_cells_per_group(adata, par):
     n_cells_before, _ = adata.shape
     cell_count = adata.obs \\
         .groupby(par["cell_filter_grouping"])["soma_joinid"] \\
-        .transform("count") \\
-        
+        .transform("count")
     adata = adata[cell_count >= par["cell_filter_minimum_count"]]
     n_cells_after, _ = adata.shape
     logger.info(

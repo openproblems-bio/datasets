@@ -3321,7 +3321,7 @@ meta = [
         {
           "type" : "string",
           "name" : "--census_version",
-          "description" : "Which release of CellxGene census to use. Possible values are \\"latest\\", \\"stable\\", or the date of one of the releases (e.g. \\"2023-07-25\\"). For more information, check the documentation on [Census data releases](https://chanzuckerberg.github.io/cellxgene-census/cellxgene_census_docsite_data_release_info.html).",
+          "description" : "Which release of CellxGene census to use. Possible values are \\"latest\\", \\"stable\\", or the date of one of the releases (e.g. \\"2025-11-08\\"). For more information, check the documentation on [Census data releases](https://chanzuckerberg.github.io/cellxgene-census/cellxgene_census_docsite_data_release_info.html).",
           "example" : [
             "stable"
           ],
@@ -3625,15 +3625,17 @@ meta = [
     {
       "type" : "docker",
       "id" : "docker",
-      "image" : "python:3.11",
+      "image" : "python:3.12",
       "namespace_separator" : "/",
       "setup" : [
         {
           "type" : "python",
           "user" : false,
           "packages" : [
-            "cellxgene-census",
-            "scanpy"
+            "cellxgene-census==1.18.0",
+            "tiledbsoma==2.3.0",
+            "anndata==0.13.4",
+            "scanpy==1.12.6"
           ],
           "upgrade" : true
         },
@@ -3666,7 +3668,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/loaders/scrnaseq/cellxgene_census",
     "viash_version" : "0.9.7",
-    "git_commit" : "5eb563217f2084e9166477faecb9702e308217b3",
+    "git_commit" : "11842fab8e01ff50c6a4491a0625b31fccae4bcf",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -3676,7 +3678,7 @@ meta = [
     "info" : {
       "test_resources" : [
         {
-          "path" : "lamin://openproblems/data-dev/collection/Ajn1Lo8zZomVzKtQ0005",
+          "path" : "lamin://openproblems/data-dev/collection/Ajn1Lo8zZomVzKtQ0006",
           "dest" : "resources_test/common/cxg_mouse_pancreas_atlas",
           "strip_prefix" : "resources_test/datasets/cxg_mouse_pancreas_atlas/"
         },
@@ -3804,49 +3806,17 @@ def connect_census(uri, census_version):
 
 def get_anndata(census_connection, par):
     logger.info("Getting gene expression data based on \\`%s\\` query.", par["obs_value_filter"])
-    # workaround for https://github.com/chanzuckerberg/cellxgene-census/issues/891
     return cellxgene_census.get_anndata(
         census=census_connection,
         obs_value_filter=par["obs_value_filter"],
         organism=par["species"]
     )
 
-    # exp = census_connection["census_data"][par["species"]]
-    # query = exp.axis_query(
-    #     "RNA",
-    #     obs_query=soma.AxisQuery(value_filter=par["obs_value_filter"]),
-    #     var_query=soma.AxisQuery(),
-    # )
-
-    # n_obs = query.n_obs
-    # n_vars = query.n_vars
-    # logger.info(f"Query yields {n_obs} cells and {n_vars} genes.")
-
-    # logger.info("Fetching obs.")
-    # obs = query.obs().concat().to_pandas()
-
-    # logger.info("Fetching var.")
-    # var = query.var().concat().to_pandas()
-
-    # logger.info("Fetching X.")
-    # X = query.X("raw")
-    # Xcoo = X.coos().concat()
-    # Xcoos = Xcoo.to_scipy().tocsr()
-    # Xcoos_subset = Xcoos[obs["soma_joinid"]]
-
-    # logger.info("Creating AnnData object.")
-    # return sc.AnnData(
-    #     layers={"counts": Xcoos_subset},
-    #     obs=obs,
-    #     var=var
-    # )
-
 def filter_min_cells_per_group(adata, par):
     n_cells_before, _ = adata.shape
     cell_count = adata.obs \\\\
         .groupby(par["cell_filter_grouping"])["soma_joinid"] \\\\
-        .transform("count") \\\\
-        
+        .transform("count")
     adata = adata[cell_count >= par["cell_filter_minimum_count"]]
     n_cells_after, _ = adata.shape
     logger.info(

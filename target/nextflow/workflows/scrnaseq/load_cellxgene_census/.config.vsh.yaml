@@ -18,13 +18,13 @@ argument_groups:
     multiple_sep: ";"
   - type: "string"
     name: "--census_version"
-    description: "The date of the CELLxGENE Census release to use (e.g. \"2023-07-25\"\
+    description: "The date of the CELLxGENE Census release to use (e.g. \"2025-11-08\"\
       ). `latest`\nand `stable` are not allowed, so that the same parameters always\
       \ give the same\ndataset. For more information, check the documentation on [Census\
       \ data\nreleases](https://chanzuckerberg.github.io/cellxgene-census/cellxgene_census_docsite_data_release_info.html).\n"
     info: null
     example:
-    - "2023-07-25"
+    - "2025-11-08"
     required: false
     direction: "input"
     multiple: false
@@ -520,7 +520,7 @@ build_info:
   output: "target/nextflow/workflows/scrnaseq/load_cellxgene_census"
   executable: "target/nextflow/workflows/scrnaseq/load_cellxgene_census/main.nf"
   viash_version: "0.9.7"
-  git_commit: "5eb563217f2084e9166477faecb9702e308217b3"
+  git_commit: "11842fab8e01ff50c6a4491a0625b31fccae4bcf"
   git_remote: "https://github.com/openproblems-bio/datasets"
   dependencies:
   - "target/nextflow/loaders/scrnaseq/cellxgene_census"
@@ -532,7 +532,7 @@ package_config:
   description: "Datasets for benchmarking open problems in single-cell analysis.\n"
   info:
     test_resources:
-    - path: "lamin://openproblems/data-dev/collection/Ajn1Lo8zZomVzKtQ0005"
+    - path: "lamin://openproblems/data-dev/collection/Ajn1Lo8zZomVzKtQ0006"
       dest: "resources_test/common/cxg_mouse_pancreas_atlas"
       strip_prefix: "resources_test/datasets/cxg_mouse_pancreas_atlas/"
     - path: "lamin://openproblems/data-dev/collection/PnooFh88ZnOarg4G0002"

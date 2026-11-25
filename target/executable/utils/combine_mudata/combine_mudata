@@ -454,9 +454,9 @@ ENV OPENBLAS_NUM_THREADS=4
 ENV MKL_NUM_THREADS=4
 ENV NUMBA_NUM_THREADS=4
 LABEL org.opencontainers.image.description="Companion container for running component utils combine_mudata"
-LABEL org.opencontainers.image.created="2026-11-25T10:06:27Z"
+LABEL org.opencontainers.image.created="2026-11-25T23:23:00Z"
 LABEL org.opencontainers.image.source="https://github.com/openproblems-bio/datasets"
-LABEL org.opencontainers.image.revision="5eb563217f2084e9166477faecb9702e308217b3"
+LABEL org.opencontainers.image.revision="11842fab8e01ff50c6a4491a0625b31fccae4bcf"
 LABEL org.opencontainers.image.version="build_main"
 
 VIASHDOCKER

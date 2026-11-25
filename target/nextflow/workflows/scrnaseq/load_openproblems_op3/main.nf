@@ -3166,7 +3166,7 @@ meta = [
           "name" : "--dataset_summary",
           "description" : "Short description of the dataset.",
           "default" : [
-            "The Open Problems Perurbation Prediction (OP3) dataset with small molecule perturbations in PBMCs"
+            "The Open Problems Perturbation Prediction (OP3) dataset with small molecule perturbations in PBMCs"
           ],
           "required" : true,
           "direction" : "input",
@@ -3622,7 +3622,7 @@ meta = [
     "engine" : "native",
     "output" : "target/nextflow/workflows/scrnaseq/load_openproblems_op3",
     "viash_version" : "0.9.7",
-    "git_commit" : "5eb563217f2084e9166477faecb9702e308217b3",
+    "git_commit" : "11842fab8e01ff50c6a4491a0625b31fccae4bcf",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -3632,7 +3632,7 @@ meta = [
     "info" : {
       "test_resources" : [
         {
-          "path" : "lamin://openproblems/data-dev/collection/Ajn1Lo8zZomVzKtQ0005",
+          "path" : "lamin://openproblems/data-dev/collection/Ajn1Lo8zZomVzKtQ0006",
           "dest" : "resources_test/common/cxg_mouse_pancreas_atlas",
           "strip_prefix" : "resources_test/datasets/cxg_mouse_pancreas_atlas/"
         },

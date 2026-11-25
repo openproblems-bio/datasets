@@ -90,6 +90,7 @@ ONTOLOGY_COLUMNS = {
 
 # registries in which to create the placeholder terms CELLxGENE uses ("unknown", "na")
 PLACEHOLDER_REGISTRIES = {
+  "cell_type_ontology_term_id": bt.CellType,
   "development_stage_ontology_term_id": bt.DevelopmentalStage,
   "self_reported_ethnicity_ontology_term_id": bt.Ethnicity,
   "sex_ontology_term_id": bt.Phenotype,
@@ -226,8 +227,9 @@ def _describe_element(node):
   if encoding and encoding.startswith("nullable-"):
     return {"type": encoding, "dtype": str(node["values"].dtype), "shape": list(node["values"].shape)}
   if encoding == "dataframe":
-    index = node[node.attrs["_index"]]
-    return {"type": "dataframe", "shape": [index.shape[0], len(node.attrs["column-order"])]}
+    # the index is an array, or a group for nullable strings and categoricals
+    n_rows = _describe_element(node[node.attrs["_index"]])["shape"][0]
+    return {"type": "dataframe", "shape": [n_rows, len(node.attrs["column-order"])]}
   return {"type": encoding or "dict", "keys": sorted(node.keys())}
 
 
@@ -483,10 +485,24 @@ def annotate_artifact(artifact, spec_path, modality=None, bib_path=BIB_PATH, for
   # an artifact with the schema of its file format counts as annotated
   artifact.schema = full_schema
   artifact.n_observations = int(obs.shape[0])
-  if artifact.description is None and uns.get("dataset_summary"):
-    artifact.description = uns["dataset_summary"]
+  artifact.description = _description(artifact.description, uns.get("dataset_summary"))
   artifact.save()
   return True
+
+
+# descriptions that nf-lamin gives a published dataset (src/config/lamin_denbi.config)
+GENERIC_DESCRIPTIONS = {
+  "Raw scRNA-seq dataset",
+  "Common scRNA-seq dataset",
+  "Raw multimodal dataset",
+  "Common multimodal dataset",
+}
+
+
+def _description(current, summary):
+  """The summary of the dataset as description, unless the artifact has a specific one."""
+  generic = current is None or current in GENERIC_DESCRIPTIONS or current.startswith("Output artifact")
+  return summary if generic and summary else current
 
 
 def _remove_values(artifact, values):

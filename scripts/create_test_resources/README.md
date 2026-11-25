@@ -10,6 +10,7 @@ Each script in this directory creates one set of test resources: it runs a workf
 | `mouse_brain_coronal.py` | `resources_test/datasets/mouse_brain_coronal` |
 | `neurips2021_bmmc.py` | `resources_test/datasets/openproblems_neurips2021` |
 | `neurips2022_pbmc.py` | `resources_test/datasets/openproblems_neurips2022` |
+| `openproblems_op3.py` | `resources_test/datasets/openproblems_op3` |
 | `scicar_cell_lines.py` | `resources_test/datasets/scicar_cell_lines` |
 
 The source files of `neurips2022_pbmc.py` are not public. They are stored in the private instance [`openproblems/private`](https://lamin.ai/openproblems/private), and `helpers.fetch_private()` records them in the parameters of the run rather than as its inputs, so that their records are not copied into the public instance.

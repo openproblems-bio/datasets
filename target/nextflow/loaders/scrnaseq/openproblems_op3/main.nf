@@ -3402,7 +3402,7 @@ meta = [
           "name" : "--dataset_summary",
           "description" : "Short summary of the dataset",
           "default" : [
-            "The Open Problems Perurbation Prediction (OP3) dataset with small molecule perturbations in PBMCs"
+            "The Open Problems Perturbation Prediction (OP3) dataset with small molecule perturbations in PBMCs"
           ],
           "required" : false,
           "direction" : "input",
@@ -3456,6 +3456,13 @@ meta = [
     }
   ],
   "description" : "\\"Loads and preprocesses the OP3 dataset from GEO accession GSE279945.\\"\n",
+  "test_resources" : [
+    {
+      "type" : "python_script",
+      "path" : "test.py",
+      "is_executable" : true
+    }
+  ],
   "info" : {
     "type" : "dataset_loader",
     "type_info" : {
@@ -3559,7 +3566,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/loaders/scrnaseq/openproblems_op3",
     "viash_version" : "0.9.7",
-    "git_commit" : "5eb563217f2084e9166477faecb9702e308217b3",
+    "git_commit" : "11842fab8e01ff50c6a4491a0625b31fccae4bcf",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -3569,7 +3576,7 @@ meta = [
     "info" : {
       "test_resources" : [
         {
-          "path" : "lamin://openproblems/data-dev/collection/Ajn1Lo8zZomVzKtQ0005",
+          "path" : "lamin://openproblems/data-dev/collection/Ajn1Lo8zZomVzKtQ0006",
           "dest" : "resources_test/common/cxg_mouse_pancreas_atlas",
           "strip_prefix" : "resources_test/datasets/cxg_mouse_pancreas_atlas/"
         },
@@ -3791,11 +3798,19 @@ def add_ontology_term_ids(adata):
         obs[column] = obs[column].astype("category")
 
 
-def move_x_to_layers(adata):
-    """Move .X to .layers['counts'] and set X to None."""
-    logger.info("Moving .X to .layers['counts']")
-    adata.layers["counts"] = adata.X.copy()
-    adata.X = None
+def keep_counts_and_metadata(adata):
+    """Keep the counts in .layers['counts'] and the cell and gene metadata.
+
+    The source h5ad also holds the results of its own analysis (.raw, the PCA, UMAP and
+    kNN graph, the HTO and protein counts in .obsm, the highly variable genes, the leiden
+    clusters, the marker genes, ...), which the processing workflow recomputes.
+    """
+    logger.info("Keeping the counts and the cell and gene metadata")
+    return ad.AnnData(
+        obs=adata.obs.drop(columns=["leiden_res1"], errors="ignore"),
+        var=adata.var[["feature_name"]],
+        layers={"counts": adata.X},
+    )
 
 def add_metadata_to_uns(adata, par):
     """Add standardized metadata to .uns."""
@@ -3807,7 +3822,6 @@ def add_metadata_to_uns(adata, par):
     adata.uns['dataset_url'] = par["dataset_url"]
     adata.uns['dataset_reference'] = par["dataset_reference"]
     adata.uns['dataset_version'] = '1.0.0'
-    adata.uns['processing_status'] = 'processed'
 
 def print_unique(adata, column):
     """Print unique values in a column."""
@@ -3864,23 +3878,21 @@ fix_splits(adata)
 # Add ontology term ids
 add_ontology_term_ids(adata)
 
-# Move X to layers and normalize
-move_x_to_layers(adata)
-
-# Add dataset metadata
-add_metadata_to_uns(adata, par)
-
 # Add a feature name
 logger.info("Setting .var['feature_name']")
 
 if par["var_feature_name"] == "index":
     adata.var["feature_name"] = adata.var.index
+elif par["var_feature_name"] in adata.var:
+    adata.var["feature_name"] = adata.var[par["var_feature_name"]]
 else:
-    if par["var_feature_name"] in adata.var:
-        adata.var["feature_name"] = adata.var[par["feature_name"]]
-        del adata.var[par["feature_name"]]
-    else:
-        logger.info(f"Warning: key '{par['var_feature_name']}' could not be found in adata.var.")
+    raise ValueError(f"Key '{par['var_feature_name']}' could not be found in adata.var")
+
+# Move X to layers and drop the analysis results of the source
+adata = keep_counts_and_metadata(adata)
+
+# Add dataset metadata
+add_metadata_to_uns(adata, par)
 
 # Print summary and save
 print_summary(adata)

@@ -76,6 +76,8 @@ helpers.save_collection(
   [f"{step}.anndata.zarr" for step in STEPS],
   key="resources_test/datasets/pancreas",
   description="Human pancreas (scIB), subsampled to 600 cells and 1500 genes",
+  # the v1 datasets predate the ontology columns that the raw and common dataset formats require
+  annotate=False,
 )
 
 ln.finish()

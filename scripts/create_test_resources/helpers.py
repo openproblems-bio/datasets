@@ -104,12 +104,13 @@ def run_workflow(workflow, params, highmem=None, output_dir=None):
   return output_dir
 
 
-def save_collection(output_dir, files, key, description, modality=None):
+def save_collection(output_dir, files, key, description, modality=None, annotate=True):
   """Store each file as an artifact under `key` and group them in a collection with that key.
 
   Earlier versions keep their files, so a pinned version of the collection stays downloadable.
   Datasets are annotated with everything the website shows about them (see
-  `scripts/lamin/annotate_artifacts.py`).
+  `scripts/lamin/annotate_artifacts.py`), unless `annotate` is false, for datasets that don't
+  follow a file format in `src/api` the script can read.
   """
   artifacts = []
   for file in files:
@@ -119,7 +120,7 @@ def save_collection(output_dir, files, key, description, modality=None):
       description=f"{description}: {file}",
       overwrite_versions=False,
     ).save()
-    spec = annotate_artifacts.spec_for(artifact)
+    spec = annotate_artifacts.spec_for(artifact) if annotate else None
     if spec is not None:
       annotate_artifacts.annotate_artifact(artifact, spec, modality=modality)
     artifacts.append(artifact)

@@ -68,6 +68,8 @@ helpers.save_collection(
   ["dataset.anndata.zarr"],
   key="resources_test/datasets/mouse_brain_coronal",
   description="10x Visium mouse brain coronal section, subsampled to 600 spots and 500 genes",
+  # the annotation script has no reader for spatial datasets yet
+  annotate=False,
 )
 
 ln.finish()

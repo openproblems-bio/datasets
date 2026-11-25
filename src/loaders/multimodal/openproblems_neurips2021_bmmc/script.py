@@ -14,15 +14,17 @@ par = {
   "dataset_reference": "Neurips",
   "dataset_summary": "value",
   "dataset_description": "value",
-  "dataset_organism": "homo_sapiens",
-  "output_mod1": "output/mod1.zarr",
-  "output_mod2": "output/mod2.zarr"
+  "output": "output/raw.mudata.zarr"
 }
 meta = {
   "name": "openproblems_neurips2021_bmmc",
-  "resources_dir": "/tmp/viash_inject_openproblems_neurips2021_bmmc14365472827677740971", 
+  "resources_dir": "src/utils",
 }
 ## VIASH END
+
+import sys
+sys.path.append(meta["resources_dir"])
+from mudata_utils import MODALITIES, to_mudata
 
 def remove_mod_col(df, mod):
   df.drop(list(df.filter(like=mod)), axis=1, inplace=True)
@@ -108,21 +110,21 @@ else:
 
 del adata_mod2.X
 
-print("Add metadata to uns", flush=True)
+print("Combine the modalities", flush=True)
+for adata in [adata_mod1, adata_mod2]:
+  adata.obs["organism"] = "Homo sapiens"
+  adata.obs["organism_ontology_term_id"] = "NCBITaxon:9606"
+
 metadata_fields = [
-    "dataset_id", "dataset_name", "dataset_url", "dataset_reference",
-    "dataset_summary", "dataset_description", "dataset_organism"
+  "dataset_id", "dataset_name", "dataset_url", "dataset_reference",
+  "dataset_summary", "dataset_description"
 ]
-for key in metadata_fields:
-    if key in par:
-        print(f"  Setting .uns['{key}']", flush=True)
-        adata_mod1.uns[key] = par[key]
-        adata_mod2.uns[key] = par[key]
+uns = {key: par[key] for key in metadata_fields if par.get(key) is not None}
+mdata = to_mudata(
+  {MODALITIES[par["mod1"]]: adata_mod1, MODALITIES[par["mod2"]]: adata_mod2},
+  uns=uns,
+)
+print(mdata, flush=True)
 
-print("Writing adata to file", flush=True)
-adata_mod1.write_zarr(par["output_mod1"])
-adata_mod2.write_zarr(par["output_mod2"])
-
-
-
-
+print("Writing mudata to file", flush=True)
+mdata.write_zarr(par["output"])

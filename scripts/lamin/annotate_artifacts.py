@@ -3,6 +3,7 @@
 # dependencies = [
 #   "lamindb[aws,bionty]==2.12.2",
 #   "anndata==0.13.2",
+#   "mudata==0.4.1",
 #   "pyyaml",
 # ]
 # ///
@@ -53,6 +54,8 @@ SPECS = {
   "hvg.anndata.zarr": "src/api/file_hvg.yaml",
   "pca.anndata.zarr": "src/api/file_pca.yaml",
   "dataset.anndata.zarr": "src/api/file_common_dataset.yaml",
+  "raw.mudata.zarr": "src/api/file_multimodal_raw.yaml",
+  "dataset.mudata.zarr": "src/api/file_multimodal_dataset.yaml",
 }
 
 # modalities, by the first part of a key
@@ -98,6 +101,9 @@ COUNT_COLUMNS = [
 ]
 
 CURATED_SLOTS = ["obs", "var", "uns"]
+ANNDATA_SLOTS = ["X", "obs", "var", "layers", "obsm", "obsp", "varm", "varp", "uns"]
+# slots of the MuData object itself; its var is the concatenation of the modalities' var
+MUDATA_SLOTS = ["obs", "obsm", "obsp", "uns"]
 ROOT_TYPE = "OpenProblems"
 
 
@@ -152,27 +158,43 @@ def _spec_feature(item, slot):
   return feature if item.get("required", True) else feature.with_config(optional=True)
 
 
-def spec_schemas(spec_path):
-  """Turn a file spec into a LaminDB schema with every slot, and one with the slots lamindb can curate."""
-  spec = load_spec(spec_path)
-  fmt = spec["info"]["format"]
-  name = spec.get("label") or Path(spec_path).stem
-  slots = {
-    slot: ln.Schema(
-      name=f"{name}: {slot}",
+def _slot_schemas(name, fmt, slot_names, prefix=""):
+  """One schema per slot of a format, named `<prefix><slot>` as lamindb's curators expect."""
+  return {
+    f"{prefix}{slot}": ln.Schema(
+      name=f"{name}: {prefix}{slot}",
       features=[_spec_feature(item, slot) for item in items],
       otype="DataFrame" if slot in ("obs", "var") else None,
     ).save()
     for slot, items in fmt.items()
-    if slot != "type" and isinstance(items, list) and items
+    if slot in slot_names and isinstance(items, list) and items
   }
+
+
+def spec_schemas(spec_path, modalities=None):
+  """Turn a file spec into a LaminDB schema with every slot, and one with the slots lamindb can curate.
+
+  For a MuData format, the slots of a modality are named `<modality>:<slot>`. Only the
+  modalities in `modalities` are curated, since a dataset has a subset of the optional ones.
+  """
+  spec = load_spec(spec_path)
+  fmt = spec["info"]["format"]
+  name = spec.get("label") or Path(spec_path).stem
   description = (spec.get("summary") or "").strip() or None
-  full = ln.Schema(name=name, otype="AnnData", slots=slots, description=description).save()
-  curated = ln.Schema(
-    name=f"{name} (curated slots)",
-    otype="AnnData",
-    slots={slot: schema for slot, schema in slots.items() if slot in CURATED_SLOTS},
-  ).save()
+  if fmt["type"] == "mudata_zarr":
+    otype = "MuData"
+    slots = _slot_schemas(name, fmt, MUDATA_SLOTS)
+    for modality, mod_fmt in (fmt.get("mod") or {}).items():
+      slots.update(_slot_schemas(name, mod_fmt, ANNDATA_SLOTS, prefix=f"{modality}:"))
+    curated_names = CURATED_SLOTS + [f"{m}:{slot}" for m in (modalities or []) for slot in CURATED_SLOTS]
+  else:
+    otype = "AnnData"
+    slots = _slot_schemas(name, fmt, ANNDATA_SLOTS)
+    curated_names = CURATED_SLOTS
+  full = ln.Schema(name=name, otype=otype, slots=slots, description=description).save()
+  curated_slots = {slot: schema for slot, schema in slots.items() if slot in curated_names}
+  suffix = f": {', '.join(modalities)}" if modalities else ""
+  curated = ln.Schema(name=f"{name} (curated slots{suffix})", otype=otype, slots=curated_slots).save()
   return spec, full, curated
 
 
@@ -208,11 +230,11 @@ def _describe_element(node):
   return {"type": encoding or "dict", "keys": sorted(node.keys())}
 
 
-def _anndata_structure(root, spec):
+def _anndata_structure(root, spec, slots=ANNDATA_SLOTS):
   """Per slot, the name, type, dtype and shape of each element, with the description from the spec."""
   fmt = spec["info"]["format"]
   structure = {}
-  for slot in ["X", "obs", "var", "layers", "obsm", "obsp", "varm", "varp", "uns"]:
+  for slot in slots:
     if slot not in root:
       continue
     descriptions = {item["name"]: (item.get("description") or "").strip() for item in fmt.get(slot, []) or [] if isinstance(item, dict)}
@@ -253,8 +275,68 @@ def _anndata_summary(root, structure):
   return obs, summary, uns
 
 
+def _mudata_structure(root, spec):
+  """The structure of the MuData object itself, and of each modality."""
+  mod_fmts = spec["info"]["format"].get("mod") or {}
+  structure = _anndata_structure(root, spec, slots=MUDATA_SLOTS)
+  structure["mod"] = {
+    modality: _anndata_structure(root["mod"][modality], {"info": {"format": mod_fmts.get(modality) or {}}})
+    for modality in root["mod"].attrs.get("mod-order", sorted(root["mod"].keys()))
+  }
+  return structure
+
+
+def _mudata_summary(root, structure):
+  """Dataset-level numbers from the global obs, and per modality its size and processing."""
+  obs = ad.io.read_elem(root["obs"])
+  uns = ad.io.read_elem(root["uns"]) if "uns" in root else {}
+  modalities = {}
+  for modality, mod_structure in structure["mod"].items():
+    var = ad.io.read_elem(root["mod"][modality]["var"])
+    mod_uns = ad.io.read_elem(root["mod"][modality]["uns"]) if "uns" in root["mod"][modality] else {}
+    info = {"n_vars": int(var.shape[0])}
+    if "hvg" in var:
+      info["n_hvg"] = int(var["hvg"].sum())
+    obsm = {item["name"]: item for item in mod_structure.get("obsm", [])}
+    if "X_svd" in obsm:
+      info["n_svd_components"] = int(obsm["X_svd"]["shape"][1])
+    if "normalization_id" in mod_uns:
+      info["normalization_id"] = str(mod_uns["normalization_id"])
+    modalities[modality] = info
+  summary = {"n_vars": sum(info["n_vars"] for info in modalities.values()), "modalities": modalities}
+  for column, feature in [("donor_id", "n_donors"), ("batch", "n_batches")]:
+    if column in obs:
+      summary[feature] = int(obs[column].nunique())
+  summary["obs_counts"] = {
+    column: {str(k): int(v) for k, v in obs[column].value_counts().items()}
+    for column in COUNT_COLUMNS
+    if column in obs
+  }
+  return obs, summary, uns
+
+
+def _anndata_modalities(root):
+  return None
+
+
+def _mudata_modalities(root):
+  return list(root["mod"].attrs.get("mod-order", sorted(root["mod"].keys())))
+
+
 FORMATS = {
-  "anndata_zarr": {"structure": _anndata_structure, "summary": _anndata_summary, "curator": ln.curators.AnnDataCurator},
+  "anndata_zarr": {
+    "structure": _anndata_structure,
+    "summary": _anndata_summary,
+    "modalities": _anndata_modalities,
+    "curator": ln.curators.AnnDataCurator,
+  },
+  # lamindb loads a MuData artifact into memory to curate it, rather than streaming it
+  "mudata_zarr": {
+    "structure": _mudata_structure,
+    "summary": _mudata_summary,
+    "modalities": _mudata_modalities,
+    "curator": ln.curators.MuDataCurator,
+  },
 }
 
 
@@ -357,12 +439,13 @@ def annotate_artifact(artifact, spec_path, modality=None, bib_path=BIB_PATH, for
   Returns whether the artifact was annotated; it is skipped when it already has the schema
   of its file format, unless `force` is set.
   """
-  spec, full_schema, curated_schema = spec_schemas(spec_path)
+  spec, full_schema, _ = spec_schemas(spec_path)
   fmt = FORMATS[spec["info"]["format"]["type"]]
   if artifact.schema_id == full_schema.id and not force:
     return False
 
   root = _open_store(artifact)
+  _, _, curated_schema = spec_schemas(spec_path, modalities=fmt["modalities"](root))
   structure = fmt["structure"](root, spec)
   obs, summary, uns = fmt["summary"](root, structure)
 

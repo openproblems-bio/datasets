@@ -129,10 +129,10 @@ argument_groups:
     arguments:
       - name: --output_mod1
         direction: output
-        __merge__: /src/api/file_multimodal_dataset.yaml
+        __merge__: /src/api/file_multimodal_v1_dataset.yaml
       - name: --output_mod2
         direction: output
-        __merge__: /src/api/file_multimodal_dataset.yaml
+        __merge__: /src/api/file_multimodal_v1_dataset.yaml
 resources:
   - type: nextflow_script
     path: main.nf

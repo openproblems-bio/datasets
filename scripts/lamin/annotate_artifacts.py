@@ -90,6 +90,7 @@ ONTOLOGY_COLUMNS = {
 
 # registries in which to create the placeholder terms CELLxGENE uses ("unknown", "na")
 PLACEHOLDER_REGISTRIES = {
+  "cell_type_ontology_term_id": bt.CellType,
   "development_stage_ontology_term_id": bt.DevelopmentalStage,
   "self_reported_ethnicity_ontology_term_id": bt.Ethnicity,
   "sex_ontology_term_id": bt.Phenotype,

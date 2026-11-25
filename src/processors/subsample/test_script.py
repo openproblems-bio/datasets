@@ -86,7 +86,8 @@ def _mudata_input(path, n_cells=200, prot_cells=None):
         "prot": modality("protein", 140, prot_cells or cells),
     })
     mdata.obs["batch"] = pd.Categorical(np.resize(["b1", "b2", "b3", "b4"], mdata.n_obs))
-    mdata.obs["cell_type"] = "t1"
+    # a category without cells, which the subsampled store should not list
+    mdata.obs["cell_type"] = pd.Categorical(["t1"] * mdata.n_obs, categories=["t1", "t2"])
     mdata.uns["dataset_id"] = "test"
     mdata.write_zarr(path)
     return path
@@ -114,6 +115,7 @@ def test_subsample_mudata_per_modality(run_component):
     assert list(output["rna"].obs_names) == list(output["prot"].obs_names)
     assert output.uns["dataset_id"] == "test_subsample"
     assert "batch" in output.obs and "batch" not in output["rna"].obs
+    assert list(output.obs["cell_type"].cat.categories) == ["t1"], "unused categories are dropped"
     assert list(output.obs_names) == list(outputs[1].obs_names), "same seed, same cells"
     assert list(output["rna"].var_names) == list(outputs[1]["rna"].var_names), "same seed, same features"
 

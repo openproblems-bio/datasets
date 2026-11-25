@@ -99,6 +99,8 @@ def subsample_mudata():
     print(">> Writing data", flush=True)
     output = md.MuData(mods)
     output.obs = mdata.obs.loc[output.obs_names].copy()
+    for col in output.obs.select_dtypes("category"):
+        output.obs[col] = output.obs[col].cat.remove_unused_categories()
     output.uns = dict(mdata.uns)
     output.uns["dataset_id"] = mdata.uns["dataset_id"] + "_subsample"
     output.write_zarr(par["output"])

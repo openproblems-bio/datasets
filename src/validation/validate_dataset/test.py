@@ -16,6 +16,8 @@ resources = Path(meta["resources_dir"]) / "cxg_mouse_pancreas_atlas"
 raw = resources / "raw.anndata.zarr"
 dataset = resources / "dataset.anndata.zarr"
 
+multimodal = Path(meta["resources_dir"]) / "openproblems_neurips2021"
+
 
 def validate(*args):
   return subprocess.run([meta["executable"], *args], capture_output=True, text=True)
@@ -44,6 +46,19 @@ adata.write_zarr(broken)
 out = validate("--input_raw", str(broken))
 assert out.returncode != 0
 assert "cell_type_ontology_term_id" in out.stdout + out.stderr, out.stdout + out.stderr
+
+print(">> Valid raw and processed multimodal datasets pass", flush=True)
+for dataset_id in ["bmmc_cite", "bmmc_multiome"]:
+  out = validate(
+    "--input_multimodal_raw", str(multimodal / dataset_id / "raw.mudata.zarr"),
+    "--input_multimodal_dataset", str(multimodal / dataset_id / "dataset.mudata.zarr"),
+  )
+  assert out.returncode == 0, out.stdout + out.stderr
+
+print(">> A raw multimodal dataset is not a processed one", flush=True)
+out = validate("--input_multimodal_dataset", str(multimodal / "bmmc_cite" / "raw.mudata.zarr"))
+assert out.returncode != 0
+assert ".mod['rna'] is missing slot" in out.stdout + out.stderr, out.stdout + out.stderr
 
 print(">> Passing no input fails", flush=True)
 assert validate().returncode != 0

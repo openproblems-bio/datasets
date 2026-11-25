@@ -3346,8 +3346,8 @@ meta = [
         {
           "type" : "file",
           "name" : "--output_mod1",
-          "label" : "Common dataset",
-          "summary" : "A dataset processed by the common dataset processing pipeline.",
+          "label" : "Multimodal dataset (openproblems v1)",
+          "summary" : "One modality of a processed openproblems v1 multimodal dataset, as output by the deprecated `process_openproblems_v1_multimodal` workflow.",
           "description" : "This dataset contains both raw counts and normalized data matrices,\nas well as a SVD embedding and a HVG selection.\n\nThe format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n",
           "info" : {
             "format" : {
@@ -3625,8 +3625,8 @@ meta = [
         {
           "type" : "file",
           "name" : "--output_mod2",
-          "label" : "Common dataset",
-          "summary" : "A dataset processed by the common dataset processing pipeline.",
+          "label" : "Multimodal dataset (openproblems v1)",
+          "summary" : "One modality of a processed openproblems v1 multimodal dataset, as output by the deprecated `process_openproblems_v1_multimodal` workflow.",
           "description" : "This dataset contains both raw counts and normalized data matrices,\nas well as a SVD embedding and a HVG selection.\n\nThe format of this file is derived from the [CELLxGENE schema v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md).\n",
           "info" : {
             "format" : {
@@ -4036,7 +4036,7 @@ meta = [
     "engine" : "native",
     "output" : "target/nextflow/workflows/multimodal/process_openproblems_v1_multimodal",
     "viash_version" : "0.9.7",
-    "git_commit" : "bd768912999396dd71cc1071b5a1b64e24f4d235",
+    "git_commit" : "9cd9a2363647732069fb49eaa6f3724503ac2d10",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -4049,6 +4049,11 @@ meta = [
           "path" : "lamin://openproblems/data-dev/collection/Ajn1Lo8zZomVzKtQ0005",
           "dest" : "resources_test/common/cxg_mouse_pancreas_atlas",
           "strip_prefix" : "resources_test/datasets/cxg_mouse_pancreas_atlas/"
+        },
+        {
+          "path" : "lamin://openproblems/data-dev/collection/PnooFh88ZnOarg4G0001",
+          "dest" : "resources_test/common/openproblems_neurips2021",
+          "strip_prefix" : "resources_test/datasets/openproblems_neurips2021/"
         }
       ]
     },

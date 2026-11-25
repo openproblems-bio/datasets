@@ -1,0 +1,52 @@
+name: combine_mudata
+namespace: utils
+description: |
+  Combine processed modalities into a multimodal MuData store. The global `obs` and `uns`
+  come from the raw store; each modality keeps only the `obs` columns it had in the raw
+  store, and its own `uns` entries such as `normalization_id`.
+arguments:
+  - name: --input_raw
+    __merge__: /src/api/file_multimodal_raw.yaml
+    direction: input
+    required: true
+  - name: --input_rna
+    type: file
+    direction: input
+    required: true
+    description: The processed `rna` modality.
+    example: rna.anndata.zarr
+  - name: --input_prot
+    type: file
+    direction: input
+    required: false
+    description: The processed `prot` modality.
+    example: prot.anndata.zarr
+  - name: --input_atac
+    type: file
+    direction: input
+    required: false
+    description: The processed `atac` modality.
+    example: atac.anndata.zarr
+  - name: --output
+    __merge__: /src/api/file_multimodal_dataset.yaml
+    direction: output
+    required: true
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/mudata_utils.py
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: /src/utils/split_mudata/test_data.py
+engines:
+  - type: docker
+    image: openproblems/base_python:1
+    setup:
+      - type: python
+        packages: ["mudata==0.4.1"]
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [lowtime, midmem, lowcpu]

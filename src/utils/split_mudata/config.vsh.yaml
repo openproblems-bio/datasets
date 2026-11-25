@@ -1,0 +1,50 @@
+name: split_mudata
+namespace: utils
+description: |
+  Split a multimodal MuData store into one AnnData store per modality, so that the
+  components for single-modality data can process each of them. The global `obs` is
+  joined into the `obs` of each modality and the global `uns` copied into its `uns`.
+arguments:
+  - name: --input
+    __merge__: /src/api/file_multimodal_raw.yaml
+    direction: input
+    required: true
+  - name: --output_rna
+    type: file
+    direction: output
+    required: true
+    description: The `rna` modality, with the global `obs` and `uns`.
+    example: rna.anndata.zarr
+  - name: --output_prot
+    type: file
+    direction: output
+    required: false
+    must_exist: false
+    description: The `prot` modality, if the dataset has one.
+    example: prot.anndata.zarr
+  - name: --output_atac
+    type: file
+    direction: output
+    required: false
+    must_exist: false
+    description: The `atac` modality, if the dataset has one.
+    example: atac.anndata.zarr
+resources:
+  - type: python_script
+    path: script.py
+  - path: /src/utils/mudata_utils.py
+test_resources:
+  - type: python_script
+    path: test.py
+  - path: test_data.py
+engines:
+  - type: docker
+    image: openproblems/base_python:1
+    setup:
+      - type: python
+        packages: ["mudata==0.4.1"]
+runners:
+  - type: executable
+  - type: nextflow
+    directives:
+      label: [lowtime, midmem, lowcpu]

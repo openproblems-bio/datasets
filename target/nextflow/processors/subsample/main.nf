@@ -4420,9 +4420,13 @@ meta = [
       "type" : "python_script",
       "path" : "script.py",
       "is_executable" : true
+    },
+    {
+      "type" : "file",
+      "path" : "/src/utils/mudata_utils.py"
     }
   ],
-  "description" : "Subsample an h5ad file",
+  "description" : "Subsample an AnnData or MuData store",
   "test_resources" : [
     {
       "type" : "file",
@@ -4441,12 +4445,12 @@ meta = [
     },
     {
       "type" : "file",
-      "path" : "/resources_test/common/cxg_mouse_pancreas_atlas"
+      "path" : "/resources_test/common/cxg_mo''' + '''use_pancreas_atlas"
     }
   ],
   "info" : {
     "type" : "dataset_processor",
-    "type_info" ''' + ''': {
+    "type_info" : {
       "label" : "Subset",
       "summary" : "Sample cells and genes randomly.",
       "description" : "This component subsets the layers, obs and var to create smaller test datasets."
@@ -4519,6 +4523,14 @@ meta = [
       "namespace_separator" : "/",
       "setup" : [
         {
+          "type" : "python",
+          "user" : false,
+          "packages" : [
+            "mudata==0.4.1"
+          ],
+          "upgrade" : true
+        },
+        {
           "type" : "docker",
           "env" : [
             "ANNDATA_AUTO_SHARD_ZARR_V3=1",
@@ -4547,7 +4559,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/processors/subsample",
     "viash_version" : "0.9.7",
-    "git_commit" : "bd768912999396dd71cc1071b5a1b64e24f4d235",
+    "git_commit" : "9cd9a2363647732069fb49eaa6f3724503ac2d10",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {
@@ -4560,6 +4572,11 @@ meta = [
           "path" : "lamin://openproblems/data-dev/collection/Ajn1Lo8zZomVzKtQ0005",
           "dest" : "resources_test/common/cxg_mouse_pancreas_atlas",
           "strip_prefix" : "resources_test/datasets/cxg_mouse_pancreas_atlas/"
+        },
+        {
+          "path" : "lamin://openproblems/data-dev/collection/PnooFh88ZnOarg4G0001",
+          "dest" : "resources_test/common/openproblems_neurips2021",
+          "strip_prefix" : "resources_test/datasets/openproblems_neurips2021/"
         }
       ]
     },
@@ -4607,7 +4624,9 @@ def innerWorkflowFactory(args) {
   def rawScript = '''set -e
 tempscript=".viash_script.py"
 cat > "$tempscript" << VIASHMAIN
+import sys
 import anndata as ad
+import mudata as md
 import scanpy as sc
 import numpy as np
 
@@ -4652,8 +4671,92 @@ dep = {
 
 ### VIASH END
 
+sys.path.append(meta["resources_dir"])
+from mudata_utils import is_mudata
+
 print(f">> Setting seed to {par['seed']}", flush=True)
 rng = np.random.default_rng(par["seed"])
+
+
+def select_cells(obs, n_obs):
+    """Positions of the cells to keep, after the \\`keep_*\\` filters, optionally evenly across batches."""
+    obs_filt = np.ones(dtype=np.bool_, shape=len(obs))
+
+    # subset by cell_type
+    if par.get("keep_cell_type_categories"):
+        print(f">> Selecting cell_type_categories {par['keep_cell_type_categories']}")
+        obs_filt = obs_filt & obs["cell_type"].isin(par["keep_cell_type_categories"])
+
+    # subset by batch
+    if par.get("keep_batch_categories"):
+        print(f">> Selecting batch_categories {par['keep_batch_categories']}")
+        obs_filt = obs_filt & obs["batch"].isin(par["keep_batch_categories"])
+
+    # don't draw more cells than are left after filtering
+    n_obs = min(n_obs, int(obs_filt.sum()))
+
+    # subsample evenly across batches or not
+    if par.get("even"):
+        obs_evenly = "batch"
+        choice_ix = np.where(obs_filt)[0]
+        choice_batch = obs.iloc[choice_ix][obs_evenly]
+        names, counts = np.unique(choice_batch, return_counts=True)
+        probs = dict(zip(names, 1 / counts / len(names)))
+
+        choice_probs = [ probs[batch] for batch in choice_batch ]
+        return rng.choice(choice_ix, size=n_obs, replace=False, p=choice_probs)
+    return rng.choice(np.where(obs_filt)[0], n_obs, replace=False)
+
+
+def subsample_mudata():
+    """Subsample the cells of a MuData store once, and the features of each modality separately."""
+    mdata = md.read_zarr(par["input"])
+    names = list(mdata.mod)
+    for name in names:
+        if not mdata[name].obs_names.equals(mdata.obs_names):
+            raise ValueError(f"Modalities have different cells: '{name}' and the global obs")
+
+    print(">> Subsampling the observations", flush=True)
+    obs_index = select_cells(mdata.obs, min(par["n_obs"], mdata.n_obs))
+    mods = {name: mdata[name][np.sort(obs_index)].copy() for name in names}
+
+    def drop_empty(mods):
+        n_counts = [np.asarray(mod.layers["counts"].sum(axis=1)).ravel() for mod in mods.values()]
+        keep_cells = np.min(n_counts, axis=0) > 1
+        mods = {name: mod[keep_cells].copy() for name, mod in mods.items()}
+        for mod in mods.values():
+            mod.X = mod.layers["counts"]
+            sc.pp.filter_genes(mod, min_cells=1)
+            del mod.X
+        return mods
+
+    mods = drop_empty(mods)
+
+    print(">> Subsampling the features of each modality", flush=True)
+    for name, mod in mods.items():
+        n_vars = min(par["n_vars"], mod.n_vars)
+        keep = mod.var_names.isin(par["keep_features"] or [])
+        initial_idx = keep.nonzero()[0]
+        remaining_idx = (~keep).nonzero()[0]
+        n_rest = min(max(n_vars - len(initial_idx), 0), len(remaining_idx))
+        rest_idx = remaining_idx[rng.choice(len(remaining_idx), n_rest, replace=False)]
+        mods[name] = mod[:, np.sort(np.concatenate([initial_idx, rest_idx]))].copy()
+
+    mods = drop_empty(mods)
+
+    print(">> Writing data", flush=True)
+    output = md.MuData(mods)
+    output.obs = mdata.obs.loc[output.obs_names].copy()
+    for col in output.obs.select_dtypes("category"):
+        output.obs[col] = output.obs[col].cat.remove_unused_categories()
+    output.uns = dict(mdata.uns)
+    output.uns["dataset_id"] = mdata.uns["dataset_id"] + "_subsample"
+    output.write_zarr(par["output"])
+
+
+if is_mudata(par["input"]):
+    subsample_mudata()
+    sys.exit(0)
 
 print(">> Load data", flush=True)
 adata_input = ad.read_zarr(par["input"])
@@ -4678,33 +4781,7 @@ if par["input_mod2"] is not None:
 n_vars = min(min_vars_list)
 
 print(">> Subsampling the observations", flush=True)
-obs_filt = np.ones(dtype=np.bool_, shape=adata_input.n_obs)
-
-# subset by cell_type
-if par.get("keep_cell_type_categories"):
-    print(f">> Selecting cell_type_categories {par['keep_cell_type_categories']}")
-    obs_filt = obs_filt & adata_input.obs["cell_type"].isin(par["keep_cell_type_categories"])
-
-# subset by batch
-if par.get("keep_batch_categories"):
-    print(f">> Selecting batch_categories {par['keep_batch_categories']}")
-    obs_filt = obs_filt & adata_input.obs["batch"].isin(par["keep_batch_categories"])
-
-# don't draw more cells than are left after filtering
-n_obs = min(n_obs, int(obs_filt.sum()))
-
-# subsample evenly across batches or not
-if par.get("even"):
-    obs_evenly = "batch"
-    choice_ix = np.where(obs_filt)[0]
-    choice_batch = adata_input[choice_ix].obs[obs_evenly]
-    names, counts = np.unique(choice_batch, return_counts=True)
-    probs = dict(zip(names, 1 / counts / len(names)))
-    
-    choice_probs = [ probs[batch] for batch in choice_batch ]
-    obs_index = rng.choice(choice_ix, size=n_obs, replace=False, p=choice_probs)
-else:
-    obs_index = rng.choice(np.where(obs_filt)[0], n_obs, replace=False)
+obs_index = select_cells(adata_input.obs, n_obs)
 
 # subsample obs
 adata_output = adata_input[obs_index].copy()
@@ -4721,7 +4798,7 @@ if par["input_mod2"] is not None:
 
     sc.pp.filter_genes(adata_output, min_cells=1)
     sc.pp.filter_genes(adata_output_mod2, min_cells=1)
-    
+
 else:
     # todo: this should not remove features in keep_features!
     print(">> Remove empty observations and features", flush=True)
@@ -4755,7 +4832,7 @@ if par["input_mod2"] is not None:
 
     sc.pp.filter_genes(adata_output, min_cells=1)
     sc.pp.filter_genes(adata_output_mod2, min_cells=1)
-    
+
 
 else:
     # todo: this should not remove features in keep_features!

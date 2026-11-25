@@ -451,9 +451,9 @@ ENV OPENBLAS_NUM_THREADS=4
 ENV MKL_NUM_THREADS=4
 ENV NUMBA_NUM_THREADS=4
 LABEL org.opencontainers.image.description="Companion container for running component loaders/scrnaseq openproblems_op3"
-LABEL org.opencontainers.image.created="2026-11-24T22:07:01Z"
+LABEL org.opencontainers.image.created="2026-11-25T09:36:57Z"
 LABEL org.opencontainers.image.source="https://github.com/openproblems-bio/datasets"
-LABEL org.opencontainers.image.revision="bd768912999396dd71cc1071b5a1b64e24f4d235"
+LABEL org.opencontainers.image.revision="9cd9a2363647732069fb49eaa6f3724503ac2d10"
 LABEL org.opencontainers.image.version="build_main"
 
 VIASHDOCKER

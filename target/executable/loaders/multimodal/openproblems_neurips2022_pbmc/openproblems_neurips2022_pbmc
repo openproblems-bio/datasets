@@ -445,15 +445,18 @@ function ViashDockerfile {
     cat << 'VIASHDOCKER'
 FROM openproblems/base_python:1
 ENTRYPOINT []
+RUN pip install --upgrade pip && \
+  pip install --upgrade --no-cache-dir "mudata==0.4.1"
+
 ENV ANNDATA_AUTO_SHARD_ZARR_V3=1
 ENV OMP_NUM_THREADS=4
 ENV OPENBLAS_NUM_THREADS=4
 ENV MKL_NUM_THREADS=4
 ENV NUMBA_NUM_THREADS=4
 LABEL org.opencontainers.image.description="Companion container for running component loaders/multimodal openproblems_neurips2022_pbmc"
-LABEL org.opencontainers.image.created="2026-11-24T22:07:01Z"
+LABEL org.opencontainers.image.created="2026-11-25T09:36:56Z"
 LABEL org.opencontainers.image.source="https://github.com/openproblems-bio/datasets"
-LABEL org.opencontainers.image.revision="bd768912999396dd71cc1071b5a1b64e24f4d235"
+LABEL org.opencontainers.image.revision="9cd9a2363647732069fb49eaa6f3724503ac2d10"
 LABEL org.opencontainers.image.version="build_main"
 
 VIASHDOCKER
@@ -621,26 +624,15 @@ function ViashHelp {
   echo "        type: string, required parameter"
   echo "        Long description of the dataset."
   echo ""
-  echo "    --dataset_organism"
-  echo "        type: string, multiple values allowed"
-  echo "        The organism of the dataset."
-  echo ""
   echo "Outputs:"
-  echo "    --output_mod1"
-  echo "        type: file, output, file must exist"
-  echo "        example: resources_test/common/cxg_mouse_pancreas_atlas/raw.anndata.zarr"
-  echo "        This dataset contains raw counts and metadata as output by a dataset"
-  echo "        loader."
-  echo "        The format of this file is derived from the [CELLxGENE schema"
-  echo "       "
-  echo "v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md)."
-  echo ""
-  echo "    --output_mod2"
-  echo "        type: file, output, file must exist"
-  echo "        example: resources_test/common/cxg_mouse_pancreas_atlas/raw.anndata.zarr"
-  echo "        This dataset contains raw counts and metadata as output by a dataset"
-  echo "        loader."
-  echo "        The format of this file is derived from the [CELLxGENE schema"
+  echo "    --output"
+  echo "        type: file, required parameter, output, file must exist"
+  echo "        example:"
+  echo "resources_test/common/openproblems_neurips2021/bmmc_cite/raw.mudata.zarr"
+  echo "        A MuData store with one modality per measurement (\`rna\`, and \`prot\`"
+  echo "        and/or \`atac\`), each with raw counts. Cell metadata is stored once, in"
+  echo "        the global \`obs\`."
+  echo "        The format of the cell metadata is derived from the [CELLxGENE schema"
   echo "       "
   echo "v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md)."
   echo ""
@@ -810,43 +802,15 @@ while [[ $# -gt 0 ]]; do
             VIASH_PAR_DATASET_DESCRIPTION=$(ViashRemoveFlags "$1")
             shift 1
             ;;
-        --dataset_organism)
-            if [ -z "$VIASH_PAR_DATASET_ORGANISM" ]; then
-              VIASH_PAR_DATASET_ORGANISM="$2"
-            else
-              VIASH_PAR_DATASET_ORGANISM="$VIASH_PAR_DATASET_ORGANISM;""$2"
-            fi
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --dataset_organism. Use "--help" to get more information on the parameters. && exit 1
+        --output)
+            [ -n "$VIASH_PAR_OUTPUT" ] && ViashError Bad arguments for option \'--output\': \'$VIASH_PAR_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output. Use "--help" to get more information on the parameters. && exit 1
             shift 2
             ;;
-        --dataset_organism=*)
-            if [ -z "$VIASH_PAR_DATASET_ORGANISM" ]; then
-              VIASH_PAR_DATASET_ORGANISM=$(ViashRemoveFlags "$1")
-            else
-              VIASH_PAR_DATASET_ORGANISM="$VIASH_PAR_DATASET_ORGANISM;"$(ViashRemoveFlags "$1")
-            fi
-            shift 1
-            ;;
-        --output_mod1)
-            [ -n "$VIASH_PAR_OUTPUT_MOD1" ] && ViashError Bad arguments for option \'--output_mod1\': \'$VIASH_PAR_OUTPUT_MOD1\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_MOD1="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_mod1. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --output_mod1=*)
-            [ -n "$VIASH_PAR_OUTPUT_MOD1" ] && ViashError Bad arguments for option \'--output_mod1=*\': \'$VIASH_PAR_OUTPUT_MOD1\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_MOD1=$(ViashRemoveFlags "$1")
-            shift 1
-            ;;
-        --output_mod2)
-            [ -n "$VIASH_PAR_OUTPUT_MOD2" ] && ViashError Bad arguments for option \'--output_mod2\': \'$VIASH_PAR_OUTPUT_MOD2\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_MOD2="$2"
-            [ $# -lt 2 ] && ViashError Not enough arguments passed to --output_mod2. Use "--help" to get more information on the parameters. && exit 1
-            shift 2
-            ;;
-        --output_mod2=*)
-            [ -n "$VIASH_PAR_OUTPUT_MOD2" ] && ViashError Bad arguments for option \'--output_mod2=*\': \'$VIASH_PAR_OUTPUT_MOD2\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
-            VIASH_PAR_OUTPUT_MOD2=$(ViashRemoveFlags "$1")
+        --output=*)
+            [ -n "$VIASH_PAR_OUTPUT" ] && ViashError Bad arguments for option \'--output=*\': \'$VIASH_PAR_OUTPUT\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_OUTPUT=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         ---engine)
@@ -1051,6 +1015,10 @@ if [ -z ${VIASH_PAR_DATASET_DESCRIPTION+x} ]; then
   ViashError '--dataset_description' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
 fi
+if [ -z ${VIASH_PAR_OUTPUT+x} ]; then
+  ViashError '--output' is a required argument. Use "--help" to get more information on the parameters.
+  exit 1
+fi
 if [ -z ${VIASH_META_NAME+x} ]; then
   ViashError 'name' is a required argument. Use "--help" to get more information on the parameters.
   exit 1
@@ -1161,11 +1129,8 @@ if [[ -n "$VIASH_META_MEMORY_PIB" ]]; then
 fi
 
 # create parent directories of output files, if so desired
-if [ ! -z "$VIASH_PAR_OUTPUT_MOD1" ] && [ ! -d "$(dirname "$VIASH_PAR_OUTPUT_MOD1")" ]; then
-  mkdir -p "$(dirname "$VIASH_PAR_OUTPUT_MOD1")"
-fi
-if [ ! -z "$VIASH_PAR_OUTPUT_MOD2" ] && [ ! -d "$(dirname "$VIASH_PAR_OUTPUT_MOD2")" ]; then
-  mkdir -p "$(dirname "$VIASH_PAR_OUTPUT_MOD2")"
+if [ ! -z "$VIASH_PAR_OUTPUT" ] && [ ! -d "$(dirname "$VIASH_PAR_OUTPUT")" ]; then
+  mkdir -p "$(dirname "$VIASH_PAR_OUTPUT")"
 fi
 
 if [[ "$VIASH_ENGINE_TYPE" == "docker" ]]; then
@@ -1179,15 +1144,10 @@ if [ ! -z "$VIASH_PAR_INPUT_MOD2" ]; then
   VIASH_DIRECTORY_MOUNTS+=( "$(ViashDockerAutodetectMountArg "$VIASH_PAR_INPUT_MOD2")" )
   VIASH_PAR_INPUT_MOD2=$(ViashDockerAutodetectMount "$VIASH_PAR_INPUT_MOD2")
 fi
-if [ ! -z "$VIASH_PAR_OUTPUT_MOD1" ]; then
-  VIASH_DIRECTORY_MOUNTS+=( "$(ViashDockerAutodetectMountArg "$VIASH_PAR_OUTPUT_MOD1")" )
-  VIASH_PAR_OUTPUT_MOD1=$(ViashDockerAutodetectMount "$VIASH_PAR_OUTPUT_MOD1")
-  VIASH_CHOWN_VARS+=( "$VIASH_PAR_OUTPUT_MOD1" )
-fi
-if [ ! -z "$VIASH_PAR_OUTPUT_MOD2" ]; then
-  VIASH_DIRECTORY_MOUNTS+=( "$(ViashDockerAutodetectMountArg "$VIASH_PAR_OUTPUT_MOD2")" )
-  VIASH_PAR_OUTPUT_MOD2=$(ViashDockerAutodetectMount "$VIASH_PAR_OUTPUT_MOD2")
-  VIASH_CHOWN_VARS+=( "$VIASH_PAR_OUTPUT_MOD2" )
+if [ ! -z "$VIASH_PAR_OUTPUT" ]; then
+  VIASH_DIRECTORY_MOUNTS+=( "$(ViashDockerAutodetectMountArg "$VIASH_PAR_OUTPUT")" )
+  VIASH_PAR_OUTPUT=$(ViashDockerAutodetectMount "$VIASH_PAR_OUTPUT")
+  VIASH_CHOWN_VARS+=( "$VIASH_PAR_OUTPUT" )
 fi
 if [ ! -z "$VIASH_META_RESOURCES_DIR" ]; then
   VIASH_DIRECTORY_MOUNTS+=( "$(ViashDockerAutodetectMountArg "$VIASH_META_RESOURCES_DIR")" )
@@ -1272,9 +1232,7 @@ par = {
   'dataset_reference': $( if [ ! -z ${VIASH_PAR_DATASET_REFERENCE+x} ]; then echo "r'${VIASH_PAR_DATASET_REFERENCE//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
   'dataset_summary': $( if [ ! -z ${VIASH_PAR_DATASET_SUMMARY+x} ]; then echo "r'${VIASH_PAR_DATASET_SUMMARY//\'/\'\"\'\"r\'}'"; else echo None; fi ),
   'dataset_description': $( if [ ! -z ${VIASH_PAR_DATASET_DESCRIPTION+x} ]; then echo "r'${VIASH_PAR_DATASET_DESCRIPTION//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'dataset_organism': $( if [ ! -z ${VIASH_PAR_DATASET_ORGANISM+x} ]; then echo "r'${VIASH_PAR_DATASET_ORGANISM//\'/\'\"\'\"r\'}'.split(';')"; else echo None; fi ),
-  'output_mod1': $( if [ ! -z ${VIASH_PAR_OUTPUT_MOD1+x} ]; then echo "r'${VIASH_PAR_OUTPUT_MOD1//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'output_mod2': $( if [ ! -z ${VIASH_PAR_OUTPUT_MOD2+x} ]; then echo "r'${VIASH_PAR_OUTPUT_MOD2//\'/\'\"\'\"r\'}'"; else echo None; fi )
+  'output': $( if [ ! -z ${VIASH_PAR_OUTPUT+x} ]; then echo "r'${VIASH_PAR_OUTPUT//\'/\'\"\'\"r\'}'"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1301,6 +1259,10 @@ dep = {
 }
 
 ## VIASH END
+
+import sys
+sys.path.append(meta["resources_dir"])
+from mudata_utils import MODALITIES, to_mudata
 
 
 def convert_matrix(adata):
@@ -1337,9 +1299,8 @@ if "is_train" not in adata_mod2.obs.columns:
 
 # split up index in modality 1 into feature ID and feature name
 adata_mod1.var['feature_id'] = [str(s).split('_')[0] for s in adata_mod1.var.index.tolist()]
-# TODO: index does not always contain an underscore.
-if "_" in adata_mod1.var.index[0]:
-  adata_mod1.var['feature_name'] = [str(s).split('_')[1] for s in adata_mod1.var.index.tolist()]
+# the Multiome gene expression has no gene symbols, only Ensembl ids
+adata_mod1.var['feature_name'] = [str(s).split('_', 1)[-1] for s in adata_mod1.var.index.tolist()]
 adata_mod1.var.set_index('feature_id',drop=False, inplace=True)
 adata_mod1.var.index.name = None
 
@@ -1355,21 +1316,24 @@ del adata_mod1.X
 del adata_mod2.X
 
 
-print("Add metadata to uns", flush=True)
+print("Combine the modalities", flush=True)
+for adata in [adata_mod1, adata_mod2]:
+  adata.obs["organism"] = "Homo sapiens"
+  adata.obs["organism_ontology_term_id"] = "NCBITaxon:9606"
+
 metadata_fields = [
-    "dataset_id", "dataset_name", "dataset_url", "dataset_reference",
-    "dataset_summary", "dataset_description", "dataset_organism"
+  "dataset_id", "dataset_name", "dataset_url", "dataset_reference",
+  "dataset_summary", "dataset_description"
 ]
-for key in metadata_fields:
-    if key in par:
-        print(f"  Setting .uns['{key}']", flush=True)
-        adata_mod1.uns[key] = par[key]
-        adata_mod2.uns[key] = par[key]
+uns = {key: par[key] for key in metadata_fields if par.get(key) is not None}
+mdata = to_mudata(
+  {MODALITIES[par["mod1"]]: adata_mod1, MODALITIES[par["mod2"]]: adata_mod2},
+  uns=uns,
+)
+print(mdata, flush=True)
 
-
-print("Writing adata to file", flush=True)
-adata_mod1.write_zarr(par["output_mod1"])
-adata_mod2.write_zarr(par["output_mod2"])
+print("Writing mudata to file", flush=True)
+mdata.write_zarr(par["output"])
 VIASHMAIN
 python -B "\$tempscript" &
 wait "\$!"
@@ -1386,11 +1350,8 @@ if [[ "$VIASH_ENGINE_TYPE" == "docker" ]]; then
   if [ ! -z "$VIASH_PAR_INPUT_MOD2" ]; then
     VIASH_PAR_INPUT_MOD2=$(ViashDockerStripAutomount "$VIASH_PAR_INPUT_MOD2")
   fi
-  if [ ! -z "$VIASH_PAR_OUTPUT_MOD1" ]; then
-    VIASH_PAR_OUTPUT_MOD1=$(ViashDockerStripAutomount "$VIASH_PAR_OUTPUT_MOD1")
-  fi
-  if [ ! -z "$VIASH_PAR_OUTPUT_MOD2" ]; then
-    VIASH_PAR_OUTPUT_MOD2=$(ViashDockerStripAutomount "$VIASH_PAR_OUTPUT_MOD2")
+  if [ ! -z "$VIASH_PAR_OUTPUT" ]; then
+    VIASH_PAR_OUTPUT=$(ViashDockerStripAutomount "$VIASH_PAR_OUTPUT")
   fi
   if [ ! -z "$VIASH_META_RESOURCES_DIR" ]; then
     VIASH_META_RESOURCES_DIR=$(ViashDockerStripAutomount "$VIASH_META_RESOURCES_DIR")
@@ -1408,12 +1369,8 @@ fi
 
 
 # check whether required files exist
-if [ ! -z "$VIASH_PAR_OUTPUT_MOD1" ] && [ ! -e "$VIASH_PAR_OUTPUT_MOD1" ]; then
-  ViashError "Output file '$VIASH_PAR_OUTPUT_MOD1' does not exist."
-  exit 1
-fi
-if [ ! -z "$VIASH_PAR_OUTPUT_MOD2" ] && [ ! -e "$VIASH_PAR_OUTPUT_MOD2" ]; then
-  ViashError "Output file '$VIASH_PAR_OUTPUT_MOD2' does not exist."
+if [ ! -z "$VIASH_PAR_OUTPUT" ] && [ ! -e "$VIASH_PAR_OUTPUT" ]; then
+  ViashError "Output file '$VIASH_PAR_OUTPUT' does not exist."
   exit 1
 fi
 

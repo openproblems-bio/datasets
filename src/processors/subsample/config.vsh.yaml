@@ -1,6 +1,6 @@
 __merge__: ../../api/comp_processor_subset.yaml
 name: subsample
-description: Subsample an h5ad file
+description: Subsample an AnnData or MuData store
 arguments:
   - name: --n_obs
     type: integer
@@ -36,6 +36,7 @@ arguments:
 resources:
   - type: python_script
     path: script.py
+  - path: /src/utils/mudata_utils.py
 test_resources:
   - type: python_script
     path: test_script.py
@@ -43,6 +44,9 @@ test_resources:
 engines:
   - type: docker
     image: openproblems/base_python:1
+    setup:
+      - type: python
+        packages: ["mudata==0.4.1"]
     test_setup:
       - type: python
         packages:

@@ -15,6 +15,6 @@ uv run scripts/lamin/annotate_artifacts.py --instance openproblems/data-dev --ke
 uv run scripts/lamin/annotate_artifacts.py --instance openproblems/data-dev --artifact <uid> --spec src/api/file_raw.yaml
 ```
 
-The file format of an artifact follows from the end of its key (`raw.anndata.zarr` is a raw dataset, `dataset.anndata.zarr` a common dataset) and the modality from its start (`scrnaseq/...`); `--spec` and `--modality` override them. Add `--dry-run` to see what would be annotated.
+The file format of an artifact follows from the end of its key (`raw.anndata.zarr` is a raw dataset, `dataset.anndata.zarr` a common dataset, `raw.mudata.zarr` and `dataset.mudata.zarr` their multimodal counterparts) and the modality from its start (`scrnaseq/...`); `--spec` and `--modality` override them. Add `--dry-run` to see what would be annotated.
 
-Only metadata, `obs`, `var` and `uns` are read, straight from where an artifact is stored, so this works for datasets of any size. Artifacts that already have the schema of their file format are skipped, unless you pass `--force`.
+For AnnData stores, only metadata, `obs`, `var` and `uns` are read, straight from where an artifact is stored, so this works for datasets of any size. MuData stores are annotated per modality, but lamindb 2.12 loads them into memory to validate them, so a large multimodal dataset needs the memory to hold it. Artifacts that already have the schema of their file format are skipped, unless you pass `--force`.

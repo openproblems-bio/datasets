@@ -445,15 +445,18 @@ function ViashDockerfile {
     cat << 'VIASHDOCKER'
 FROM openproblems/base_python:1
 ENTRYPOINT []
+RUN pip install --upgrade pip && \
+  pip install --upgrade --no-cache-dir "mudata==0.4.1"
+
 ENV ANNDATA_AUTO_SHARD_ZARR_V3=1
 ENV OMP_NUM_THREADS=4
 ENV OPENBLAS_NUM_THREADS=4
 ENV MKL_NUM_THREADS=4
 ENV NUMBA_NUM_THREADS=4
 LABEL org.opencontainers.image.description="Companion container for running component validation validate_dataset"
-LABEL org.opencontainers.image.created="2026-11-24T22:07:01Z"
+LABEL org.opencontainers.image.created="2026-11-25T09:36:57Z"
 LABEL org.opencontainers.image.source="https://github.com/openproblems-bio/datasets"
-LABEL org.opencontainers.image.revision="bd768912999396dd71cc1071b5a1b64e24f4d235"
+LABEL org.opencontainers.image.revision="9cd9a2363647732069fb49eaa6f3724503ac2d10"
 LABEL org.opencontainers.image.version="build_main"
 
 VIASHDOCKER
@@ -600,6 +603,29 @@ function ViashHelp {
   echo "        This dataset contains both raw counts and normalized data matrices,"
   echo "        as well as a PCA embedding, HVG selection and a kNN graph."
   echo ""
+  echo "    --input_multimodal_raw"
+  echo "        type: file, file must exist"
+  echo "        example:"
+  echo "resources_test/common/openproblems_neurips2021/bmmc_cite/raw.mudata.zarr"
+  echo "        A MuData store with one modality per measurement (\`rna\`, and \`prot\`"
+  echo "        and/or \`atac\`), each with raw counts. Cell metadata is stored once, in"
+  echo "        the global \`obs\`."
+  echo "        The format of the cell metadata is derived from the [CELLxGENE schema"
+  echo "       "
+  echo "v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md)."
+  echo ""
+  echo "    --input_multimodal_dataset"
+  echo "        type: file, file must exist"
+  echo "        example:"
+  echo "resources_test/common/openproblems_neurips2021/bmmc_cite/dataset.mudata.zarr"
+  echo "        A MuData store with one modality per measurement (\`rna\`, and \`prot\`"
+  echo "        and/or \`atac\`). Each modality contains raw counts, normalised values, an"
+  echo "        SVD embedding and a selection of highly variable features. Cell metadata"
+  echo "        is stored once, in the global \`obs\`."
+  echo "        The format of the cell metadata is derived from the [CELLxGENE schema"
+  echo "       "
+  echo "v4.0.0](https://github.com/chanzuckerberg/single-cell-curation/blob/main/schema/4.0.0/schema.md)."
+  echo ""
   echo "Viash built in Computational Requirements:"
   echo "    ---cpus=INT"
   echo "        Number of CPUs to use"
@@ -670,6 +696,28 @@ while [[ $# -gt 0 ]]; do
         --input_dataset=*)
             [ -n "$VIASH_PAR_INPUT_DATASET" ] && ViashError Bad arguments for option \'--input_dataset=*\': \'$VIASH_PAR_INPUT_DATASET\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
             VIASH_PAR_INPUT_DATASET=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --input_multimodal_raw)
+            [ -n "$VIASH_PAR_INPUT_MULTIMODAL_RAW" ] && ViashError Bad arguments for option \'--input_multimodal_raw\': \'$VIASH_PAR_INPUT_MULTIMODAL_RAW\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INPUT_MULTIMODAL_RAW="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input_multimodal_raw. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --input_multimodal_raw=*)
+            [ -n "$VIASH_PAR_INPUT_MULTIMODAL_RAW" ] && ViashError Bad arguments for option \'--input_multimodal_raw=*\': \'$VIASH_PAR_INPUT_MULTIMODAL_RAW\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INPUT_MULTIMODAL_RAW=$(ViashRemoveFlags "$1")
+            shift 1
+            ;;
+        --input_multimodal_dataset)
+            [ -n "$VIASH_PAR_INPUT_MULTIMODAL_DATASET" ] && ViashError Bad arguments for option \'--input_multimodal_dataset\': \'$VIASH_PAR_INPUT_MULTIMODAL_DATASET\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INPUT_MULTIMODAL_DATASET="$2"
+            [ $# -lt 2 ] && ViashError Not enough arguments passed to --input_multimodal_dataset. Use "--help" to get more information on the parameters. && exit 1
+            shift 2
+            ;;
+        --input_multimodal_dataset=*)
+            [ -n "$VIASH_PAR_INPUT_MULTIMODAL_DATASET" ] && ViashError Bad arguments for option \'--input_multimodal_dataset=*\': \'$VIASH_PAR_INPUT_MULTIMODAL_DATASET\' \& \'$2\' - you should provide exactly one argument for this option. && exit 1
+            VIASH_PAR_INPUT_MULTIMODAL_DATASET=$(ViashRemoveFlags "$1")
             shift 1
             ;;
         ---engine)
@@ -876,6 +924,14 @@ if [ ! -z "$VIASH_PAR_INPUT_DATASET" ] && [ ! -e "$VIASH_PAR_INPUT_DATASET" ]; t
   ViashError "Input file '$VIASH_PAR_INPUT_DATASET' does not exist."
   exit 1
 fi
+if [ ! -z "$VIASH_PAR_INPUT_MULTIMODAL_RAW" ] && [ ! -e "$VIASH_PAR_INPUT_MULTIMODAL_RAW" ]; then
+  ViashError "Input file '$VIASH_PAR_INPUT_MULTIMODAL_RAW' does not exist."
+  exit 1
+fi
+if [ ! -z "$VIASH_PAR_INPUT_MULTIMODAL_DATASET" ] && [ ! -e "$VIASH_PAR_INPUT_MULTIMODAL_DATASET" ]; then
+  ViashError "Input file '$VIASH_PAR_INPUT_MULTIMODAL_DATASET' does not exist."
+  exit 1
+fi
 
 # check whether parameters values are of the right type
 if [[ -n "$VIASH_META_CPUS" ]]; then
@@ -962,6 +1018,14 @@ if [ ! -z "$VIASH_PAR_INPUT_DATASET" ]; then
   VIASH_DIRECTORY_MOUNTS+=( "$(ViashDockerAutodetectMountArg "$VIASH_PAR_INPUT_DATASET")" )
   VIASH_PAR_INPUT_DATASET=$(ViashDockerAutodetectMount "$VIASH_PAR_INPUT_DATASET")
 fi
+if [ ! -z "$VIASH_PAR_INPUT_MULTIMODAL_RAW" ]; then
+  VIASH_DIRECTORY_MOUNTS+=( "$(ViashDockerAutodetectMountArg "$VIASH_PAR_INPUT_MULTIMODAL_RAW")" )
+  VIASH_PAR_INPUT_MULTIMODAL_RAW=$(ViashDockerAutodetectMount "$VIASH_PAR_INPUT_MULTIMODAL_RAW")
+fi
+if [ ! -z "$VIASH_PAR_INPUT_MULTIMODAL_DATASET" ]; then
+  VIASH_DIRECTORY_MOUNTS+=( "$(ViashDockerAutodetectMountArg "$VIASH_PAR_INPUT_MULTIMODAL_DATASET")" )
+  VIASH_PAR_INPUT_MULTIMODAL_DATASET=$(ViashDockerAutodetectMount "$VIASH_PAR_INPUT_MULTIMODAL_DATASET")
+fi
 if [ ! -z "$VIASH_META_RESOURCES_DIR" ]; then
   VIASH_DIRECTORY_MOUNTS+=( "$(ViashDockerAutodetectMountArg "$VIASH_META_RESOURCES_DIR")" )
   VIASH_META_RESOURCES_DIR=$(ViashDockerAutodetectMount "$VIASH_META_RESOURCES_DIR")
@@ -1036,7 +1100,9 @@ from openproblems.project.component_tests.run_and_check_output import check_form
 # The following code has been auto-generated by Viash.
 par = {
   'input_raw': $( if [ ! -z ${VIASH_PAR_INPUT_RAW+x} ]; then echo "r'${VIASH_PAR_INPUT_RAW//\'/\'\"\'\"r\'}'"; else echo None; fi ),
-  'input_dataset': $( if [ ! -z ${VIASH_PAR_INPUT_DATASET+x} ]; then echo "r'${VIASH_PAR_INPUT_DATASET//\'/\'\"\'\"r\'}'"; else echo None; fi )
+  'input_dataset': $( if [ ! -z ${VIASH_PAR_INPUT_DATASET+x} ]; then echo "r'${VIASH_PAR_INPUT_DATASET//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'input_multimodal_raw': $( if [ ! -z ${VIASH_PAR_INPUT_MULTIMODAL_RAW+x} ]; then echo "r'${VIASH_PAR_INPUT_MULTIMODAL_RAW//\'/\'\"\'\"r\'}'"; else echo None; fi ),
+  'input_multimodal_dataset': $( if [ ! -z ${VIASH_PAR_INPUT_MULTIMODAL_DATASET+x} ]; then echo "r'${VIASH_PAR_INPUT_MULTIMODAL_DATASET//\'/\'\"\'\"r\'}'"; else echo None; fi )
 }
 meta = {
   'name': $( if [ ! -z ${VIASH_META_NAME+x} ]; then echo "r'${VIASH_META_NAME//\'/\'\"\'\"r\'}'"; else echo None; fi ),
@@ -1098,6 +1164,12 @@ if [[ "$VIASH_ENGINE_TYPE" == "docker" ]]; then
   fi
   if [ ! -z "$VIASH_PAR_INPUT_DATASET" ]; then
     VIASH_PAR_INPUT_DATASET=$(ViashDockerStripAutomount "$VIASH_PAR_INPUT_DATASET")
+  fi
+  if [ ! -z "$VIASH_PAR_INPUT_MULTIMODAL_RAW" ]; then
+    VIASH_PAR_INPUT_MULTIMODAL_RAW=$(ViashDockerStripAutomount "$VIASH_PAR_INPUT_MULTIMODAL_RAW")
+  fi
+  if [ ! -z "$VIASH_PAR_INPUT_MULTIMODAL_DATASET" ]; then
+    VIASH_PAR_INPUT_MULTIMODAL_DATASET=$(ViashDockerStripAutomount "$VIASH_PAR_INPUT_MULTIMODAL_DATASET")
   fi
   if [ ! -z "$VIASH_META_RESOURCES_DIR" ]; then
     VIASH_META_RESOURCES_DIR=$(ViashDockerStripAutomount "$VIASH_META_RESOURCES_DIR")

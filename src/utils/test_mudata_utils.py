@@ -68,3 +68,12 @@ def test_is_mudata(tmp_path):
 
   assert is_mudata(str(tmp_path / "x.mudata.zarr"))
   assert not is_mudata(str(tmp_path / "x.anndata.zarr"))
+
+
+def test_to_mudata_drops_dataset_level_uns_of_modalities():
+  rna = _adata(CELLS)
+  rna.uns = {"dataset_id": "source_id", "organism": "human", "genome": "GRCh38"}
+  mdata = to_mudata({"rna": rna}, uns={"dataset_id": "x"})
+
+  assert dict(mdata["rna"].uns) == {"genome": "GRCh38"}
+  assert mdata.uns["dataset_id"] == "x"

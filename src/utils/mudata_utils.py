@@ -7,12 +7,16 @@ import mudata as md
 # modality labels used by the sources, and the name of that modality in a MuData store
 MODALITIES = {"GEX": "rna", "ADT": "prot", "ATAC": "atac"}
 
+# uns keys of a source modality that describe the dataset rather than the modality
+DATASET_LEVEL_UNS = ["dataset_id", "organism"]
+
 
 def to_mudata(mods, uns):
   """Combine AnnData objects that measure the same cells into one MuData object.
 
   Columns of `obs` that are identical in every modality describe the cell rather than
-  the measurement, so they are moved to the global `obs`. `uns` becomes the global `uns`.
+  the measurement, so they are moved to the global `obs`. `uns` becomes the global `uns`, and
+  dataset-level keys are removed from the `uns` of the modalities.
   """
   names = list(mods)
   first = mods[names[0]].obs
@@ -27,6 +31,9 @@ def to_mudata(mods, uns):
   obs = first[shared].copy()
   for adata in mods.values():
     adata.obs = adata.obs.drop(columns=shared)
+    # the dataset-level metadata of a source (e.g. its own `dataset_id`) would contradict the global one
+    for key in [*uns, *DATASET_LEVEL_UNS]:
+      adata.uns.pop(key, None)
 
   mdata = md.MuData(mods)
   mdata.obs = obs

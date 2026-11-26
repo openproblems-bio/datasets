@@ -43,7 +43,7 @@ Every script takes these options:
 * `--dry-run`: write the Nextflow config and parameters and print where they are, without launching.
 * `--instance`: the Lamin instance to publish to. It defaults to `$LAMIN_INSTANCE` or `openproblems/data-dev`; any other instance also needs `ALLOW_INSTANCE=1`.
 
-Datasets marked `large` (Tabula Sapiens, the Human Retina Cell Atlas, OP3 and the NeurIPS 2022 Multiome) are launched separately, with up to 450 GB of memory and 48 hours per step ([`src/config/large_datasets.config`](../../src/config/large_datasets.config)).
+Every dataset is a run of its own, since nf-lamin links each artifact a run publishes to every artifact the run read. Datasets marked `large` (Tabula Sapiens, the Human Retina Cell Atlas, OP3 and the NeurIPS 2022 Multiome) get up to 450 GB of memory and 48 hours per step ([`src/config/large_datasets.config`](../../src/config/large_datasets.config)).
 
 ## Setup
 

@@ -105,7 +105,13 @@ def test_select_by_id():
     helpers.select(DATASETS, ["a/big", "c/missing"])
 
 
-def test_split_by_size():
-  regular, large = helpers.split_by_size(DATASETS)
-  assert regular == [{"id": "a/small"}, {"id": "b/small"}]
-  assert large == [{"id": "a/big"}]
+def test_one_run_per_dataset(monkeypatch):
+  launched = []
+  monkeypatch.setattr(helpers, "launch", lambda workflow, params, prefix, **kwargs: launched.append((params, kwargs["large"])))
+  args = helpers.make_parser("test").parse_args(["--dry-run"])
+  helpers.launch_datasets("scrnaseq/load_cellxgene_census", DATASETS, {"shared": 1}, "scrnaseq", args)
+  assert launched == [
+    ({"param_list": [{"id": "a/small"}], "shared": 1}, False),
+    ({"param_list": [{"id": "a/big"}], "shared": 1}, True),
+    ({"param_list": [{"id": "b/small"}], "shared": 1}, False),
+  ]

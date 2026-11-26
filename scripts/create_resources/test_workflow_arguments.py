@@ -41,7 +41,7 @@ def workflow_arguments(workflow):
 ])
 def test_load_params_are_arguments(workflow, module):
   arguments = workflow_arguments(workflow) | {"id"}
-  for dataset in helpers.split_by_size(module.DATASETS)[0] + helpers.split_by_size(module.DATASETS)[1]:
+  for dataset in map(helpers.params_of, module.DATASETS):
     assert set(dataset) <= arguments, f"{dataset['id']}: {set(dataset) - arguments}"
   assert set(module.SHARED) <= arguments, set(module.SHARED) - arguments
 

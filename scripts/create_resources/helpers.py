@@ -92,11 +92,9 @@ def select(datasets, ids):
   return [dataset for dataset in datasets if dataset["id"] in ids]
 
 
-def split_by_size(datasets):
-  """Split datasets into regular and large ones (`large: True`), dropping the flag."""
-  regular = [{k: v for k, v in d.items() if k != "large"} for d in datasets if not d.get("large")]
-  large = [{k: v for k, v in d.items() if k != "large"} for d in datasets if d.get("large")]
-  return regular, large
+def params_of(dataset):
+  """The workflow parameters of a dataset, without the `large` flag."""
+  return {k: v for k, v in dataset.items() if k != "large"}
 
 
 def make_parser(description):
@@ -112,8 +110,17 @@ def parse_args(description):
 
 
 def launch_datasets(workflow, datasets, shared, prefix, args):
-  """Launch the selected datasets, the large ones separately with more memory and time."""
-  regular, large = split_by_size(select(datasets, args.ids))
-  for group, is_large in [(regular, False), (large, True)]:
-    if group:
-      launch(workflow, {"param_list": group, **shared}, prefix, large=is_large, instance=args.instance, dry_run=args.dry_run)
+  """Launch each selected dataset as a run of its own, the large ones with more memory and time.
+
+  nf-lamin records a Nextflow run as one LaminDB run, with every artifact the run read as
+  its input, so a run with several datasets would link each output to all of their inputs.
+  """
+  for dataset in select(datasets, args.ids):
+    launch(
+      workflow,
+      {"param_list": [params_of(dataset)], **shared},
+      prefix,
+      large=dataset.get("large", False),
+      instance=args.instance,
+      dry_run=args.dry_run,
+    )

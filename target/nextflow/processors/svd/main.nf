@@ -4315,7 +4315,7 @@ meta = [
     "engine" : "docker",
     "output" : "target/nextflow/processors/svd",
     "viash_version" : "0.9.7",
-    "git_commit" : "11842fab8e01ff50c6a4491a0625b31fccae4bcf",
+    "git_commit" : "32834e12f52ff3d658819d565f78da47e1a06828",
     "git_remote" : "https://github.com/openproblems-bio/datasets"
   },
   "package_config" : {

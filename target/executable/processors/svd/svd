@@ -454,9 +454,9 @@ ENV OPENBLAS_NUM_THREADS=4
 ENV MKL_NUM_THREADS=4
 ENV NUMBA_NUM_THREADS=4
 LABEL org.opencontainers.image.description="Companion container for running component processors svd"
-LABEL org.opencontainers.image.created="2026-11-25T23:22:59Z"
+LABEL org.opencontainers.image.created="2026-11-26T07:36:49Z"
 LABEL org.opencontainers.image.source="https://github.com/openproblems-bio/datasets"
-LABEL org.opencontainers.image.revision="11842fab8e01ff50c6a4491a0625b31fccae4bcf"
+LABEL org.opencontainers.image.revision="32834e12f52ff3d658819d565f78da47e1a06828"
 LABEL org.opencontainers.image.version="build_main"
 
 VIASHDOCKER

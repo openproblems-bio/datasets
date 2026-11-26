@@ -53,7 +53,6 @@ SHARED = {
   "dataset_url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE194122",
   "dataset_reference": "luecken2021neurips",
   "output_raw": "$id/raw.mudata.zarr",
-  "output_state": "$id/load_state.yaml",
 }
 
 if __name__ == "__main__":

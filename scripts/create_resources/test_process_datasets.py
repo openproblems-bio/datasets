@@ -15,16 +15,11 @@ UID = "abcdefghijklmnop0000"
 
 
 def test_scrnaseq_key():
-  # output_state is not an argument of the workflow, so it can't be in a param_list entry
   assert process_datasets.raw_key_to_param("scrnaseq/cellxgene_census/hlca/raw.anndata.zarr", UID, "openproblems/data-dev") == {
     "id": "cellxgene_census/hlca",
     "input": f"lamin://openproblems/data-dev/artifact/{UID}",
     "output_dataset": "$id/dataset.anndata.zarr",
   }
-
-
-def test_process_shared_params():
-  assert process_datasets.SHARED == {"output_state": "$id/process_state.yaml"}
 
 
 def test_mudata_key():

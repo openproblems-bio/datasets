@@ -48,10 +48,6 @@ def raw_key_to_param(key, uid, instance):
   }
 
 
-# Viash reads the state file name from the top-level parameters only
-SHARED = {"output_state": "$id/process_state.yaml"}
-
-
 def latest_raw_datasets(instance, modality):
   import lamindb as ln
 
@@ -76,7 +72,7 @@ def main():
   ]
   if not datasets:
     raise SystemExit(f"No raw {args.modality} datasets in {instance}")
-  helpers.launch_datasets(f"{args.modality}/process_{args.modality}", datasets, SHARED, args.modality, args)
+  helpers.launch_datasets(f"{args.modality}/process_{args.modality}", datasets, {}, args.modality, args)
   print(f"\nOnce the runs have finished:\n  uv run scripts/lamin/annotate_artifacts.py --instance {instance} --key-prefix {args.modality}/")
 
 

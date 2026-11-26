@@ -31,7 +31,6 @@ DATASETS = [
 
 SHARED = {
   "output_raw": "$id/raw.anndata.zarr",
-  "output_state": "$id/load_state.yaml",
 }
 
 if __name__ == "__main__":

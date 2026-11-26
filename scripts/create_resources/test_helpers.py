@@ -51,6 +51,13 @@ def test_nf_lamin_pinned():
   assert "id 'nf-lamin@1.0.1'" in config
 
 
+def test_state_files_not_published():
+  # Viash publishes a state yaml next to the outputs, which would end up in the instance's
+  # storage without being registered
+  config = (helpers.REPO_ROOT / "src/config/lamin_denbi.config").read_text()
+  assert "withName: 'publishStatesProc' { publishDir = [enabled: false] }" in config
+
+
 def test_large_config(tmp_path):
   config = launch(tmp_path, large=True).config.read_text()
   assert config.index("instance = 'openproblems/data-dev'") < config.index("450.GB")

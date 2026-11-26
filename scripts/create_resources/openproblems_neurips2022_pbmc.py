@@ -60,7 +60,6 @@ SHARED = {
   "dataset_url": "https://www.kaggle.com/competitions/open-problems-multimodal/data",
   "dataset_reference": "lance2024predicting",
   "output_raw": "$id/raw.mudata.zarr",
-  "output_state": "$id/load_state.yaml",
 }
 
 if __name__ == "__main__":

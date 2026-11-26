@@ -86,6 +86,8 @@
 
 * BUG FIX: `scripts/lamin/annotate_artifacts.py` accepts `unknown` as cell type, as CELLxGENE does, and can describe dataframes whose index anndata wrote as a nullable string array.
 
+* BUG FIX: `scripts/lamin/annotate_artifacts.py` names the schema of a slot after its features (e.g. `layers: counts, normalized`) instead of after its file format. LaminDB shares one schema between formats and modalities with the same slot, and renamed it to whichever format was annotated last.
+
 * MINOR CHANGE: The OP3 loader keeps the counts and the cell and gene metadata only, not the results of the analysis in the GEO h5ad (`.raw`, embeddings, the kNN graph, HTO and protein counts, highly variable genes, clusters, marker genes). Its test runs on a small synthetic h5ad instead of downloading the full dataset.
 
 # datasets v0.1.0

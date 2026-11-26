@@ -160,44 +160,66 @@ def _spec_feature(item, slot):
   return feature if item.get("required", True) else feature.with_config(optional=True)
 
 
-def _slot_schemas(name, fmt, slot_names, prefix=""):
-  """One schema per slot of a format, named `<prefix><slot>` as lamindb's curators expect."""
+def slot_items(fmt):
+  """The slots of a format with their items, keyed `<slot>` or, for a MuData modality, `<modality>:<slot>`."""
+  if fmt["type"] != "mudata_zarr":
+    return _slot_items(fmt, ANNDATA_SLOTS)
+  slots = _slot_items(fmt, MUDATA_SLOTS)
+  for modality, mod_fmt in (fmt.get("mod") or {}).items():
+    slots.update(_slot_items(mod_fmt, ANNDATA_SLOTS, prefix=f"{modality}:"))
+  return slots
+
+
+def _slot_items(fmt, slot_names, prefix=""):
   return {
-    f"{prefix}{slot}": ln.Schema(
-      name=f"{name}: {prefix}{slot}",
-      features=[_spec_feature(item, slot) for item in items],
-      otype="DataFrame" if slot in ("obs", "var") else None,
-    ).save()
+    f"{prefix}{slot}": (slot, items)
     for slot, items in fmt.items()
     if slot in slot_names and isinstance(items, list) and items
   }
 
 
-def spec_schemas(spec_path, modalities=None):
-  """Turn a file spec into a LaminDB schema with every slot, and one with the slots lamindb can curate.
+def slot_schema_name(slot, items):
+  """Name a slot schema after its contents.
 
-  For a MuData format, the slots of a modality are named `<modality>:<slot>`. Only the
-  modalities in `modalities` are curated, since a dataset has a subset of the optional ones.
+  LaminDB identifies a schema by its features, not its name, so formats and modalities with
+  the same slot share one schema, which a name like `Raw dataset: obs` would misdescribe.
   """
+  names = sorted(item["name"] for item in items)
+  return f"{slot}: {', '.join(names)}" if len(names) <= 4 else f"{slot}: {len(names)} features"
+
+
+def spec_schemas(spec_path):
+  """Turn a file spec into a LaminDB schema with every slot (`<modality>:<slot>` for a MuData modality)."""
   spec = load_spec(spec_path)
   fmt = spec["info"]["format"]
-  name = spec.get("label") or Path(spec_path).stem
-  description = (spec.get("summary") or "").strip() or None
-  if fmt["type"] == "mudata_zarr":
-    otype = "MuData"
-    slots = _slot_schemas(name, fmt, MUDATA_SLOTS)
-    for modality, mod_fmt in (fmt.get("mod") or {}).items():
-      slots.update(_slot_schemas(name, mod_fmt, ANNDATA_SLOTS, prefix=f"{modality}:"))
-    curated_names = CURATED_SLOTS + [f"{m}:{slot}" for m in (modalities or []) for slot in CURATED_SLOTS]
-  else:
-    otype = "AnnData"
-    slots = _slot_schemas(name, fmt, ANNDATA_SLOTS)
-    curated_names = CURATED_SLOTS
-  full = ln.Schema(name=name, otype=otype, slots=slots, description=description).save()
-  curated_slots = {slot: schema for slot, schema in slots.items() if slot in curated_names}
+  slots = {
+    key: ln.Schema(
+      name=slot_schema_name(slot, items),
+      features=[_spec_feature(item, slot) for item in items],
+      otype="DataFrame" if slot in ("obs", "var") else None,
+    ).save()
+    for key, (slot, items) in slot_items(fmt).items()
+  }
+  full = ln.Schema(
+    name=spec.get("label") or Path(spec_path).stem,
+    otype="MuData" if fmt["type"] == "mudata_zarr" else "AnnData",
+    slots=slots,
+    description=(spec.get("summary") or "").strip() or None,
+  ).save()
+  return spec, full
+
+
+def curated_slot_names(modalities=None):
+  """The slots lamindb can curate; of a MuData, only those of the modalities a dataset has."""
+  return CURATED_SLOTS + [f"{m}:{slot}" for m in (modalities or []) for slot in CURATED_SLOTS]
+
+
+def curated_schema(full, modalities=None):
+  """The slots of a format's schema that lamindb can curate."""
+  names = curated_slot_names(modalities)
+  slots = {key: schema for key, schema in full.slots.items() if key in names}
   suffix = f": {', '.join(modalities)}" if modalities else ""
-  curated = ln.Schema(name=f"{name} (curated slots{suffix})", otype=otype, slots=curated_slots).save()
-  return spec, full, curated
+  return ln.Schema(name=f"{full.name} (curated slots{suffix})", otype=full.otype, slots=slots).save()
 
 
 # --- reading a store -----------------------------------------------------------------------
@@ -442,18 +464,17 @@ def annotate_artifact(artifact, spec_path, modality=None, bib_path=BIB_PATH, for
   Returns whether the artifact was annotated; it is skipped when it already has the schema
   of its file format, unless `force` is set.
   """
-  spec, full_schema, _ = spec_schemas(spec_path)
+  spec, full_schema = spec_schemas(spec_path)
   fmt = FORMATS[spec["info"]["format"]["type"]]
   if artifact.schema_id == full_schema.id and not force:
     return False
 
   root = _open_store(artifact)
-  _, _, curated_schema = spec_schemas(spec_path, modalities=fmt["modalities"](root))
   structure = fmt["structure"](root, spec)
   obs, summary, uns = fmt["summary"](root, structure)
 
   # validate the slots lamindb can curate, and link their ontology terms
-  _curate(artifact, curated_schema, fmt["curator"], obs)
+  _curate(artifact, curated_schema(full_schema, fmt["modalities"](root)), fmt["curator"], obs)
 
   # the metadata in uns, the summary and the structure as feature values
   uns_features = {feature.name: feature for feature in full_schema.slots["uns"].members} if "uns" in full_schema.slots else {}

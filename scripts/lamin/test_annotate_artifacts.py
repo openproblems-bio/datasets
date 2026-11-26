@@ -48,6 +48,38 @@ def test_specific_description_is_kept():
   assert annotate_artifacts._description(None, None) is None
 
 
+def test_slot_schema_name():
+  items = [{"name": "normalized"}, {"name": "counts"}]
+  assert annotate_artifacts.slot_schema_name("layers", items) == "layers: counts, normalized"
+  items = [{"name": f"column_{i}"} for i in range(5)]
+  assert annotate_artifacts.slot_schema_name("obs", items) == "obs: 5 features"
+
+
+def _content(slots, keys=None):
+  # what lamindb hashes a composite schema by: its slot keys and their features, not the names
+  return frozenset(
+    (key, slot, frozenset((i["name"], i["type"], i.get("multiple", False), i.get("required", True)) for i in items))
+    for key, (slot, items) in slots.items()
+    if keys is None or key in keys
+  )
+
+
+def test_formats_have_distinct_composite_schemas():
+  # a composite schema is named after its format, so two formats with the same slots would
+  # share one schema, renamed to whichever format was annotated last
+  repo = Path(__file__).parents[2]
+  full, curated = {}, {}
+  for path in annotate_artifacts.SPECS.values():
+    fmt = annotate_artifacts.load_spec(repo / path)["info"]["format"]
+    slots = annotate_artifacts.slot_items(fmt)
+    full.setdefault(_content(slots), []).append(path)
+    for modalities in [["rna", "prot"], ["rna", "atac"]] if fmt["type"] == "mudata_zarr" else [None]:
+      keys = annotate_artifacts.curated_slot_names(modalities)
+      curated.setdefault(_content(slots, keys), []).append((path, modalities))
+  assert [paths for paths in full.values() if len(paths) > 1] == []
+  assert [paths for paths in curated.values() if len(paths) > 1] == []
+
+
 def test_placeholder_registries_cover_cellxgene_unknowns():
   # CELLxGENE schema 5 allows "unknown" in these columns (and "na" for ethnicity), so they
   # need a placeholder term to validate; the Census release of 2025-11-08 has unknown cell types
